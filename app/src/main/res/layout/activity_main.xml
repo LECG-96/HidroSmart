@@ -1,22 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#FAFAFA"
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/tvEstado"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Encabezado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTitulo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="HidroSmart • Modo Demo"
+                android:textColor="#1B5E20"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvModoBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#E8F5E9"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:text="AUTO"
+                android:textColor="#1B5E20"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Selector de Cultivo -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cultivo seleccionado"
+                    android:textColor="#616161"
+                    android:textSize="12sp" />
+
+                <Spinner
+                    android:id="@+id/spnCultivo"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Mediciones en tiempo real -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Mediciones de sensores"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:stretchColumns="1">
+
+                <!-- Aire -->
+                <TableRow android:paddingBottom="6dp">
+                    <TextView android:text="Temp. Aire" android:textColor="#424242" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvTempAire" android:gravity="end" android:text="-- °C" android:textColor="#212121" />
+                    <TextView android:id="@+id/tvRangoAire" android:layout_marginStart="8dp" android:text="(15 - 24 °C)" android:textColor="#757575" android:textSize="12sp" />
+                </TableRow>
+
+                <!-- Humedad -->
+                <TableRow android:paddingBottom="6dp">
+                    <TextView android:text="Humedad" android:textColor="#424242" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvHumedad" android:gravity="end" android:text="-- %" android:textColor="#212121" />
+                    <TextView android:layout_marginStart="8dp" android:text="(Óptimo)" android:textColor="#757575" android:textSize="12sp" />
+                </TableRow>
+
+                <!-- Agua -->
+                <TableRow android:paddingBottom="6dp">
+                    <TextView android:text="Temp. Agua" android:textColor="#424242" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvTempAgua" android:gravity="end" android:text="-- °C" android:textColor="#212121" />
+                    <TextView android:id="@+id/tvRangoAgua" android:layout_marginStart="8dp" android:text="(18 - 22 °C)" android:textColor="#757575" android:textSize="12sp" />
+                </TableRow>
+
+                <!-- pH -->
+                <TableRow android:paddingBottom="6dp">
+                    <TextView android:text="pH Solución" android:textColor="#424242" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvPh" android:gravity="end" android:text="--" android:textColor="#212121" />
+                    <TextView android:id="@+id/tvRangoPh" android:layout_marginStart="8dp" android:text="(5.5 - 6.0)" android:textColor="#757575" android:textSize="12sp" />
+                </TableRow>
+
+                <!-- EC -->
+                <TableRow android:paddingBottom="6dp">
+                    <TextView android:text="Conductividad (EC)" android:textColor="#424242" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvEc" android:gravity="end" android:text="-- mS/cm" android:textColor="#212121" />
+                    <TextView android:id="@+id/tvRangoEc" android:layout_marginStart="8dp" android:text="(1.2 - 1.8)" android:textColor="#757575" android:textSize="12sp" />
+                </TableRow>
+
+                <!-- Luz -->
+                <TableRow android:paddingBottom="6dp">
+                    <TextView android:text="Luminosidad" android:textColor="#424242" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvLux" android:gravity="end" android:text="-- lux" android:textColor="#212121" />
+                    <TextView android:layout_marginStart="8dp" android:text="(≥ 3000 lux)" android:textColor="#757575" android:textSize="12sp" />
+                </TableRow>
+
+                <!-- Nivel Agua -->
+                <TableRow>
+                    <TextView android:text="Nivel Estanque" android:textColor="#424242" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvNivel" android:gravity="end" android:text="-- %" android:textColor="#212121" />
+                    <TextView android:layout_marginStart="8dp" android:text="(≥ 30%)" android:textColor="#757575" android:textSize="12sp" />
+                </TableRow>
+            </TableLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Salidas y Actuadores -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Estado de actuadores"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:padding="12dp">
+
+                <TextView android:id="@+id/actVentilador" android:layout_width="0dp" android:layout_columnWeight="1" android:padding="6dp" android:text="○ Ventilador: OFF" />
+                <TextView android:id="@+id/actLed" android:layout_width="0dp" android:layout_columnWeight="1" android:padding="6dp" android:text="○ LED Cultivo: OFF" />
+                <TextView android:id="@+id/actBomba" android:layout_width="0dp" android:layout_columnWeight="1" android:padding="6dp" android:text="○ Riego: OFF" />
+                <TextView android:id="@+id/actNutrientes" android:layout_width="0dp" android:layout_columnWeight="1" android:padding="6dp" android:text="○ Nutrientes: OFF" />
+                <TextView android:id="@+id/actPhPump" android:layout_width="0dp" android:layout_columnWeight="1" android:padding="6dp" android:text="○ pH Down: OFF" />
+                <TextView android:id="@+id/actCerradura" android:layout_width="0dp" android:layout_columnWeight="1" android:padding="6dp" android:text="○ Cerradura: CERRADA" />
+            </GridLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Alertas Activas -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Alertas y diagnóstico"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp">
+
+            <TextView
+                android:id="@+id/tvAlertas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="4dp"
+                android:padding="12dp"
+                android:text="✓ Todos los parámetros dentro de rango."
+                android:textColor="#1B5E20"
+                android:textSize="14sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>
