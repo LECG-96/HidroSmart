@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">HidroSmart</string>
+    <string name="login_btn_demo">Entrar en modo demo</string>
+    <string name="login_proximamente">El inicio de sesión con usuarios llegará pronto</string>
+    <string name="main_modo_demo">Modo demo</string>
+    <string name="main_modo_real">Sesión de usuario</string>
 </resources>
