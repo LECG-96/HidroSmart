@@ -1,4 +1,4 @@
-package com.devst.hidrosmart;
+package com.devst.hidrosmart.view;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +18,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.devst.hidrosmart.R;
 import com.devst.hidrosmart.modelo.Alerta;
 import com.devst.hidrosmart.modelo.Huerto;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     // Vistas de Actuadores
     private TextView actVentilador, actLed, actBomba, actNutrientes, actPhPump, actCerradura;
 
-    // Alertas y control
+    // AlertasFragment y control
     private TextView tvAlertas, tvLabelCultivo;
     private Spinner spnCultivo, spnCantidadTorres;
     private TabLayout tabTorres;
