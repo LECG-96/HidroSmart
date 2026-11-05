@@ -1,5 +1,11 @@
 package com.devst.hidrosmart.view;
 
+import com.devst.hidrosmart.R;
+import com.devst.hidrosmart.modelo.Alerta;
+import com.devst.hidrosmart.modelo.Huerto;
+import com.devst.hidrosmart.modelo.PerfilCultivo;
+import com.devst.hidrosmart.modelo.RespuestaComando;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,10 +25,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.devst.hidrosmart.R;
-import com.devst.hidrosmart.modelo.Alerta;
-import com.devst.hidrosmart.modelo.Huerto;
-import com.devst.hidrosmart.modelo.PerfilCultivo;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -43,14 +48,21 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTempAire, tvHumedad, tvTempAgua, tvPh, tvEc, tvLux, tvNivel;
     private TextView tvRangoAire, tvRangoAgua, tvRangoPh, tvRangoEc;
 
-    // Vistas de Actuadores
-    private TextView actVentilador, actLed, actBomba, actNutrientes, actPhPump, actCerradura;
+    // Vistas de Controles Manuales
+    private SwitchMaterial swModoManual, swCorteDatos;
+    private MaterialCheckBox chkVentilador, chkLed, chkBomba, chkNutrientes, chkPhPump, chkCerradura;
 
-    // AlertasFragment y control
+    // Sliders para forzar valores
+    private SeekBar seekAire, seekHum, seekAgua, seekPh, seekEc, seekLux, seekNivel;
+    private TextView lblSeekAire, lblSeekHum, lblSeekAgua, lblSeekPh, lblSeekEc, lblSeekLux, lblSeekNivel;
+    private boolean usuarioArrastrandoSlider = false;
+
+    // Alertas y control
     private TextView tvAlertas, tvLabelCultivo;
     private Spinner spnCultivo, spnCantidadTorres;
     private TabLayout tabTorres;
     private boolean actualizandoSpinnerCultivo = false;
+    private boolean actualizandoCheckboxes = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +78,10 @@ public class MainActivity extends AppCompatActivity {
 
         inicializarVistas();
         configurarSpinners();
+        configurarControlesManuales();
+        configurarSliders();
         configurarBotonesEscenarios();
-        reconstruirTorres(3); // 3 torres por defecto
+        reconstruirTorres(3);
         iniciarBucleSimulacion();
     }
 
@@ -85,12 +99,31 @@ public class MainActivity extends AppCompatActivity {
         tvRangoPh = findViewById(R.id.tvRangoPh);
         tvRangoEc = findViewById(R.id.tvRangoEc);
 
-        actVentilador = findViewById(R.id.actVentilador);
-        actLed = findViewById(R.id.actLed);
-        actBomba = findViewById(R.id.actBomba);
-        actNutrientes = findViewById(R.id.actNutrientes);
-        actPhPump = findViewById(R.id.actPhPump);
-        actCerradura = findViewById(R.id.actCerradura);
+        swModoManual = findViewById(R.id.swModoManual);
+        swCorteDatos = findViewById(R.id.swCorteDatos);
+
+        chkVentilador = findViewById(R.id.chkVentilador);
+        chkLed = findViewById(R.id.chkLed);
+        chkBomba = findViewById(R.id.chkBomba);
+        chkNutrientes = findViewById(R.id.chkNutrientes);
+        chkPhPump = findViewById(R.id.chkPhPump);
+        chkCerradura = findViewById(R.id.chkCerradura);
+
+        seekAire = findViewById(R.id.seekAire);
+        seekHum = findViewById(R.id.seekHum);
+        seekAgua = findViewById(R.id.seekAgua);
+        seekPh = findViewById(R.id.seekPh);
+        seekEc = findViewById(R.id.seekEc);
+        seekLux = findViewById(R.id.seekLux);
+        seekNivel = findViewById(R.id.seekNivel);
+
+        lblSeekAire = findViewById(R.id.lblSeekAire);
+        lblSeekHum = findViewById(R.id.lblSeekHum);
+        lblSeekAgua = findViewById(R.id.lblSeekAgua);
+        lblSeekPh = findViewById(R.id.lblSeekPh);
+        lblSeekEc = findViewById(R.id.lblSeekEc);
+        lblSeekLux = findViewById(R.id.lblSeekLux);
+        lblSeekNivel = findViewById(R.id.lblSeekNivel);
 
         tvAlertas = findViewById(R.id.tvAlertas);
         tvLabelCultivo = findViewById(R.id.tvLabelCultivo);
@@ -100,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configurarSpinners() {
-        // Cantidad de torres (1 a 4)
         Integer[] opciones = {1, 2, 3, 4};
         ArrayAdapter<Integer> adapterCant = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, opciones);
         adapterCant.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -120,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // Spinner Cultivos
         List<PerfilCultivo> lista = PerfilCultivo.todos();
         ArrayAdapter<PerfilCultivo> adapterCultivos = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lista);
         adapterCultivos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -156,6 +187,180 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
+    }
+
+    private void configurarControlesManuales() {
+        swModoManual.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            Huerto h = getHuertoActual();
+            if (h != null) {
+                double ahora = System.currentTimeMillis() / 1000.0;
+                h.comando("modo", isChecked ? "manual" : "auto", ahora);
+                habilitarCheckboxesManuales(isChecked);
+                if (!isChecked) {
+                    sincronizarCheckboxes(h);
+                }
+                actualizarUI();
+            }
+        });
+
+        vincularComandoCheckbox(chkVentilador, "ventilador");
+        vincularComandoCheckbox(chkLed, "led");
+        vincularComandoCheckbox(chkBomba, "bomba_riego");
+        vincularComandoCheckbox(chkNutrientes, "nutrientes");
+        vincularComandoCheckbox(chkPhPump, "ph_pump");
+        vincularComandoCheckbox(chkCerradura, "cerradura");
+    }
+
+    private void vincularComandoCheckbox(MaterialCheckBox chk, String actuador) {
+        chk.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (actualizandoCheckboxes) return;
+            Huerto h = getHuertoActual();
+            if (h != null && h.modoManual) {
+                double ahora = System.currentTimeMillis() / 1000.0;
+                RespuestaComando res = h.comando(actuador, isChecked ? "on" : "off", ahora);
+                if (!res.aceptado) {
+                    actualizandoCheckboxes = true;
+                    chk.setChecked(!isChecked);
+                    actualizandoCheckboxes = false;
+                    Toast.makeText(this, res.mensaje, Toast.LENGTH_SHORT).show();
+                }
+                actualizarUI();
+            }
+        });
+    }
+
+    private void habilitarCheckboxesManuales(boolean manual) {
+        chkVentilador.setEnabled(manual);
+        chkLed.setEnabled(manual);
+        chkBomba.setEnabled(manual);
+        chkNutrientes.setEnabled(manual);
+        chkPhPump.setEnabled(manual);
+        chkCerradura.setEnabled(manual);
+    }
+
+    private void sincronizarCheckboxes(Huerto h) {
+        actualizandoCheckboxes = true;
+        chkVentilador.setChecked(Boolean.TRUE.equals(h.act.get("ventilador")));
+        chkLed.setChecked(Boolean.TRUE.equals(h.act.get("led")));
+        chkBomba.setChecked(Boolean.TRUE.equals(h.act.get("bomba_riego")));
+        chkNutrientes.setChecked(Boolean.TRUE.equals(h.act.get("nutrientes")));
+        chkPhPump.setChecked(Boolean.TRUE.equals(h.act.get("ph_pump")));
+        chkCerradura.setChecked(Boolean.TRUE.equals(h.act.get("cerradura")));
+        actualizandoCheckboxes = false;
+    }
+
+    private void configurarSliders() {
+        // Aire (0 a 45 °C, persistente)
+        seekAire.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                lblSeekAire.setText(String.format(Locale.US, "Temp. Aire: %d.0 °C", progress));
+                if (fromUser) aplicarValorSlider("temp_ambiente", (double) progress, true);
+            }
+        });
+
+        // Humedad (0 a 100 %, persistente)
+        seekHum.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                lblSeekHum.setText(String.format(Locale.US, "Humedad: %d %%", progress));
+                if (fromUser) aplicarValorSlider("humedad", (double) progress, true);
+            }
+        });
+
+        // Agua (5 a 35 °C, progress 0 a 30)
+        seekAgua.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                double val = 5.0 + progress;
+                lblSeekAgua.setText(String.format(Locale.US, "Temp. Agua: %.1f °C", val));
+                if (fromUser) aplicarValorSlider("temp_agua", val, true);
+            }
+        });
+
+        // pH (3.0 a 9.0, progress 0 a 60, paso 0.1)
+        seekPh.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                double val = 3.0 + (progress / 10.0);
+                lblSeekPh.setText(String.format(Locale.US, "pH: %.1f", val));
+                if (fromUser) aplicarValorSlider("ph", val, false);
+            }
+        });
+
+        // EC (0.0 a 4.5, progress 0 a 45, paso 0.1)
+        seekEc.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                double val = progress / 10.0;
+                lblSeekEc.setText(String.format(Locale.US, "EC: %.1f mS/cm", val));
+                if (fromUser) aplicarValorSlider("ec", val, false);
+            }
+        });
+
+        // Luz (0 a 10000 lux, progress 0 a 100, paso 100)
+        seekLux.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                double val = progress * 100.0;
+                lblSeekLux.setText(String.format(Locale.US, "Luz: %.0f lux", val));
+                if (fromUser) aplicarValorSlider("lux", val, true);
+            }
+        });
+
+        // Nivel (0 a 100 %)
+        seekNivel.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                lblSeekNivel.setText(String.format(Locale.US, "Nivel Estanque: %d %%", progress));
+                if (fromUser) aplicarValorSlider("nivel_agua", (double) progress, false);
+            }
+        });
+    }
+
+    private void aplicarValorSlider(String variable, double valor, boolean persistente) {
+        Huerto h = getHuertoActual();
+        if (h != null) {
+            synchronized (h.lock) {
+                h.v.put(variable, valor);
+                if (persistente && h.base.containsKey(variable)) {
+                    h.base.put(variable, valor);
+                }
+            }
+            actualizarUI();
+        }
+    }
+
+    private void sincronizarSliders(Huerto h) {
+        if (usuarioArrastrandoSlider) return;
+
+        double aire = h.v.get("temp_ambiente");
+        seekAire.setProgress((int) Math.round(aire));
+        lblSeekAire.setText(String.format(Locale.US, "Temp. Aire: %.1f °C", aire));
+
+        double hum = h.v.get("humedad");
+        seekHum.setProgress((int) Math.round(hum));
+        lblSeekHum.setText(String.format(Locale.US, "Humedad: %.0f %%", hum));
+
+        double agua = h.v.get("temp_agua");
+        seekAgua.setProgress((int) Math.max(0, Math.round(agua - 5.0)));
+        lblSeekAgua.setText(String.format(Locale.US, "Temp. Agua: %.1f °C", agua));
+
+        double ph = h.v.get("ph");
+        seekPh.setProgress((int) Math.max(0, Math.round((ph - 3.0) * 10.0)));
+        lblSeekPh.setText(String.format(Locale.US, "pH: %.2f", ph));
+
+        double ec = h.v.get("ec");
+        seekEc.setProgress((int) Math.max(0, Math.round(ec * 10.0)));
+        lblSeekEc.setText(String.format(Locale.US, "EC: %.2f mS/cm", ec));
+
+        double lux = h.v.get("lux");
+        seekLux.setProgress((int) Math.max(0, Math.round(lux / 100.0)));
+        lblSeekLux.setText(String.format(Locale.US, "Luz: %.0f lux", lux));
+
+        double nivel = h.v.get("nivel_agua");
+        seekNivel.setProgress((int) Math.round(nivel));
+        lblSeekNivel.setText(String.format(Locale.US, "Nivel Estanque: %.0f %%", nivel));
     }
 
     private void reconstruirTorres(int n) {
@@ -205,6 +410,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         actualizandoSpinnerCultivo = false;
+
+        swModoManual.setChecked(actual.modoManual);
+        habilitarCheckboxesManuales(actual.modoManual);
+        sincronizarCheckboxes(actual);
+        sincronizarSliders(actual);
+
         actualizarRangosTexto(actual.perfil);
         actualizarUI();
     }
@@ -238,6 +449,7 @@ public class MainActivity extends AppCompatActivity {
                     h.v.put("nivel_agua", 100.0);
                 }
                 Toast.makeText(this, "Estanque T" + h.idx + " rellenado al 100%", Toast.LENGTH_SHORT).show();
+                sincronizarSliders(h);
                 actualizarUI();
             }
         });
@@ -250,6 +462,7 @@ public class MainActivity extends AppCompatActivity {
             if (h != null) {
                 h.aplicarEscenario(escenario);
                 Toast.makeText(this, "Escenario aplicado: " + escenario, Toast.LENGTH_SHORT).show();
+                sincronizarSliders(h);
                 actualizarUI();
             }
         });
@@ -267,7 +480,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                     h.temporizadores(ahora);
                 }
-                actualizarUI();
+
+                // Si está activo el corte de datos, no refresca la pantalla
+                if (!swCorteDatos.isChecked()) {
+                    actualizarUI();
+                }
+
                 handler.postDelayed(this, 1000);
             }
         };
@@ -308,12 +526,8 @@ public class MainActivity extends AppCompatActivity {
         tvNivel.setText(String.format(Locale.US, "%.0f %%", nivel));
         pintarValor(tvNivel, nivel < Huerto.NIVEL_BAJO);
 
-        actualizarActuador(actVentilador, "Ventilador", actual.act.get("ventilador"));
-        actualizarActuador(actLed, "LED Cultivo", actual.act.get("led"));
-        actualizarActuador(actBomba, "Riego", actual.act.get("bomba_riego"));
-        actualizarActuador(actNutrientes, "Nutrientes", actual.act.get("nutrientes"));
-        actualizarActuador(actPhPump, "pH Down", actual.act.get("ph_pump"));
-        actualizarActuador(actCerradura, "Cerradura", actual.act.get("cerradura"));
+        sincronizarCheckboxes(actual);
+        sincronizarSliders(actual);
 
         List<Alerta> alertas = actual.alertas();
         if (alertas.isEmpty()) {
@@ -337,10 +551,16 @@ public class MainActivity extends AppCompatActivity {
         tv.setTextColor(fueraDeRango ? Color.parseColor("#B71C1C") : Color.parseColor("#1B5E20"));
     }
 
-    private void actualizarActuador(TextView tv, String nombre, Boolean activo) {
-        boolean isOn = Boolean.TRUE.equals(activo);
-        tv.setText(String.format("%s %s: %s", isOn ? "●" : "○", nombre, isOn ? "ON" : "OFF"));
-        tv.setTextColor(isOn ? Color.parseColor("#1B5E20") : Color.parseColor("#757575"));
+    private abstract class SimpleSeekBarListener implements SeekBar.OnSeekBarChangeListener {
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            usuarioArrastrandoSlider = true;
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            usuarioArrastrandoSlider = false;
+        }
     }
 
     @Override
