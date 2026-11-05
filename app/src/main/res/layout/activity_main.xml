@@ -1,370 +1,351 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
-    android:fillViewport="true">
+    android:background="#FAFAFA">
 
-    <LinearLayout
+    <!-- CONTENEDOR 1: VISTA ADMIN (Panel Demo + Gestión de Torres) -->
+    <ScrollView
+        android:id="@+id/vistaAdmin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <!-- Encabezado con selector de torres -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="HidroSmart • Demo"
-                android:textColor="#1B5E20"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:text="Torres:"
-                android:textColor="#616161"
-                android:textSize="12sp" />
-
-            <Spinner
-                android:id="@+id/spnCantidadTorres"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp" />
-        </LinearLayout>
-
-        <!-- Selector de Torre Activa (Tabs) -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabTorres"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:tabIndicatorColor="#1B5E20"
-            app:tabMode="fixed"
-            app:tabSelectedTextColor="#1B5E20" />
-
-        <!-- Cultivo y Modo Operativo -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
-
+            <!-- Encabezado Admin -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvLabelCultivo"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Cultivo de Torre 1"
-                    android:textColor="#616161"
-                    android:textSize="12sp" />
+                    android:layout_weight="1"
+                    android:text="HidroSmart • Admin"
+                    android:textColor="#1B5E20"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-                <Spinner
-                    android:id="@+id/spnCultivo"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginTop="2dp" />
+                <!-- Opciones de Agregar y Eliminar Torre -->
+                <Button
+                    android:id="@+id/btnAgregarTorre"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="+ Torre"
+                    android:textSize="11sp" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="#E0E0E0" />
+                <Button
+                    android:id="@+id/btnEliminarTorre"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="- Torre"
+                    android:textColor="#B71C1C"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabTorres"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:tabIndicatorColor="#1B5E20"
+                app:tabMode="fixed"
+                app:tabSelectedTextColor="#1B5E20" />
+
+            <!-- Cultivo y Modo -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/swModoManual"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Modo Manual"
-                        android:textColor="#212121"
-                        android:textSize="14sp" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/swCorteDatos"
+                    <TextView
+                        android:id="@+id/tvLabelCultivo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Corte datos"
-                        android:textColor="#757575"
+                        android:text="Cultivo de Torre 1"
+                        android:textColor="#616161"
                         android:textSize="12sp" />
+
+                    <Spinner
+                        android:id="@+id/spnCultivo"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="2dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#E0E0E0" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swModoManual"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Modo Manual"
+                            android:textColor="#212121"
+                            android:textSize="14sp" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swCorteDatos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Corte datos"
+                            android:textColor="#757575"
+                            android:textSize="12sp" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            </com.google.android.material.card.MaterialCardView>
 
-        <!-- Mediciones en tiempo real -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Mediciones de sensores"
-            android:textColor="#212121"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            <!-- Medidas -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Mediciones de sensores"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
-
-            <TableLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:stretchColumns="1">
+                android:layout_marginTop="6dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp">
 
-                <TableRow android:paddingBottom="4dp">
-                    <TextView android:text="Temp. Aire" android:textColor="#424242" android:textStyle="bold" />
-                    <TextView android:id="@+id/tvTempAire" android:gravity="end" android:text="-- °C" android:textColor="#212121" />
-                    <TextView android:id="@+id/tvRangoAire" android:layout_marginStart="8dp" android:text="(--)" android:textColor="#757575" android:textSize="11sp" />
-                </TableRow>
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:stretchColumns="1">
 
-                <TableRow android:paddingBottom="4dp">
-                    <TextView android:text="Humedad" android:textColor="#424242" android:textStyle="bold" />
-                    <TextView android:id="@+id/tvHumedad" android:gravity="end" android:text="-- %" android:textColor="#212121" />
-                    <TextView android:layout_marginStart="8dp" android:text="(Óptimo)" android:textColor="#757575" android:textSize="11sp" />
-                </TableRow>
+                    <TableRow android:paddingBottom="4dp">
+                        <TextView android:text="Temp. Aire" android:textColor="#424242" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvTempAire" android:gravity="end" android:text="-- °C" android:textColor="#212121" />
+                        <TextView android:id="@+id/tvRangoAire" android:layout_marginStart="8dp" android:text="(--)" android:textColor="#757575" android:textSize="11sp" />
+                    </TableRow>
 
-                <TableRow android:paddingBottom="4dp">
-                    <TextView android:text="Temp. Agua" android:textColor="#424242" android:textStyle="bold" />
-                    <TextView android:id="@+id/tvTempAgua" android:gravity="end" android:text="-- °C" android:textColor="#212121" />
-                    <TextView android:id="@+id/tvRangoAgua" android:layout_marginStart="8dp" android:text="(--)" android:textColor="#757575" android:textSize="11sp" />
-                </TableRow>
+                    <TableRow android:paddingBottom="4dp">
+                        <TextView android:text="Humedad" android:textColor="#424242" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvHumedad" android:gravity="end" android:text="-- %" android:textColor="#212121" />
+                        <TextView android:layout_marginStart="8dp" android:text="(Óptimo)" android:textColor="#757575" android:textSize="11sp" />
+                    </TableRow>
 
-                <TableRow android:paddingBottom="4dp">
-                    <TextView android:text="pH Solución" android:textColor="#424242" android:textStyle="bold" />
-                    <TextView android:id="@+id/tvPh" android:gravity="end" android:text="--" android:textColor="#212121" />
-                    <TextView android:id="@+id/tvRangoPh" android:layout_marginStart="8dp" android:text="(--)" android:textColor="#757575" android:textSize="11sp" />
-                </TableRow>
+                    <TableRow android:paddingBottom="4dp">
+                        <TextView android:text="Temp. Agua" android:textColor="#424242" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvTempAgua" android:gravity="end" android:text="-- °C" android:textColor="#212121" />
+                        <TextView android:id="@+id/tvRangoAgua" android:layout_marginStart="8dp" android:text="(--)" android:textColor="#757575" android:textSize="11sp" />
+                    </TableRow>
 
-                <TableRow android:paddingBottom="4dp">
-                    <TextView android:text="Conductividad (EC)" android:textColor="#424242" android:textStyle="bold" />
-                    <TextView android:id="@+id/tvEc" android:gravity="end" android:text="-- mS/cm" android:textColor="#212121" />
-                    <TextView android:id="@+id/tvRangoEc" android:layout_marginStart="8dp" android:text="(--)" android:textColor="#757575" android:textSize="11sp" />
-                </TableRow>
+                    <TableRow android:paddingBottom="4dp">
+                        <TextView android:text="pH Solución" android:textColor="#424242" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvPh" android:gravity="end" android:text="--" android:textColor="#212121" />
+                        <TextView android:id="@+id/tvRangoPh" android:layout_marginStart="8dp" android:text="(--)" android:textColor="#757575" android:textSize="11sp" />
+                    </TableRow>
 
-                <TableRow android:paddingBottom="4dp">
-                    <TextView android:text="Luminosidad" android:textColor="#424242" android:textStyle="bold" />
-                    <TextView android:id="@+id/tvLux" android:gravity="end" android:text="-- lux" android:textColor="#212121" />
-                    <TextView android:layout_marginStart="8dp" android:text="(≥ 3000 lux)" android:textColor="#757575" android:textSize="11sp" />
-                </TableRow>
+                    <TableRow android:paddingBottom="4dp">
+                        <TextView android:text="Conductividad (EC)" android:textColor="#424242" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvEc" android:gravity="end" android:text="-- mS/cm" android:textColor="#212121" />
+                        <TextView android:id="@+id/tvRangoEc" android:layout_marginStart="8dp" android:text="(--)" android:textColor="#757575" android:textSize="11sp" />
+                    </TableRow>
 
-                <TableRow>
-                    <TextView android:text="Nivel Estanque" android:textColor="#424242" android:textStyle="bold" />
-                    <TextView android:id="@+id/tvNivel" android:gravity="end" android:text="-- %" android:textColor="#212121" />
-                    <TextView android:layout_marginStart="8dp" android:text="(≥ 30%)" android:textColor="#757575" android:textSize="11sp" />
-                </TableRow>
-            </TableLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TableRow android:paddingBottom="4dp">
+                        <TextView android:text="Luminosidad" android:textColor="#424242" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvLux" android:gravity="end" android:text="-- lux" android:textColor="#212121" />
+                        <TextView android:layout_marginStart="8dp" android:text="(≥ 3000 lux)" android:textColor="#757575" android:textSize="11sp" />
+                    </TableRow>
 
-        <!-- Salidas y Control Manual Directo -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Actuadores (activos solo en modo manual)"
-            android:textColor="#212121"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+                    <TableRow>
+                        <TextView android:text="Nivel Estanque" android:textColor="#424242" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvNivel" android:gravity="end" android:text="-- %" android:textColor="#212121" />
+                        <TextView android:layout_marginStart="8dp" android:text="(≥ 30%)" android:textColor="#757575" android:textSize="11sp" />
+                    </TableRow>
+                </TableLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+            <!-- Actuadores -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Actuadores (activos en modo manual)"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp">
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:padding="8dp">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/chkVentilador" android:layout_width="0dp" android:layout_columnWeight="1" android:enabled="false" android:text="Ventilador" />
+                    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/chkLed" android:layout_width="0dp" android:layout_columnWeight="1" android:enabled="false" android:text="LED cultivo" />
+                    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/chkBomba" android:layout_width="0dp" android:layout_columnWeight="1" android:enabled="false" android:text="Bomba riego" />
+                    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/chkNutrientes" android:layout_width="0dp" android:layout_columnWeight="1" android:enabled="false" android:text="Nutrientes A+B" />
+                    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/chkPhPump" android:layout_width="0dp" android:layout_columnWeight="1" android:enabled="false" android:text="pH Down" />
+                    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/chkCerradura" android:layout_width="0dp" android:layout_columnWeight="1" android:enabled="false" android:text="Cerradura" />
+                </GridLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Alertas -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Alertas y diagnóstico"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp">
+
+                <TextView
+                    android:id="@+id/tvAlertas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="3dp"
+                    android:padding="10dp"
+                    android:text="✓ Todos los parámetros dentro de rango."
+                    android:textColor="#1B5E20"
+                    android:textSize="13sp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Sliders -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Forzar valores continuos (Sliders)"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView android:id="@+id/lblSeekAire" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Temp. Aire: -- °C" android:textSize="12sp" />
+                    <SeekBar android:id="@+id/seekAire" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="45" />
+
+                    <TextView android:id="@+id/lblSeekHum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Humedad: -- %" android:textSize="12sp" />
+                    <SeekBar android:id="@+id/seekHum" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
+
+                    <TextView android:id="@+id/lblSeekAgua" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Temp. Agua: -- °C" android:textSize="12sp" />
+                    <SeekBar android:id="@+id/seekAgua" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="30" />
+
+                    <TextView android:id="@+id/lblSeekPh" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="pH: --" android:textSize="12sp" />
+                    <SeekBar android:id="@+id/seekPh" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="60" />
+
+                    <TextView android:id="@+id/lblSeekEc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="EC: -- mS/cm" android:textSize="12sp" />
+                    <SeekBar android:id="@+id/seekEc" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="45" />
+
+                    <TextView android:id="@+id/lblSeekLux" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Luz: -- lux" android:textSize="12sp" />
+                    <SeekBar android:id="@+id/seekLux" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
+
+                    <TextView android:id="@+id/lblSeekNivel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Nivel Estanque: -- %" android:textSize="12sp" />
+                    <SeekBar android:id="@+id/seekNivel" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Escenarios -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Aplicar escenario a esta torre"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:padding="8dp">
+                android:layout_marginTop="6dp"
+                android:columnCount="2">
 
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/chkVentilador"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:enabled="false"
-                    android:text="Ventilador" />
-
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/chkLed"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:enabled="false"
-                    android:text="LED cultivo" />
-
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/chkBomba"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:enabled="false"
-                    android:text="Bomba riego" />
-
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/chkNutrientes"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:enabled="false"
-                    android:text="Nutrientes A+B" />
-
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/chkPhPump"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:enabled="false"
-                    android:text="pH Down" />
-
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/chkCerradura"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:enabled="false"
-                    android:text="Cerradura" />
+                <Button android:id="@+id/btnEscCalor" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Calor" />
+                <Button android:id="@+id/btnEscFrio" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Frío" />
+                <Button android:id="@+id/btnEscAguaCal" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Agua caliente" />
+                <Button android:id="@+id/btnEscAguaFria" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Agua fría" />
+                <Button android:id="@+id/btnEscPhAlto" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="pH alto" />
+                <Button android:id="@+id/btnEscPhBajo" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="pH bajo" />
+                <Button android:id="@+id/btnEscEcBaja" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="EC baja" />
+                <Button android:id="@+id/btnEscEcAlta" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="EC alta" />
+                <Button android:id="@+id/btnEscOscuridad" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Poca luz" />
+                <Button android:id="@+id/btnEscNivelBajo" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Nivel bajo" />
+                <Button android:id="@+id/btnEscNivelCritico" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Nivel crítico" />
+                <Button android:id="@+id/btnEscNormal" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Normal" />
             </GridLayout>
-        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Alertas -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Alertas y diagnóstico"
-            android:textColor="#212121"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
-
-            <TextView
-                android:id="@+id/tvAlertas"
+            <Button
+                android:id="@+id/btnRellenarEstanque"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lineSpacingExtra="3dp"
-                android:padding="10dp"
-                android:text="✓ Todos los parámetros dentro de rango."
-                android:textColor="#1B5E20"
-                android:textSize="13sp" />
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_marginTop="6dp"
+                android:text="Rellenar estanque (100 %)" />
 
-        <!-- Forzar Valores con Sliders -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="Forzar valores continuos (Sliders)"
-            android:textColor="#212121"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+    <!-- CONTENEDOR 2: VISTA USUARIO GENERAL -->
+    <include
+        android:id="@+id/vistaUsuario"
+        layout="@layout/fragment_usuario_general"
+        android:visibility="gone" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <!-- Temp Aire -->
-                <TextView android:id="@+id/lblSeekAire" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Temp. Aire: -- °C" android:textSize="12sp" />
-                <SeekBar android:id="@+id/seekAire" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="45" />
-
-                <!-- Humedad -->
-                <TextView android:id="@+id/lblSeekHum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Humedad: -- %" android:textSize="12sp" />
-                <SeekBar android:id="@+id/seekHum" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
-
-                <!-- Temp Agua -->
-                <TextView android:id="@+id/lblSeekAgua" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Temp. Agua: -- °C" android:textSize="12sp" />
-                <SeekBar android:id="@+id/seekAgua" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="30" />
-
-                <!-- pH -->
-                <TextView android:id="@+id/lblSeekPh" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="pH: --" android:textSize="12sp" />
-                <SeekBar android:id="@+id/seekPh" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="60" />
-
-                <!-- EC -->
-                <TextView android:id="@+id/lblSeekEc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="EC: -- mS/cm" android:textSize="12sp" />
-                <SeekBar android:id="@+id/seekEc" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="45" />
-
-                <!-- Luz -->
-                <TextView android:id="@+id/lblSeekLux" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Luz: -- lux" android:textSize="12sp" />
-                <SeekBar android:id="@+id/seekLux" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
-
-                <!-- Nivel Agua -->
-                <TextView android:id="@+id/lblSeekNivel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Nivel Estanque: -- %" android:textSize="12sp" />
-                <SeekBar android:id="@+id/seekNivel" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Botonera de Escenarios -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="Aplicar escenario a esta torre"
-            android:textColor="#212121"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:columnCount="2">
-
-            <Button android:id="@+id/btnEscCalor" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Calor" />
-            <Button android:id="@+id/btnEscFrio" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Frío" />
-            <Button android:id="@+id/btnEscAguaCal" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Agua caliente" />
-            <Button android:id="@+id/btnEscAguaFria" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Agua fría" />
-            <Button android:id="@+id/btnEscPhAlto" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="pH alto" />
-            <Button android:id="@+id/btnEscPhBajo" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="pH bajo" />
-            <Button android:id="@+id/btnEscEcBaja" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="EC baja" />
-            <Button android:id="@+id/btnEscEcAlta" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="EC alta" />
-            <Button android:id="@+id/btnEscOscuridad" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Poca luz" />
-            <Button android:id="@+id/btnEscNivelBajo" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Nivel bajo" />
-            <Button android:id="@+id/btnEscNivelCritico" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Nivel crítico" />
-            <Button android:id="@+id/btnEscNormal" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Normal" />
-        </GridLayout>
-
-        <Button
-            android:id="@+id/btnRellenarEstanque"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Rellenar estanque (100 %)" />
-
-    </LinearLayout>
-</ScrollView>
+</FrameLayout>

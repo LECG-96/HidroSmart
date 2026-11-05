@@ -1,11 +1,5 @@
 package com.devst.hidrosmart.view;
 
-import com.devst.hidrosmart.R;
-import com.devst.hidrosmart.modelo.Alerta;
-import com.devst.hidrosmart.modelo.Huerto;
-import com.devst.hidrosmart.modelo.PerfilCultivo;
-import com.devst.hidrosmart.modelo.RespuestaComando;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,6 +20,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.devst.hidrosmart.R;
+import com.devst.hidrosmart.modelo.Alerta;
+import com.devst.hidrosmart.modelo.Huerto;
+import com.devst.hidrosmart.modelo.PerfilCultivo;
+import com.devst.hidrosmart.modelo.RespuestaComando;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.tabs.TabLayout;
@@ -36,7 +36,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_MODO_DEMO = "modo_demo";
-    private static final String[] CULTIVOS_DEFECTO = {"lechuga", "albahaca", "cilantro", "menta"};
+    private static final String[] CULTIVOS_DEFECTO = {"lechuga", "albahaca", "cilantro", "menta", "acelga", "tomate_cherry"};
 
     private final List<Huerto> torres = new ArrayList<>();
     private int torreSeleccionada = 0;
@@ -44,25 +44,29 @@ public class MainActivity extends AppCompatActivity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable runnableSimulador;
 
-    // Vistas de Medidas
+    // Vistas contenedoras por rol
+    private View vistaAdmin;
+    private View vistaUsuario;
+
+    // Controles Admin
     private TextView tvTempAire, tvHumedad, tvTempAgua, tvPh, tvEc, tvLux, tvNivel;
     private TextView tvRangoAire, tvRangoAgua, tvRangoPh, tvRangoEc;
-
-    // Vistas de Controles Manuales
     private SwitchMaterial swModoManual, swCorteDatos;
     private MaterialCheckBox chkVentilador, chkLed, chkBomba, chkNutrientes, chkPhPump, chkCerradura;
-
-    // Sliders para forzar valores
     private SeekBar seekAire, seekHum, seekAgua, seekPh, seekEc, seekLux, seekNivel;
     private TextView lblSeekAire, lblSeekHum, lblSeekAgua, lblSeekPh, lblSeekEc, lblSeekLux, lblSeekNivel;
-    private boolean usuarioArrastrandoSlider = false;
-
-    // Alertas y control
     private TextView tvAlertas, tvLabelCultivo;
-    private Spinner spnCultivo, spnCantidadTorres;
+    private Spinner spnCultivo;
     private TabLayout tabTorres;
+    private boolean usuarioArrastrandoSlider = false;
     private boolean actualizandoSpinnerCultivo = false;
     private boolean actualizandoCheckboxes = false;
+
+    // Controles Usuario General
+    private Spinner spnTorreComentario;
+    private EditText etComentario;
+    private Button btnEnviarComentario;
+    private TextView tvUltimoComentario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,16 +80,32 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        inicializarVistas();
-        configurarSpinners();
-        configurarControlesManuales();
-        configurarSliders();
-        configurarBotonesEscenarios();
-        reconstruirTorres(3);
-        iniciarBucleSimulacion();
+        String rol = getIntent().getStringExtra(Login.EXTRA_ROL);
+        if (rol == null) rol = Login.ROL_ADMIN;
+
+        vistaAdmin = findViewById(R.id.vistaAdmin);
+        vistaUsuario = findViewById(R.id.vistaUsuario);
+
+        // Inicializar 2 torres por defecto
+        reconstruirTorres(2);
+
+        if (Login.ROL_ADMIN.equals(rol)) {
+            vistaAdmin.setVisibility(View.VISIBLE);
+            vistaUsuario.setVisibility(View.GONE);
+            inicializarVistasAdmin();
+            configurarControlesAdmin();
+            iniciarBucleSimulacion();
+        } else {
+            vistaAdmin.setVisibility(View.GONE);
+            vistaUsuario.setVisibility(View.VISIBLE);
+            inicializarVistasUsuario();
+        }
     }
 
-    private void inicializarVistas() {
+    // ----------------------------------------------------
+    // INICIALIZACIÓN VISTA ADMIN
+    // ----------------------------------------------------
+    private void inicializarVistasAdmin() {
         tvTempAire = findViewById(R.id.tvTempAire);
         tvHumedad = findViewById(R.id.tvHumedad);
         tvTempAgua = findViewById(R.id.tvTempAgua);
@@ -128,30 +148,11 @@ public class MainActivity extends AppCompatActivity {
         tvAlertas = findViewById(R.id.tvAlertas);
         tvLabelCultivo = findViewById(R.id.tvLabelCultivo);
         spnCultivo = findViewById(R.id.spnCultivo);
-        spnCantidadTorres = findViewById(R.id.spnCantidadTorres);
         tabTorres = findViewById(R.id.tabTorres);
     }
 
-    private void configurarSpinners() {
-        Integer[] opciones = {1, 2, 3, 4};
-        ArrayAdapter<Integer> adapterCant = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, opciones);
-        adapterCant.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnCantidadTorres.setAdapter(adapterCant);
-        spnCantidadTorres.setSelection(2); // 3 torres
-
-        spnCantidadTorres.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int cantidad = (Integer) parent.getItemAtPosition(position);
-                if (cantidad != torres.size()) {
-                    reconstruirTorres(cantidad);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
+    private void configurarControlesAdmin() {
+        // Spinner Cultivos
         List<PerfilCultivo> lista = PerfilCultivo.todos();
         ArrayAdapter<PerfilCultivo> adapterCultivos = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lista);
         adapterCultivos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -174,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
+        // Tabs
         tabTorres.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -187,9 +189,36 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
-    }
 
-    private void configurarControlesManuales() {
+        // Botón + Torre
+        findViewById(R.id.btnAgregarTorre).setOnClickListener(v -> {
+            if (torres.size() >= 4) {
+                Toast.makeText(this, "Máximo 4 torres alcanzado", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            int nuevoIdx = torres.size() + 1;
+            String cultivo = CULTIVOS_DEFECTO[(nuevoIdx - 1) % CULTIVOS_DEFECTO.length];
+            torres.add(new Huerto(cultivo, 20.0, 60.0, 10.0, nuevoIdx));
+            actualizarTabsDesdeCero();
+            Toast.makeText(this, "Torre " + nuevoIdx + " agregada", Toast.LENGTH_SHORT).show();
+        });
+
+        // Botón - Torre
+        findViewById(R.id.btnEliminarTorre).setOnClickListener(v -> {
+            if (torres.size() <= 1) {
+                Toast.makeText(this, "Debe quedar al menos 1 torre", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            int removedIdx = torres.size();
+            torres.remove(torres.size() - 1);
+            if (torreSeleccionada >= torres.size()) {
+                torreSeleccionada = torres.size() - 1;
+            }
+            actualizarTabsDesdeCero();
+            Toast.makeText(this, "Torre " + removedIdx + " eliminada", Toast.LENGTH_SHORT).show();
+        });
+
+        // Modo manual y switches
         swModoManual.setOnCheckedChangeListener((buttonView, isChecked) -> {
             Huerto h = getHuertoActual();
             if (h != null) {
@@ -209,8 +238,117 @@ public class MainActivity extends AppCompatActivity {
         vincularComandoCheckbox(chkNutrientes, "nutrientes");
         vincularComandoCheckbox(chkPhPump, "ph_pump");
         vincularComandoCheckbox(chkCerradura, "cerradura");
+
+        configurarSliders();
+        configurarBotonesEscenarios();
+        actualizarTabsDesdeCero();
     }
 
+    // ----------------------------------------------------
+    // INICIALIZACIÓN VISTA USUARIO GENERAL
+    // ----------------------------------------------------
+    private void inicializarVistasUsuario() {
+        spnTorreComentario = findViewById(R.id.spnTorreComentario);
+        etComentario = findViewById(R.id.etComentario);
+        btnEnviarComentario = findViewById(R.id.btnEnviarComentario);
+        tvUltimoComentario = findViewById(R.id.tvUltimoComentario);
+
+        List<String> opciones = new ArrayList<>();
+        for (Huerto h : torres) {
+            opciones.add(String.format("Torre %d (%s)", h.idx, h.perfil.nombre));
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, opciones);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnTorreComentario.setAdapter(adapter);
+
+        btnEnviarComentario.setOnClickListener(v -> {
+            String texto = etComentario.getText().toString().trim();
+            if (texto.isEmpty()) {
+                Toast.makeText(this, "Escribe una observación antes de enviar", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String seleccion = spnTorreComentario.getSelectedItem().toString();
+            tvUltimoComentario.setVisibility(View.VISIBLE);
+            tvUltimoComentario.setText(String.format("✓ Observación guardada para %s:\n\"%s\"", seleccion, texto));
+            etComentario.setText("");
+            Toast.makeText(this, "Observación registrada con éxito", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    // ----------------------------------------------------
+    // LÓGICA DE TORRES Y TABS
+    // ----------------------------------------------------
+    private void reconstruirTorres(int n) {
+        torres.clear();
+        for (int i = 0; i < n; i++) {
+            String cultivo = CULTIVOS_DEFECTO[i % CULTIVOS_DEFECTO.length];
+            torres.add(new Huerto(cultivo, 20.0, 60.0, 10.0, i + 1));
+        }
+        torreSeleccionada = 0;
+    }
+
+    private void actualizarTabsDesdeCero() {
+        if (tabTorres == null) return;
+        tabTorres.removeAllTabs();
+        for (int i = 0; i < torres.size(); i++) {
+            tabTorres.addTab(tabTorres.newTab().setText("T" + (i + 1)));
+        }
+        actualizarTitulosTabs();
+        TabLayout.Tab tab = tabTorres.getTabAt(torreSeleccionada);
+        if (tab != null) tab.select();
+        sincronizarVistaConTorre();
+    }
+
+    private void actualizarTitulosTabs() {
+        for (int i = 0; i < torres.size(); i++) {
+            TabLayout.Tab tab = tabTorres.getTabAt(i);
+            if (tab != null) {
+                tab.setText(String.format("T%d · %s", torres.get(i).idx, torres.get(i).perfil.nombre));
+            }
+        }
+    }
+
+    private Huerto getHuertoActual() {
+        if (torreSeleccionada >= 0 && torreSeleccionada < torres.size()) {
+            return torres.get(torreSeleccionada);
+        }
+        return null;
+    }
+
+    private void sincronizarVistaConTorre() {
+        Huerto actual = getHuertoActual();
+        if (actual == null || tvLabelCultivo == null) return;
+
+        tvLabelCultivo.setText("Cultivo de Torre " + actual.idx);
+        actualizandoSpinnerCultivo = true;
+        List<PerfilCultivo> todos = PerfilCultivo.todos();
+        for (int i = 0; i < todos.size(); i++) {
+            if (todos.get(i).clave.equals(actual.perfil.clave)) {
+                spnCultivo.setSelection(i);
+                break;
+            }
+        }
+        actualizandoSpinnerCultivo = false;
+
+        swModoManual.setChecked(actual.modoManual);
+        habilitarCheckboxesManuales(actual.modoManual);
+        sincronizarCheckboxes(actual);
+        sincronizarSliders(actual);
+
+        actualizarRangosTexto(actual.perfil);
+        actualizarUI();
+    }
+
+    private void actualizarRangosTexto(PerfilCultivo p) {
+        tvRangoAire.setText(String.format(Locale.US, "(%.0f - %.0f °C)", p.aireMin, p.aireMax));
+        tvRangoAgua.setText(String.format(Locale.US, "(%.0f - %.0f °C)", p.tempAguaMin, p.tempAguaMax));
+        tvRangoPh.setText(String.format(Locale.US, "(%.1f - %.1f)", p.phMin, p.phMax));
+        tvRangoEc.setText(String.format(Locale.US, "(%.1f - %.1f)", p.ecMin, p.ecMax));
+    }
+
+    // ----------------------------------------------------
+    // CHECKBOXES Y ACTUADORES
+    // ----------------------------------------------------
     private void vincularComandoCheckbox(MaterialCheckBox chk, String actuador) {
         chk.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (actualizandoCheckboxes) return;
@@ -249,8 +387,10 @@ public class MainActivity extends AppCompatActivity {
         actualizandoCheckboxes = false;
     }
 
+    // ----------------------------------------------------
+    // SLIDERS Y ESCENARIOS
+    // ----------------------------------------------------
     private void configurarSliders() {
-        // Aire (0 a 45 °C, persistente)
         seekAire.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -259,7 +399,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Humedad (0 a 100 %, persistente)
         seekHum.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -268,7 +407,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Agua (5 a 35 °C, progress 0 a 30)
         seekAgua.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -278,7 +416,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // pH (3.0 a 9.0, progress 0 a 60, paso 0.1)
         seekPh.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -288,7 +425,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // EC (0.0 a 4.5, progress 0 a 45, paso 0.1)
         seekEc.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -298,7 +434,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Luz (0 a 10000 lux, progress 0 a 100, paso 100)
         seekLux.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -308,7 +443,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Nivel (0 a 100 %)
         seekNivel.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -332,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sincronizarSliders(Huerto h) {
-        if (usuarioArrastrandoSlider) return;
+        if (usuarioArrastrandoSlider || seekAire == null) return;
 
         double aire = h.v.get("temp_ambiente");
         seekAire.setProgress((int) Math.round(aire));
@@ -361,70 +495,6 @@ public class MainActivity extends AppCompatActivity {
         double nivel = h.v.get("nivel_agua");
         seekNivel.setProgress((int) Math.round(nivel));
         lblSeekNivel.setText(String.format(Locale.US, "Nivel Estanque: %.0f %%", nivel));
-    }
-
-    private void reconstruirTorres(int n) {
-        torres.clear();
-        for (int i = 0; i < n; i++) {
-            String cultivo = CULTIVOS_DEFECTO[i % CULTIVOS_DEFECTO.length];
-            torres.add(new Huerto(cultivo, 20.0, 60.0, 10.0, i + 1));
-        }
-
-        tabTorres.removeAllTabs();
-        for (int i = 0; i < n; i++) {
-            tabTorres.addTab(tabTorres.newTab().setText("T" + (i + 1)));
-        }
-
-        torreSeleccionada = 0;
-        actualizarTitulosTabs();
-        sincronizarVistaConTorre();
-    }
-
-    private void actualizarTitulosTabs() {
-        for (int i = 0; i < torres.size(); i++) {
-            TabLayout.Tab tab = tabTorres.getTabAt(i);
-            if (tab != null) {
-                tab.setText(String.format("T%d · %s", torres.get(i).idx, torres.get(i).perfil.nombre));
-            }
-        }
-    }
-
-    private Huerto getHuertoActual() {
-        if (torreSeleccionada >= 0 && torreSeleccionada < torres.size()) {
-            return torres.get(torreSeleccionada);
-        }
-        return null;
-    }
-
-    private void sincronizarVistaConTorre() {
-        Huerto actual = getHuertoActual();
-        if (actual == null) return;
-
-        tvLabelCultivo.setText("Cultivo de Torre " + actual.idx);
-        actualizandoSpinnerCultivo = true;
-        List<PerfilCultivo> todos = PerfilCultivo.todos();
-        for (int i = 0; i < todos.size(); i++) {
-            if (todos.get(i).clave.equals(actual.perfil.clave)) {
-                spnCultivo.setSelection(i);
-                break;
-            }
-        }
-        actualizandoSpinnerCultivo = false;
-
-        swModoManual.setChecked(actual.modoManual);
-        habilitarCheckboxesManuales(actual.modoManual);
-        sincronizarCheckboxes(actual);
-        sincronizarSliders(actual);
-
-        actualizarRangosTexto(actual.perfil);
-        actualizarUI();
-    }
-
-    private void actualizarRangosTexto(PerfilCultivo p) {
-        tvRangoAire.setText(String.format(Locale.US, "(%.0f - %.0f °C)", p.aireMin, p.aireMax));
-        tvRangoAgua.setText(String.format(Locale.US, "(%.0f - %.0f °C)", p.tempAguaMin, p.tempAguaMax));
-        tvRangoPh.setText(String.format(Locale.US, "(%.1f - %.1f)", p.phMin, p.phMax));
-        tvRangoEc.setText(String.format(Locale.US, "(%.1f - %.1f)", p.ecMin, p.ecMax));
     }
 
     private void configurarBotonesEscenarios() {
@@ -469,6 +539,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // ----------------------------------------------------
+    // CICLO DE SIMULACIÓN Y UI
+    // ----------------------------------------------------
     private void iniciarBucleSimulacion() {
         runnableSimulador = new Runnable() {
             @Override
@@ -482,8 +555,7 @@ public class MainActivity extends AppCompatActivity {
                     h.temporizadores(ahora);
                 }
 
-                // Si está activo el corte de datos, no refresca la pantalla
-                if (!swCorteDatos.isChecked()) {
+                if (swCorteDatos != null && !swCorteDatos.isChecked()) {
                     actualizarUI();
                 }
 
@@ -495,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void actualizarUI() {
         Huerto actual = getHuertoActual();
-        if (actual == null) return;
+        if (actual == null || tvTempAire == null) return;
 
         PerfilCultivo p = actual.perfil;
 
