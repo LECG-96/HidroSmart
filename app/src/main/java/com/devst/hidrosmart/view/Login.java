@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.devst.hidrosmart.R;
@@ -12,6 +13,7 @@ import com.devst.hidrosmart.R;
 public class Login extends AppCompatActivity {
 
     public static final String EXTRA_ROL = "extra_rol";
+    public static final String EXTRA_USUARIO_ACTUAL = "extra_usuario_actual";
     public static final String ROL_ADMIN = "ADMIN";
     public static final String ROL_USER = "USER";
 
@@ -35,22 +37,26 @@ public class Login extends AppCompatActivity {
             }
 
             if (usuario.equals("admin") && contrasena.equals("1234")) {
-                abrirMain(ROL_ADMIN, false);
+                abrirMain(ROL_ADMIN, false, "admin");
             } else if (usuario.equals("user") && contrasena.equals("1234")) {
-                abrirMain(ROL_USER, false);
+                abrirMain(ROL_USER, false, "user");
             } else {
                 Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
             }
         });
 
-        btnDemo.setOnClickListener(v -> abrirMain(ROL_ADMIN, true));
+        // Modo Demo: entra como admin para ver la simulación, pero bloquea pestañas de supervisión
+        btnDemo.setOnClickListener(v -> abrirMain(ROL_ADMIN, true, "demo"));
     }
 
-    private void abrirMain(String rol, boolean esDemo) {
+    private void abrirMain(String rol, boolean esDemo, String nombreUsuario) {
         Intent intent = new Intent(Login.this, MainActivity.class);
         intent.putExtra(EXTRA_ROL, rol);
         intent.putExtra(MainActivity.EXTRA_MODO_DEMO, esDemo);
+        intent.putExtra(EXTRA_USUARIO_ACTUAL, nombreUsuario);
         startActivity(intent);
-        if (!esDemo) finish();
+        if (!esDemo) {
+            finish();
+        }
     }
 }

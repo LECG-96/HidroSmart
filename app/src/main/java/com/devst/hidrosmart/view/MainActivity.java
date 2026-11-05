@@ -9,12 +9,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -22,6 +24,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.devst.hidrosmart.R;
 import com.devst.hidrosmart.modelo.Alerta;
+import com.devst.hidrosmart.modelo.ComentarioUsuario;
 import com.devst.hidrosmart.modelo.Huerto;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.modelo.RespuestaComando;
@@ -29,7 +32,9 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.tabs.TabLayout;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,15 +43,28 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MODO_DEMO = "modo_demo";
     private static final String[] CULTIVOS_DEFECTO = {"lechuga", "albahaca", "cilantro", "menta", "acelga", "tomate_cherry"};
 
+    // Solo los usuarios registrados realmente en el sistema
+    public static final List<String> USUARIOS_GENERALES = new ArrayList<>();
+    public static final List<ComentarioUsuario> COMENTARIOS_REGISTRADOS = new ArrayList<>();
+
+    static {
+        // Cuenta general base registrada en la app
+        USUARIOS_GENERALES.add("user");
+    }
+
     private final List<Huerto> torres = new ArrayList<>();
     private int torreSeleccionada = 0;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable runnableSimulador;
 
-    // Vistas contenedoras por rol
+    // Vistas contenedoras
     private View vistaAdmin;
     private View vistaUsuario;
+    private TabLayout tabSeccionesAdmin;
+    private View seccionControlTorres;
+    private View seccionUsuariosAdmin;
+    private ListView lvUsuariosGenerales;
 
     // Controles Admin
     private TextView tvTempAire, tvHumedad, tvTempAgua, tvPh, tvEc, tvLux, tvNivel;
@@ -82,16 +100,36 @@ public class MainActivity extends AppCompatActivity {
 
         String rol = getIntent().getStringExtra(Login.EXTRA_ROL);
         if (rol == null) rol = Login.ROL_ADMIN;
+        boolean esModoDemo = getIntent().getBooleanExtra(EXTRA_MODO_DEMO, false);
 
         vistaAdmin = findViewById(R.id.vistaAdmin);
         vistaUsuario = findViewById(R.id.vistaUsuario);
+        tabSeccionesAdmin = findViewById(R.id.tabSeccionesAdmin);
+        seccionControlTorres = findViewById(R.id.seccionControlTorres);
+        seccionUsuariosAdmin = findViewById(R.id.seccionUsuariosAdmin);
+        lvUsuariosGenerales = findViewById(R.id.lvUsuariosGenerales);
 
-        // Inicializar 2 torres por defecto
         reconstruirTorres(2);
 
         if (Login.ROL_ADMIN.equals(rol)) {
             vistaAdmin.setVisibility(View.VISIBLE);
             vistaUsuario.setVisibility(View.GONE);
+
+            // Si es MODO DEMO, bloquear/ocultar completamente la pestaña de supervisión de usuarios
+            if (esModoDemo) {
+                tabSeccionesAdmin.setVisibility(View.GONE);
+                seccionUsuariosAdmin.setVisibility(View.GONE);
+                seccionControlTorres.setVisibility(View.VISIBLE);
+                TextView tvAdminTitulo = findViewById(R.id.tvAdminTitulo);
+                if (tvAdminTitulo != null) {
+                    tvAdminTitulo.setText("HidroSmart • Modo Demo");
+                }
+            } else {
+                tabSeccionesAdmin.setVisibility(View.VISIBLE);
+                configurarPestanasAdmin();
+                configurarListaUsuariosAdmin();
+            }
+
             inicializarVistasAdmin();
             configurarControlesAdmin();
             iniciarBucleSimulacion();
@@ -103,7 +141,66 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ----------------------------------------------------
-    // INICIALIZACIÓN VISTA ADMIN
+    // GESTIÓN DE PESTAÑAS ADMIN (CONTROL VS USUARIOS REGISTRADOS)
+    // ----------------------------------------------------
+    private void configurarPestanasAdmin() {
+        tabSeccionesAdmin.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    seccionControlTorres.setVisibility(View.VISIBLE);
+                    seccionUsuariosAdmin.setVisibility(View.GONE);
+                } else {
+                    seccionControlTorres.setVisibility(View.GONE);
+                    seccionUsuariosAdmin.setVisibility(View.VISIBLE);
+                    actualizarListaUsuariosAdmin();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+    }
+
+    private void configurarListaUsuariosAdmin() {
+        actualizarListaUsuariosAdmin();
+        lvUsuariosGenerales.setOnItemClickListener((parent, view, position, id) -> {
+            String usuarioSeleccionado = USUARIOS_GENERALES.get(position);
+            mostrarDialogoComentariosUsuario(usuarioSeleccionado);
+        });
+    }
+
+    private void actualizarListaUsuariosAdmin() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, USUARIOS_GENERALES);
+        lvUsuariosGenerales.setAdapter(adapter);
+    }
+
+    private void mostrarDialogoComentariosUsuario(String usuarioNombre) {
+        StringBuilder sb = new StringBuilder();
+
+        for (ComentarioUsuario c : COMENTARIOS_REGISTRADOS) {
+            if (c.usuario.equals(usuarioNombre)) {
+                sb.append("• [").append(c.fechaHora).append("] ").append(c.torre).append(":\n")
+                        .append("\"").append(c.mensaje).append("\"\n\n");
+            }
+        }
+
+        if (sb.length() == 0) {
+            sb.append("Este usuario aún no registra comentarios u observaciones.");
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Observaciones de: " + usuarioNombre)
+                .setMessage(sb.toString().trim())
+                .setPositiveButton("Cerrar", null)
+                .show();
+    }
+
+    // ----------------------------------------------------
+    // INICIALIZACIÓN VISTA ADMIN (SIMULADOR / TORRES)
     // ----------------------------------------------------
     private void inicializarVistasAdmin() {
         tvTempAire = findViewById(R.id.tvTempAire);
@@ -152,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configurarControlesAdmin() {
-        // Spinner Cultivos
         List<PerfilCultivo> lista = PerfilCultivo.todos();
         ArrayAdapter<PerfilCultivo> adapterCultivos = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lista);
         adapterCultivos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -175,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // Tabs
         tabTorres.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -190,7 +285,6 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        // Botón + Torre
         findViewById(R.id.btnAgregarTorre).setOnClickListener(v -> {
             if (torres.size() >= 4) {
                 Toast.makeText(this, "Máximo 4 torres alcanzado", Toast.LENGTH_SHORT).show();
@@ -203,7 +297,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Torre " + nuevoIdx + " agregada", Toast.LENGTH_SHORT).show();
         });
 
-        // Botón - Torre
         findViewById(R.id.btnEliminarTorre).setOnClickListener(v -> {
             if (torres.size() <= 1) {
                 Toast.makeText(this, "Debe quedar al menos 1 torre", Toast.LENGTH_SHORT).show();
@@ -218,7 +311,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Torre " + removedIdx + " eliminada", Toast.LENGTH_SHORT).show();
         });
 
-        // Modo manual y switches
         swModoManual.setOnCheckedChangeListener((buttonView, isChecked) -> {
             Huerto h = getHuertoActual();
             if (h != null) {
@@ -253,6 +345,10 @@ public class MainActivity extends AppCompatActivity {
         btnEnviarComentario = findViewById(R.id.btnEnviarComentario);
         tvUltimoComentario = findViewById(R.id.tvUltimoComentario);
 
+        String usuarioActual = getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
+        if (usuarioActual == null) usuarioActual = "user";
+        final String remitente = usuarioActual;
+
         List<String> opciones = new ArrayList<>();
         for (Huerto h : torres) {
             opciones.add(String.format("Torre %d (%s)", h.idx, h.perfil.nombre));
@@ -268,15 +364,19 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             String seleccion = spnTorreComentario.getSelectedItem().toString();
+            String horaActual = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+
+            COMENTARIOS_REGISTRADOS.add(new ComentarioUsuario(remitente, seleccion, texto, horaActual));
+
             tvUltimoComentario.setVisibility(View.VISIBLE);
             tvUltimoComentario.setText(String.format("✓ Observación guardada para %s:\n\"%s\"", seleccion, texto));
             etComentario.setText("");
-            Toast.makeText(this, "Observación registrada con éxito", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Observación enviada al supervisor", Toast.LENGTH_SHORT).show();
         });
     }
 
     // ----------------------------------------------------
-    // LÓGICA DE TORRES Y TABS
+    // MÉTODOS DEL SIMULADOR
     // ----------------------------------------------------
     private void reconstruirTorres(int n) {
         torres.clear();
@@ -346,9 +446,6 @@ public class MainActivity extends AppCompatActivity {
         tvRangoEc.setText(String.format(Locale.US, "(%.1f - %.1f)", p.ecMin, p.ecMax));
     }
 
-    // ----------------------------------------------------
-    // CHECKBOXES Y ACTUADORES
-    // ----------------------------------------------------
     private void vincularComandoCheckbox(MaterialCheckBox chk, String actuador) {
         chk.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (actualizandoCheckboxes) return;
@@ -387,9 +484,6 @@ public class MainActivity extends AppCompatActivity {
         actualizandoCheckboxes = false;
     }
 
-    // ----------------------------------------------------
-    // SLIDERS Y ESCENARIOS
-    // ----------------------------------------------------
     private void configurarSliders() {
         seekAire.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
@@ -539,9 +633,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // ----------------------------------------------------
-    // CICLO DE SIMULACIÓN Y UI
-    // ----------------------------------------------------
     private void iniciarBucleSimulacion() {
         runnableSimulador = new Runnable() {
             @Override
