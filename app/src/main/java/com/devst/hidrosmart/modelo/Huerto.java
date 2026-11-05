@@ -305,6 +305,26 @@ public class Huerto {
 
     public void aplicarEscenario(String escenario) {
         synchronized (lock) {
+            if ("normal".equals(escenario)) {
+                double phIdeal = Math.round(((perfil.phMin + perfil.phMax) / 2.0) * 100.0) / 100.0;
+                double ecIdeal = Math.round(((perfil.ecMin + perfil.ecMax) / 2.0) * 100.0) / 100.0;
+                double tempAireIdeal = Math.min(24.0, perfil.aireMax - 3.0);
+                double tempAguaIdeal = Math.round(((perfil.tempAguaMin + perfil.tempAguaMax) / 2.0) * 10.0) / 10.0;
+
+                base.put("temp_ambiente", tempAireIdeal);
+                base.put("humedad", 62.0);
+                base.put("temp_agua", tempAguaIdeal);
+                base.put("lux", 4500.0);
+                base.put("ph", phIdeal);
+                base.put("ec", ecIdeal);
+
+                v.putAll(base);
+                v.put("nivel_agua", 80.0);
+
+                apagarTodo();
+                return;
+            }
+
             switch (escenario) {
                 case "calor":
                     v.put("temp_ambiente", 32.0);
@@ -343,12 +363,6 @@ public class Huerto {
                     break;
                 case "nivel_critico":
                     v.put("nivel_agua", 10.0);
-                    break;
-                case "normal":
-                    for (Map.Entry<String, Double> entry : base.entrySet()) {
-                        v.put(entry.getKey(), entry.getValue());
-                    }
-                    v.put("nivel_agua", 80.0);
                     break;
                 default:
                     break;

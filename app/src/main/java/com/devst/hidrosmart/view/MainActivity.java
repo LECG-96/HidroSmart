@@ -461,9 +461,10 @@ public class MainActivity extends AppCompatActivity {
             Huerto h = getHuertoActual();
             if (h != null) {
                 h.aplicarEscenario(escenario);
-                Toast.makeText(this, "Escenario aplicado: " + escenario, Toast.LENGTH_SHORT).show();
                 sincronizarSliders(h);
+                sincronizarCheckboxes(h);
                 actualizarUI();
+                Toast.makeText(this, "Escenario aplicado: " + escenario, Toast.LENGTH_SHORT).show();
             }
         });
     }
