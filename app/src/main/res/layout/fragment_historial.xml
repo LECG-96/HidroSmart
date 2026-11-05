@@ -12,33 +12,13 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Encabezado con Botón Salir -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Panel de Usuario General"
-                android:textColor="#1B5E20"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btnCerrarSesion"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="Salir"
-                android:textColor="#757575"
-                android:textSize="11sp" />
-        </LinearLayout>
+            android:text="Panel de Monitoreo General"
+            android:textColor="#1B5E20"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <!-- 1. Estadísticas (En cero por falta de conexión física) -->
         <TextView

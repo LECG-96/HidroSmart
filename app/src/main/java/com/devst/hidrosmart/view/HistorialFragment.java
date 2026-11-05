@@ -1,6 +1,5 @@
 package com.devst.hidrosmart.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,15 +49,10 @@ public class HistorialFragment extends Fragment {
         btnEnviarComentario = view.findViewById(R.id.btnEnviarComentario);
         tvUltimoComentario = view.findViewById(R.id.tvUltimoComentario);
 
-        Button btnSalir = view.findViewById(R.id.btnCerrarSesion);
-        btnSalir.setOnClickListener(v -> cerrarSesion());
-
-        // Obtener el usuario activo pasado en el intent
         String usuarioActual = requireActivity().getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
         if (usuarioActual == null) usuarioActual = "user";
         final String remitente = usuarioActual;
 
-        // Observar lista de torres para poblar el selector del formulario
         viewModel.getListaTorres().observe(getViewLifecycleOwner(), torres -> {
             if (torres == null) return;
             List<String> opciones = new ArrayList<>();
@@ -70,7 +64,6 @@ public class HistorialFragment extends Fragment {
             spnTorreComentario.setAdapter(adapter);
         });
 
-        // Enviar observación al ViewModel
         btnEnviarComentario.setOnClickListener(v -> {
             String texto = etComentario.getText().toString().trim();
             if (texto.isEmpty()) {
@@ -91,12 +84,5 @@ public class HistorialFragment extends Fragment {
             etComentario.setText("");
             Toast.makeText(requireContext(), "Observación enviada al supervisor", Toast.LENGTH_SHORT).show();
         });
-    }
-
-    private void cerrarSesion() {
-        Intent intent = new Intent(requireActivity(), Login.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        requireActivity().finish();
     }
 }
