@@ -1,5 +1,6 @@
 package com.devst.hidrosmart.view;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,12 +44,11 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MODO_DEMO = "modo_demo";
     private static final String[] CULTIVOS_DEFECTO = {"lechuga", "albahaca", "cilantro", "menta", "acelga", "tomate_cherry"};
 
-    // Solo los usuarios registrados realmente en el sistema
+    // Solo los usuarios registrados en el sistema
     public static final List<String> USUARIOS_GENERALES = new ArrayList<>();
     public static final List<ComentarioUsuario> COMENTARIOS_REGISTRADOS = new ArrayList<>();
 
     static {
-        // Cuenta general base registrada en la app
         USUARIOS_GENERALES.add("user");
     }
 
@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
             vistaAdmin.setVisibility(View.VISIBLE);
             vistaUsuario.setVisibility(View.GONE);
 
-            // Si es MODO DEMO, bloquear/ocultar completamente la pestaña de supervisión de usuarios
             if (esModoDemo) {
                 tabSeccionesAdmin.setVisibility(View.GONE);
                 seccionUsuariosAdmin.setVisibility(View.GONE);
@@ -138,6 +137,13 @@ public class MainActivity extends AppCompatActivity {
             vistaUsuario.setVisibility(View.VISIBLE);
             inicializarVistasUsuario();
         }
+    }
+
+    private void cerrarSesion() {
+        Intent intent = new Intent(MainActivity.this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     // ----------------------------------------------------
@@ -249,6 +255,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configurarControlesAdmin() {
+        Button btnCerrarSesionAdmin = findViewById(R.id.btnCerrarSesionAdmin);
+        if (btnCerrarSesionAdmin != null) {
+            btnCerrarSesionAdmin.setOnClickListener(v -> cerrarSesion());
+        }
+
         List<PerfilCultivo> lista = PerfilCultivo.todos();
         ArrayAdapter<PerfilCultivo> adapterCultivos = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lista);
         adapterCultivos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -340,6 +351,11 @@ public class MainActivity extends AppCompatActivity {
     // INICIALIZACIÓN VISTA USUARIO GENERAL
     // ----------------------------------------------------
     private void inicializarVistasUsuario() {
+        Button btnCerrarSesionUser = findViewById(R.id.btnCerrarSesionUser);
+        if (btnCerrarSesionUser != null) {
+            btnCerrarSesionUser.setOnClickListener(v -> cerrarSesion());
+        }
+
         spnTorreComentario = findViewById(R.id.spnTorreComentario);
         etComentario = findViewById(R.id.etComentario);
         btnEnviarComentario = findViewById(R.id.btnEnviarComentario);

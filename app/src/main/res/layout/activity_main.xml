@@ -45,7 +45,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Encabezado Admin -->
+                <!-- Encabezado Admin con Botón Salir -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -82,6 +82,18 @@
                         android:paddingEnd="8dp"
                         android:text="- Torre"
                         android:textColor="#B71C1C"
+                        android:textSize="11sp" />
+
+                    <Button
+                        android:id="@+id/btnCerrarSesionAdmin"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="4dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:text="Salir"
+                        android:textColor="#757575"
                         android:textSize="11sp" />
                 </LinearLayout>
 
