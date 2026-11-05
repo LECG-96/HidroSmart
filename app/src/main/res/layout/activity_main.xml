@@ -7,7 +7,7 @@
     android:background="#FAFAFA"
     android:orientation="vertical">
 
-    <!-- Barra superior común -->
+    <!-- Barra superior -->
     <LinearLayout
         android:id="@+id/toolbarAdmin"
         android:layout_width="match_parent"
@@ -31,7 +31,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Acciones dinámicas de administración de torres (ocultas para USER) -->
         <Button
             android:id="@+id/btnAgregarTorre"
             style="?attr/materialButtonOutlinedStyle"
@@ -67,7 +66,7 @@
             android:textSize="11sp" />
     </LinearLayout>
 
-    <!-- Pestañas de navegación para ADMIN (Ocultas en USER) -->
+    <!-- Pestañas de navegación Admin -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabNavegacionAdmin"
         android:layout_width="match_parent"
@@ -94,7 +93,7 @@
             android:text="Usuarios" />
     </com.google.android.material.tabs.TabLayout>
 
-    <!-- Contenedor central donde se cargan los Fragments -->
+    <!-- Contenedor de Fragments -->
     <FrameLayout
         android:id="@+id/contenedorFragment"
         android:layout_width="match_parent"
