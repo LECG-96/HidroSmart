@@ -14,7 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.devst.hidrosmart.R;
@@ -32,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabNavegacionAdmin;
     private Button btnAgregarTorre, btnEliminarTorre, btnCerrarSesionTop;
     private TextView tvTituloToolbar;
+
+    private final Fragment fragmentInicio = new InicioFragment();
+    private final Fragment fragmentControl = new ControlFragment();
+    private final Fragment fragmentHistorial = new HistorialFragment();
+    private Fragment fragmentActivo;
 
     private boolean esModoDemo = false;
     private String rol = Login.ROL_ADMIN;
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         esModoDemo = getIntent().getBooleanExtra(EXTRA_MODO_DEMO, false);
 
         inicializarComponentes();
+        configurarFragmentosIniciales();
         configurarNavegacionPorRol();
     }
 
@@ -100,13 +106,37 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void configurarFragmentosIniciales() {
+        FragmentManager fm = getSupportFragmentManager();
+        if (Login.ROL_USER.equals(rol)) {
+            fm.beginTransaction()
+                    .add(R.id.contenedorFragment, fragmentHistorial, "historial")
+                    .commit();
+            fragmentActivo = fragmentHistorial;
+        } else {
+            fm.beginTransaction()
+                    .add(R.id.contenedorFragment, fragmentControl, "control").hide(fragmentControl)
+                    .add(R.id.contenedorFragment, fragmentInicio, "inicio")
+                    .commit();
+            fragmentActivo = fragmentInicio;
+        }
+    }
+
+    private void cambiarFragment(Fragment nuevoFragment) {
+        if (fragmentActivo == nuevoFragment) return;
+        getSupportFragmentManager().beginTransaction()
+                .hide(fragmentActivo)
+                .show(nuevoFragment)
+                .commit();
+        fragmentActivo = nuevoFragment;
+    }
+
     private void configurarNavegacionPorRol() {
         if (Login.ROL_USER.equals(rol)) {
             tvTituloToolbar.setText(R.string.titulo_usuario);
             tabNavegacionAdmin.setVisibility(View.GONE);
             btnAgregarTorre.setVisibility(View.GONE);
             btnEliminarTorre.setVisibility(View.GONE);
-            cargarFragment(new HistorialFragment());
             return;
         }
 
@@ -124,9 +154,9 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 int pos = tab.getPosition();
                 if (pos == 0) {
-                    cargarFragment(new InicioFragment());
+                    cambiarFragment(fragmentInicio);
                 } else if (pos == 1) {
-                    cargarFragment(new ControlFragment());
+                    cambiarFragment(fragmentControl);
                 } else if (pos == 2) {
                     mostrarDialogoUsuariosRegistrados();
                 }
@@ -142,14 +172,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        cargarFragment(new InicioFragment());
-    }
-
-    private void cargarFragment(Fragment fragment) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.contenedorFragment, fragment);
-        ft.commit();
     }
 
     private void mostrarDialogoUsuariosRegistrados() {

@@ -51,7 +51,6 @@ public class SimuladorRepository {
         usuariosGenerales.add("user");
         usuariosGenerales.add("operador1");
 
-        // Inicialización base
         torres.add(new Huerto(1, PerfilCultivo.todos().get(0)));
         torres.add(new Huerto(2, PerfilCultivo.todos().get(1)));
 
@@ -90,17 +89,24 @@ public class SimuladorRepository {
         observadores.remove(obs);
     }
 
-    private void notificarObservadores() {
-        List<ObservadorSimulador> copia;
-        synchronized (this) {
-            copia = new ArrayList<>(observadores);
-        }
-        for (ObservadorSimulador obs : copia) {
-            obs.onTickSimulacion();
+    public void notificarObservadores() {
+        Runnable r = () -> {
+            List<ObservadorSimulador> copia;
+            synchronized (SimuladorRepository.this) {
+                copia = new ArrayList<>(observadores);
+            }
+            for (ObservadorSimulador obs : copia) {
+                obs.onTickSimulacion();
+            }
+        };
+
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            r.run();
+        } else {
+            handler.post(r);
         }
     }
 
-    // Lista protegida e inmutable
     public synchronized List<Huerto> getTorres() {
         return Collections.unmodifiableList(new ArrayList<>(torres));
     }
@@ -118,6 +124,7 @@ public class SimuladorRepository {
     public synchronized void setTorreSeleccionada(int indice) {
         if (indice >= 0 && indice < torres.size()) {
             this.torreSeleccionada = indice;
+            notificarObservadores();
         }
     }
 
@@ -156,7 +163,9 @@ public class SimuladorRepository {
     public synchronized RespuestaComando enviarComando(String actuador, String orden) {
         Huerto actual = getHuertoActual();
         if (actual == null) return new RespuestaComando(false, "No hay torre activa");
-        return actual.enviarComando(actuador, orden);
+        RespuestaComando res = actual.enviarComando(actuador, orden);
+        notificarObservadores();
+        return res;
     }
 
     public synchronized void aplicarEscenario(String escenario) {
@@ -171,6 +180,17 @@ public class SimuladorRepository {
         Huerto actual = getHuertoActual();
         if (actual != null) {
             actual.forzarParametro(variable, valor, persistente);
+            notificarObservadores();
+        }
+    }
+
+    public synchronized void setModoManual(boolean manual) {
+        Huerto actual = getHuertoActual();
+        if (actual != null) {
+            actual.modoManual = manual;
+            if (!manual) {
+                actual.apagarTodo();
+            }
             notificarObservadores();
         }
     }

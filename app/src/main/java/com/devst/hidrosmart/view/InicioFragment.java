@@ -37,6 +37,19 @@ public class InicioFragment extends Fragment {
 
     private boolean actualizandoSpinner = false;
 
+    private final TabLayout.OnTabSelectedListener tabListener = new TabLayout.OnTabSelectedListener() {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            viewModel.seleccionarTorre(tab.getPosition());
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {}
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {}
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,7 +64,7 @@ public class InicioFragment extends Fragment {
 
         inicializarVistas(view);
         configurarSpinnerCultivos();
-        configurarTabs();
+        tabTorres.addOnTabSelectedListener(tabListener);
         observarViewModel();
     }
 
@@ -95,37 +108,24 @@ public class InicioFragment extends Fragment {
         });
     }
 
-    private void configurarTabs() {
-        tabTorres.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewModel.seleccionarTorre(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
-    }
-
     private void observarViewModel() {
-        // Observar estado del corte de datos
         viewModel.getCorteDatosActivo().observe(getViewLifecycleOwner(), corte -> {
             tvBannerCorte.setVisibility(Boolean.TRUE.equals(corte) ? View.VISIBLE : View.GONE);
         });
 
         viewModel.getListaTorres().observe(getViewLifecycleOwner(), torres -> {
             if (torres == null) return;
+            int sel = viewModel.getIndiceTorreSeleccionada();
+
             if (tabTorres.getTabCount() != torres.size()) {
+                tabTorres.removeOnTabSelectedListener(tabListener);
                 tabTorres.removeAllTabs();
                 for (int i = 0; i < torres.size(); i++) {
                     tabTorres.addTab(tabTorres.newTab().setText(String.format("T%d · %s", torres.get(i).idx, torres.get(i).perfil.nombre)));
                 }
-                int sel = viewModel.getIndiceTorreSeleccionada();
                 TabLayout.Tab tab = tabTorres.getTabAt(sel);
                 if (tab != null) tab.select();
+                tabTorres.addOnTabSelectedListener(tabListener);
             } else {
                 for (int i = 0; i < torres.size(); i++) {
                     TabLayout.Tab tab = tabTorres.getTabAt(i);

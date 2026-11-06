@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.devst.hidrosmart.R;
-import com.devst.hidrosmart.modelo.Huerto;
 import com.devst.hidrosmart.modelo.RespuestaComando;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -35,6 +34,7 @@ public class ControlFragment extends Fragment {
 
     private boolean usuarioArrastrandoSlider = false;
     private boolean actualizandoCheckboxes = false;
+    private boolean actualizandoSwitches = false;
 
     @Nullable
     @Override
@@ -53,6 +53,7 @@ public class ControlFragment extends Fragment {
         configurarCheckboxesActuadores();
         configurarSliders();
         configurarBotonesEscenarios(view);
+        habilitarCheckboxesManuales(swModoManual.isChecked());
         observarViewModel();
     }
 
@@ -86,6 +87,7 @@ public class ControlFragment extends Fragment {
 
     private void configurarSwitches() {
         swModoManual.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (actualizandoSwitches) return;
             viewModel.setModoManual(isChecked);
             habilitarCheckboxesManuales(isChecked);
         });
@@ -107,6 +109,13 @@ public class ControlFragment extends Fragment {
     private void vincularComandoCheckbox(MaterialCheckBox chk, String actuador) {
         chk.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (actualizandoCheckboxes) return;
+            if (!swModoManual.isChecked()) {
+                actualizandoCheckboxes = true;
+                chk.setChecked(!isChecked);
+                actualizandoCheckboxes = false;
+                Toast.makeText(requireContext(), "Activa el Switch 'Modo Manual' para operar este actuador", Toast.LENGTH_SHORT).show();
+                return;
+            }
             RespuestaComando res = viewModel.enviarComando(actuador, isChecked);
             if (!res.aceptado) {
                 actualizandoCheckboxes = true;
@@ -131,7 +140,9 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 lblSeekAire.setText(String.format(Locale.US, "Temp. Aire: %d.0 °C", progress));
-                if (fromUser) viewModel.forzarParametro("temp_ambiente", (double) progress, true);
+                if (fromUser) {
+                    viewModel.forzarParametro("temp_ambiente", (double) progress, true);
+                }
             }
         });
 
@@ -139,7 +150,9 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 lblSeekHum.setText(String.format(Locale.US, "Humedad: %d %%", progress));
-                if (fromUser) viewModel.forzarParametro("humedad", (double) progress, true);
+                if (fromUser) {
+                    viewModel.forzarParametro("humedad", (double) progress, true);
+                }
             }
         });
 
@@ -148,7 +161,9 @@ public class ControlFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 double val = 5.0 + progress;
                 lblSeekAgua.setText(String.format(Locale.US, "Temp. Agua: %.1f °C", val));
-                if (fromUser) viewModel.forzarParametro("temp_agua", val, true);
+                if (fromUser) {
+                    viewModel.forzarParametro("temp_agua", val, true);
+                }
             }
         });
 
@@ -156,8 +171,10 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 double val = 3.0 + (progress / 10.0);
-                lblSeekPh.setText(String.format(Locale.US, "pH: %.1f", val));
-                if (fromUser) viewModel.forzarParametro("ph", val, false);
+                lblSeekPh.setText(String.format(Locale.US, "pH: %.2f", val));
+                if (fromUser) {
+                    viewModel.forzarParametro("ph", val, true);
+                }
             }
         });
 
@@ -165,8 +182,10 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 double val = progress / 10.0;
-                lblSeekEc.setText(String.format(Locale.US, "EC: %.1f mS/cm", val));
-                if (fromUser) viewModel.forzarParametro("ec", val, false);
+                lblSeekEc.setText(String.format(Locale.US, "EC: %.2f mS/cm", val));
+                if (fromUser) {
+                    viewModel.forzarParametro("ec", val, true);
+                }
             }
         });
 
@@ -175,7 +194,9 @@ public class ControlFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 double val = progress * 100.0;
                 lblSeekLux.setText(String.format(Locale.US, "Luz: %.0f lux", val));
-                if (fromUser) viewModel.forzarParametro("lux", val, true);
+                if (fromUser) {
+                    viewModel.forzarParametro("lux", val, true);
+                }
             }
         });
 
@@ -183,7 +204,9 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 lblSeekNivel.setText(String.format(Locale.US, "Nivel Estanque: %d %%", progress));
-                if (fromUser) viewModel.forzarParametro("nivel_agua", (double) progress, false);
+                if (fromUser) {
+                    viewModel.forzarParametro("nivel_agua", (double) progress, true);
+                }
             }
         });
     }
@@ -221,13 +244,13 @@ public class ControlFragment extends Fragment {
         viewModel.getHuertoActual().observe(getViewLifecycleOwner(), huerto -> {
             if (huerto == null) return;
 
-            // Sincronizar switch manual
+            actualizandoSwitches = true;
             if (swModoManual.isChecked() != huerto.modoManual) {
                 swModoManual.setChecked(huerto.modoManual);
                 habilitarCheckboxesManuales(huerto.modoManual);
             }
+            actualizandoSwitches = false;
 
-            // Sincronizar checkboxes de actuadores
             actualizandoCheckboxes = true;
             chkVentilador.setChecked(Boolean.TRUE.equals(huerto.act.get("ventilador")));
             chkLed.setChecked(Boolean.TRUE.equals(huerto.act.get("led")));
@@ -237,7 +260,6 @@ public class ControlFragment extends Fragment {
             chkCerradura.setChecked(Boolean.TRUE.equals(huerto.act.get("cerradura")));
             actualizandoCheckboxes = false;
 
-            // Sincronizar sliders si el usuario no los está manipulando
             if (!usuarioArrastrandoSlider) {
                 double aire = huerto.v.get("temp_ambiente");
                 seekAire.setProgress((int) Math.round(aire));
