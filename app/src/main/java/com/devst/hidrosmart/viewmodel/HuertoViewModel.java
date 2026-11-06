@@ -18,12 +18,12 @@ public class HuertoViewModel extends ViewModel implements SimuladorRepository.Ob
 
     private final SimuladorRepository repository;
 
-    // Estados observables para la UI
     private final MutableLiveData<Huerto> huertoActual = new MutableLiveData<>();
     private final MutableLiveData<List<Huerto>> listaTorres = new MutableLiveData<>();
     private final MutableLiveData<List<Alerta>> alertasActuales = new MutableLiveData<>();
     private final MutableLiveData<List<String>> usuariosGenerales = new MutableLiveData<>();
     private final MutableLiveData<List<ComentarioUsuario>> comentarios = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> corteDatosActivo = new MutableLiveData<>();
 
     public HuertoViewModel() {
         this.repository = SimuladorRepository.getInstancia();
@@ -43,6 +43,7 @@ public class HuertoViewModel extends ViewModel implements SimuladorRepository.Ob
         listaTorres.postValue(repository.getTorres());
         usuariosGenerales.postValue(repository.getUsuariosGenerales());
         comentarios.postValue(repository.getComentariosRegistrados());
+        corteDatosActivo.postValue(repository.isCorteDatos());
 
         if (actual != null) {
             alertasActuales.postValue(actual.alertas());
@@ -51,36 +52,23 @@ public class HuertoViewModel extends ViewModel implements SimuladorRepository.Ob
         }
     }
 
-    // ------------------------------------------------------------------------
-    // GETTERS DE LIVEDATA (OBSERVABLES DESDE FRAGMENTS/ACTIVITIES)
-    // ------------------------------------------------------------------------
-    public LiveData<Huerto> getHuertoActual() {
-        return huertoActual;
+    public LiveData<Huerto> getHuertoActual() { return huertoActual; }
+    public LiveData<List<Huerto>> getListaTorres() { return listaTorres; }
+    public LiveData<List<Alerta>> getAlertasActuales() { return alertasActuales; }
+    public LiveData<List<String>> getUsuariosGenerales() { return usuariosGenerales; }
+    public LiveData<List<ComentarioUsuario>> getComentarios() { return comentarios; }
+    public LiveData<Boolean> getCorteDatosActivo() { return corteDatosActivo; }
+
+    public int getIndiceTorreSeleccionada() { return repository.getTorreSeleccionada(); }
+
+    public void pausarSimulacion() {
+        repository.pausarSimulacion();
     }
 
-    public LiveData<List<Huerto>> getListaTorres() {
-        return listaTorres;
+    public void reanudarSimulacion() {
+        repository.reanudarSimulacion();
     }
 
-    public LiveData<List<Alerta>> getAlertasActuales() {
-        return alertasActuales;
-    }
-
-    public LiveData<List<String>> getUsuariosGenerales() {
-        return usuariosGenerales;
-    }
-
-    public LiveData<List<ComentarioUsuario>> getComentarios() {
-        return comentarios;
-    }
-
-    public int getIndiceTorreSeleccionada() {
-        return repository.getTorreSeleccionada();
-    }
-
-    // ------------------------------------------------------------------------
-    // ACCIONES DISPARADAS DESDE LA UI
-    // ------------------------------------------------------------------------
     public void seleccionarTorre(int indice) {
         repository.setTorreSeleccionada(indice);
         actualizarDatos();

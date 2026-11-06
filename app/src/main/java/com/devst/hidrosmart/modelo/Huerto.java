@@ -38,6 +38,7 @@ public class Huerto {
     public double tRiego;
     public final List<String> mensajes = new ArrayList<>();
 
+    // Constructor completo
     public Huerto(String clavePerfil, double esperaDosis, double riegoCada, double riegoDura, Double t0, int idx) {
         this.idx = idx;
         this.esperaDosis = esperaDosis;
@@ -46,7 +47,27 @@ public class Huerto {
         this.reloj = (t0 != null) ? t0 : (System.currentTimeMillis() / 1000.0);
 
         setPerfil(clavePerfil);
+        inicializarValoresBase();
+    }
 
+    // Constructor simplificado usado por SimuladorRepository
+    public Huerto(int idx, PerfilCultivo perfilInicial) {
+        this.idx = idx;
+        this.esperaDosis = 10.0;
+        this.riegoCada = 30.0;
+        this.riegoDura = 5.0;
+        this.reloj = System.currentTimeMillis() / 1000.0;
+
+        this.perfil = (perfilInicial != null) ? perfilInicial : PerfilCultivo.todos().get(0);
+        this.nombrePerfil = this.perfil.clave;
+        inicializarValoresBase();
+    }
+
+    public Huerto(String clavePerfil, double esperaDosis, double riegoCada, double riegoDura, int idx) {
+        this(clavePerfil, esperaDosis, riegoCada, riegoDura, null, idx);
+    }
+
+    private void inicializarValoresBase() {
         double ph0 = Math.round(((perfil.phMin + perfil.phMax) / 2.0) * 100.0) / 100.0;
         double ec0 = Math.round(((perfil.ecMin + perfil.ecMax) / 2.0) * 100.0) / 100.0;
 
@@ -78,24 +99,47 @@ public class Huerto {
         this.tRiego = this.reloj;
     }
 
-    public Huerto(String clavePerfil, double esperaDosis, double riegoCada, double riegoDura, int idx) {
-        this(clavePerfil, esperaDosis, riegoCada, riegoDura, null, idx);
-    }
-
     public void setPerfil(String clave) {
         synchronized (lock) {
             PerfilCultivo p = PerfilCultivo.porClave(clave);
             if (p == null) {
-                p = PerfilCultivo.porClave("guia");
-                clave = "guia";
+                p = PerfilCultivo.todos().get(0);
+                clave = p.clave;
             }
             this.perfil = p;
             this.nombrePerfil = clave;
         }
     }
 
+    public void cambiarPerfil(PerfilCultivo nuevoPerfil) {
+        synchronized (lock) {
+            if (nuevoPerfil == null) return;
+            this.perfil = nuevoPerfil;
+            this.nombrePerfil = nuevoPerfil.clave;
+            aplicarEscenario("normal");
+        }
+    }
+
     private double ruido(double s) {
         return (random.nextDouble() * 2.0 - 1.0) * s;
+    }
+
+    /**
+     * Orquestador por segundo del ciclo de simulación
+     */
+    public void tick(double dt) {
+        synchronized (lock) {
+            this.reloj += dt;
+            evolucionar();
+            if (!modoManual) {
+                automatizar(this.reloj);
+            }
+            temporizadores(this.reloj);
+        }
+    }
+
+    public void tick() {
+        tick(1.0);
     }
 
     public void evolucionar() {
@@ -256,6 +300,25 @@ public class Huerto {
         }
     }
 
+    public RespuestaComando enviarComando(String actuador, String orden) {
+        return comando(actuador, orden, this.reloj);
+    }
+
+    public void forzarParametro(String variable, double valor, boolean persistente) {
+        synchronized (lock) {
+            v.put(variable, valor);
+            if (persistente && base.containsKey(variable)) {
+                base.put(variable, valor);
+            }
+        }
+    }
+
+    public void rellenarEstanque() {
+        synchronized (lock) {
+            v.put("nivel_agua", 100.0);
+        }
+    }
+
     public List<Alerta> alertas() {
         synchronized (lock) {
             List<Alerta> out = new ArrayList<>();
@@ -306,10 +369,11 @@ public class Huerto {
     public void aplicarEscenario(String escenario) {
         synchronized (lock) {
             if ("normal".equals(escenario)) {
+                modoManual = false;
                 double phIdeal = Math.round(((perfil.phMin + perfil.phMax) / 2.0) * 100.0) / 100.0;
                 double ecIdeal = Math.round(((perfil.ecMin + perfil.ecMax) / 2.0) * 100.0) / 100.0;
-                double tempAireIdeal = Math.min(24.0, perfil.aireMax - 3.0);
-                double tempAguaIdeal = Math.round(((perfil.tempAguaMin + perfil.tempAguaMax) / 2.0) * 10.0) / 10.0;
+                double tempAireIdeal = (perfil.aireMin + perfil.aireMax) / 2.0;
+                double tempAguaIdeal = (perfil.tempAguaMin + perfil.tempAguaMax) / 2.0;
 
                 base.put("temp_ambiente", tempAireIdeal);
                 base.put("humedad", 62.0);
@@ -319,7 +383,7 @@ public class Huerto {
                 base.put("ec", ecIdeal);
 
                 v.putAll(base);
-                v.put("nivel_agua", 80.0);
+                v.put("nivel_agua", 85.0);
 
                 apagarTodo();
                 return;

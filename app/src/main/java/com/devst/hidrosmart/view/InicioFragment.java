@@ -1,6 +1,5 @@
 package com.devst.hidrosmart.view;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -31,7 +31,7 @@ public class InicioFragment extends Fragment {
 
     private TextView tvTempAire, tvHumedad, tvTempAgua, tvPh, tvEc, tvLux, tvNivel;
     private TextView tvRangoAire, tvRangoAgua, tvRangoPh, tvRangoEc;
-    private TextView tvAlertas, tvLabelCultivo;
+    private TextView tvAlertas, tvLabelCultivo, tvBannerCorte;
     private Spinner spnCultivo;
     private TabLayout tabTorres;
 
@@ -47,7 +47,6 @@ public class InicioFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Compartir la misma instancia del ViewModel ligada a la Activity anfitriona
         viewModel = new ViewModelProvider(requireActivity()).get(HuertoViewModel.class);
 
         inicializarVistas(view);
@@ -57,6 +56,7 @@ public class InicioFragment extends Fragment {
     }
 
     private void inicializarVistas(View view) {
+        tvBannerCorte = view.findViewById(R.id.tvBannerCorte);
         tvTempAire = view.findViewById(R.id.tvTempAire);
         tvHumedad = view.findViewById(R.id.tvHumedad);
         tvTempAgua = view.findViewById(R.id.tvTempAgua);
@@ -111,7 +111,11 @@ public class InicioFragment extends Fragment {
     }
 
     private void observarViewModel() {
-        // Observa la lista de torres para recrear los tabs si se agregan o eliminan
+        // Observar estado del corte de datos
+        viewModel.getCorteDatosActivo().observe(getViewLifecycleOwner(), corte -> {
+            tvBannerCorte.setVisibility(Boolean.TRUE.equals(corte) ? View.VISIBLE : View.GONE);
+        });
+
         viewModel.getListaTorres().observe(getViewLifecycleOwner(), torres -> {
             if (torres == null) return;
             if (tabTorres.getTabCount() != torres.size()) {
@@ -132,7 +136,6 @@ public class InicioFragment extends Fragment {
             }
         });
 
-        // Observa los datos de la torre seleccionada
         viewModel.getHuertoActual().observe(getViewLifecycleOwner(), huerto -> {
             if (huerto == null) return;
 
@@ -183,27 +186,40 @@ public class InicioFragment extends Fragment {
             pintarValor(tvNivel, nivel < Huerto.NIVEL_BAJO);
         });
 
-        // Observa la lista de alertas
         viewModel.getAlertasActuales().observe(getViewLifecycleOwner(), alertas -> {
             if (alertas == null || alertas.isEmpty()) {
-                tvAlertas.setText("✓ Todos los parámetros dentro de rango.");
-                tvAlertas.setTextColor(Color.parseColor("#1B5E20"));
+                tvAlertas.setText(getString(R.string.alertas_todas_ok));
+                tvAlertas.setTextColor(ContextCompat.getColor(requireContext(), R.color.alerta_ok));
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (Alerta a : alertas) {
-                    sb.append("⚠ ").append(a.variable.toUpperCase())
+                    sb.append("⚠ ").append(formatearNombreVariable(a.variable))
                             .append(" ").append(a.nivel.toUpperCase())
                             .append(" (").append(String.format(Locale.US, "%.1f", a.valor)).append(")\n")
                             .append("→ ").append(a.accion)
                             .append(a.automatica ? " [Auto]\n\n" : " [Acción manual requerida]\n\n");
                 }
                 tvAlertas.setText(sb.toString().trim());
-                tvAlertas.setTextColor(Color.parseColor("#B71C1C"));
+                tvAlertas.setTextColor(ContextCompat.getColor(requireContext(), R.color.alerta_error));
             }
         });
     }
 
+    private String formatearNombreVariable(String raw) {
+        if (raw == null) return "";
+        switch (raw.toLowerCase()) {
+            case "temp_ambiente": return "Temperatura Aire";
+            case "temp_agua": return "Temperatura Agua";
+            case "ph": return "pH Solución";
+            case "ec": return "Conductividad (EC)";
+            case "lux": return "Luminosidad";
+            case "nivel_agua": return "Nivel de Estanque";
+            default: return raw.replace("_", " ").toUpperCase();
+        }
+    }
+
     private void pintarValor(TextView tv, boolean fueraDeRango) {
-        tv.setTextColor(fueraDeRango ? Color.parseColor("#B71C1C") : Color.parseColor("#1B5E20"));
+        int colorRes = fueraDeRango ? R.color.alerta_error : R.color.alerta_ok;
+        tv.setTextColor(ContextCompat.getColor(requireContext(), colorRes));
     }
 }

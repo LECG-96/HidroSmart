@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name">HidroSmart</string>
-    <string name="login_btn_demo">Entrar en modo demo</string>
-    <string name="login_proximamente">El inicio de sesión con usuarios llegará pronto</string>
-    <string name="main_modo_demo">Modo demo</string>
-    <string name="main_modo_real">Sesión de usuario</string>
+    <string name="titulo_admin">HidroSmart • Admin</string>
+    <string name="titulo_usuario">HidroSmart • Usuario</string>
+    <string name="titulo_demo">HidroSmart • Demo</string>
+    <string name="btn_salir">Salir</string>
+    <string name="btn_agregar_torre">+ Torre</string>
+    <string name="btn_eliminar_torre">- Torre</string>
+    <string name="tab_sensores">Sensores</string>
+    <string name="tab_control">Control &amp; Sim</string>
+    <string name="tab_usuarios">Usuarios</string>
+    <string name="aviso_corte_datos">⚠ TELEMETRÍA EN PAUSA (SIMULACIÓN DE CORTE DE DATOS)</string>
+    <string name="alertas_todas_ok">✓ Todos los parámetros dentro de rango.</string>
 </resources>

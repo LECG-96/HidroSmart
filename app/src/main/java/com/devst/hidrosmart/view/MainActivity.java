@@ -58,6 +58,22 @@ public class MainActivity extends AppCompatActivity {
         configurarNavegacionPorRol();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (viewModel != null) {
+            viewModel.reanudarSimulacion();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (viewModel != null) {
+            viewModel.pausarSimulacion();
+        }
+    }
+
     private void inicializarComponentes() {
         tvTituloToolbar = findViewById(R.id.tvTituloToolbar);
         tabNavegacionAdmin = findViewById(R.id.tabNavegacionAdmin);
@@ -86,8 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void configurarNavegacionPorRol() {
         if (Login.ROL_USER.equals(rol)) {
-            // USUARIO GENERAL: Va directo al panel de estadísticas y comentarios
-            tvTituloToolbar.setText("HidroSmart • Usuario");
+            tvTituloToolbar.setText(R.string.titulo_usuario);
             tabNavegacionAdmin.setVisibility(View.GONE);
             btnAgregarTorre.setVisibility(View.GONE);
             btnEliminarTorre.setVisibility(View.GONE);
@@ -95,14 +110,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // MODO ADMIN / DEMO
         if (esModoDemo) {
-            tvTituloToolbar.setText("HidroSmart • Demo");
+            tvTituloToolbar.setText(R.string.titulo_demo);
             if (tabNavegacionAdmin.getTabCount() >= 3) {
-                tabNavegacionAdmin.removeTabAt(2); // Quitar pestaña Usuarios en Demo
+                tabNavegacionAdmin.removeTabAt(2);
             }
         } else {
-            tvTituloToolbar.setText("HidroSmart • Admin");
+            tvTituloToolbar.setText(R.string.titulo_admin);
         }
 
         tabNavegacionAdmin.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

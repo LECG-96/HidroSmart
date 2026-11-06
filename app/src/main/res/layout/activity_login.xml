@@ -1,91 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:background="@color/fondo_pantalla"
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/tvTitulo"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="HidroSmart"
-        android:textStyle="bold"
-        android:textSize="42sp"
         android:gravity="center"
-        android:layout_marginTop="80dp"
-        />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <TextView
-        android:id="@+id/tvUsuario"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Usuario"
-        android:textSize="24sp"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@color/verde_primario"
+            android:textSize="32sp"
+            android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/etUsuario"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:inputType="textPersonName"
-        android:hint="Ingresa tu usuario"
-        android:layout_marginBottom="12dp"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Gestión y Control Hidropónico Automatizado"
+            android:textColor="@color/texto_secundario"
+            android:textSize="14sp" />
 
-        />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
 
-    <TextView
-        android:id="@+id/Contrasena"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Contraseña"
-        android:textSize="24sp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-    <EditText
-        android:id="@+id/etContrasena"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:inputType="textPassword"
-        android:hint="Ingresa tu contraseña"
-        />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Acceso al Sistema"
+                    android:textColor="@color/texto_principal"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnIngresar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ingresar"
-        android:textSize="18dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Usuario"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-    <Button
-        android:id="@+id/btnDemo"
-        style="?attr/materialButtonOutlinedStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/login_btn_demo"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etUsuario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Contraseña"
+                    app:passwordToggleEnabled="true"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etContrasena"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Botón de Ingreso estándar Material (altura 52dp) -->
+                <Button
+                    android:id="@+id/btnIngresar"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Iniciar Sesión"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
+                <!-- Acceso directo al modo Demo -->
+                <Button
+                    android:id="@+id/btnDemo"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Ingresar en Modo Demo"
+                    android:textSize="14sp" />
 
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Credenciales de prueba:\nadmin / 1234  •  user / 1234"
+            android:textAlignment="center"
+            android:textColor="@color/texto_terciario"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -32,6 +32,9 @@ public class HistorialFragment extends Fragment {
     private Button btnEnviarComentario;
     private TextView tvUltimoComentario;
 
+    // Control para no resetear el spinner a cada segundo
+    private final List<String> opcionesPrevias = new ArrayList<>();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,13 +58,26 @@ public class HistorialFragment extends Fragment {
 
         viewModel.getListaTorres().observe(getViewLifecycleOwner(), torres -> {
             if (torres == null) return;
-            List<String> opciones = new ArrayList<>();
+
+            List<String> nuevasOpciones = new ArrayList<>();
             for (Huerto h : torres) {
-                opciones.add(String.format("Torre %d (%s)", h.idx, h.perfil.nombre));
+                nuevasOpciones.add(String.format("Torre %d (%s)", h.idx, h.perfil.nombre));
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, opciones);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spnTorreComentario.setAdapter(adapter);
+
+            // Solo recarga si cambió el contenido real, evitando cerrar el desplegable
+            if (!nuevasOpciones.equals(opcionesPrevias)) {
+                int posSeleccionada = spnTorreComentario.getSelectedItemPosition();
+                opcionesPrevias.clear();
+                opcionesPrevias.addAll(nuevasOpciones);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, nuevasOpciones);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spnTorreComentario.setAdapter(adapter);
+
+                if (posSeleccionada >= 0 && posSeleccionada < nuevasOpciones.size()) {
+                    spnTorreComentario.setSelection(posSeleccionada);
+                }
+            }
         });
 
         btnEnviarComentario.setOnClickListener(v -> {
