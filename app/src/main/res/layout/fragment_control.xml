@@ -31,7 +31,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Modo Manual"
+                    android:text="@string/control_modo_manual"
                     android:textColor="@color/texto_principal"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -40,7 +40,7 @@
                     android:id="@+id/swCorteDatos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Corte datos"
+                    android:text="@string/control_corte_datos"
                     android:textColor="@color/texto_secundario"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -51,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:text="Actuadores directos (activos en modo manual)"
+            android:text="@string/control_actuadores_titulo"
             android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -74,42 +74,42 @@
                     android:layout_width="0dp"
                     android:layout_columnWeight="1"
                     android:enabled="false"
-                    android:text="Ventilador" />
+                    android:text="@string/control_ventilador" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/chkLed"
                     android:layout_width="0dp"
                     android:layout_columnWeight="1"
                     android:enabled="false"
-                    android:text="LED cultivo" />
+                    android:text="@string/control_led" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/chkBomba"
                     android:layout_width="0dp"
                     android:layout_columnWeight="1"
                     android:enabled="false"
-                    android:text="Bomba riego" />
+                    android:text="@string/control_bomba_riego" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/chkNutrientes"
                     android:layout_width="0dp"
                     android:layout_columnWeight="1"
                     android:enabled="false"
-                    android:text="Nutrientes A+B" />
+                    android:text="@string/control_nutrientes" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/chkPhPump"
                     android:layout_width="0dp"
                     android:layout_columnWeight="1"
                     android:enabled="false"
-                    android:text="pH Down" />
+                    android:text="@string/control_ph_down" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/chkCerradura"
                     android:layout_width="0dp"
                     android:layout_columnWeight="1"
                     android:enabled="false"
-                    android:text="Cerradura" />
+                    android:text="@string/control_cerradura" />
             </GridLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -118,7 +118,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:text="Forzar parámetros (Sliders continuos)"
+            android:text="@string/control_forzar_parametros"
             android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -137,31 +137,31 @@
                 android:padding="12dp">
 
                 <!-- Temp Aire -->
-                <TextView android:id="@+id/lblSeekAire" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Temp. Aire: -- °C" android:textSize="12sp" />
+                <TextView android:id="@+id/lblSeekAire" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/control_temp_aire_inicial" android:textSize="12sp" />
                 <SeekBar android:id="@+id/seekAire" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="45" />
 
                 <!-- Humedad -->
-                <TextView android:id="@+id/lblSeekHum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Humedad: -- %" android:textSize="12sp" />
+                <TextView android:id="@+id/lblSeekHum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/control_humedad_inicial" android:textSize="12sp" />
                 <SeekBar android:id="@+id/seekHum" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
 
                 <!-- Temp Agua -->
-                <TextView android:id="@+id/lblSeekAgua" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Temp. Agua: -- °C" android:textSize="12sp" />
+                <TextView android:id="@+id/lblSeekAgua" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/control_temp_agua_inicial" android:textSize="12sp" />
                 <SeekBar android:id="@+id/seekAgua" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="30" />
 
                 <!-- pH -->
-                <TextView android:id="@+id/lblSeekPh" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="pH: --" android:textSize="12sp" />
+                <TextView android:id="@+id/lblSeekPh" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/control_ph_inicial" android:textSize="12sp" />
                 <SeekBar android:id="@+id/seekPh" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="60" />
 
                 <!-- EC -->
-                <TextView android:id="@+id/lblSeekEc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="EC: -- mS/cm" android:textSize="12sp" />
+                <TextView android:id="@+id/lblSeekEc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/control_ec_inicial" android:textSize="12sp" />
                 <SeekBar android:id="@+id/seekEc" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="45" />
 
                 <!-- Luz -->
-                <TextView android:id="@+id/lblSeekLux" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Luz: -- lux" android:textSize="12sp" />
+                <TextView android:id="@+id/lblSeekLux" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/control_luz_inicial" android:textSize="12sp" />
                 <SeekBar android:id="@+id/seekLux" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
 
                 <!-- Nivel Agua -->
-                <TextView android:id="@+id/lblSeekNivel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Nivel Estanque: -- %" android:textSize="12sp" />
+                <TextView android:id="@+id/lblSeekNivel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/control_nivel_inicial" android:textSize="12sp" />
                 <SeekBar android:id="@+id/seekNivel" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -171,7 +171,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:text="Inyectar escenarios de falla / prueba"
+            android:text="@string/control_inyectar_escenarios"
             android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -182,18 +182,18 @@
             android:layout_marginTop="6dp"
             android:columnCount="2">
 
-            <Button android:id="@+id/btnEscCalor" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Calor" />
-            <Button android:id="@+id/btnEscFrio" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Frío" />
-            <Button android:id="@+id/btnEscAguaCal" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Agua caliente" />
-            <Button android:id="@+id/btnEscAguaFria" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Agua fría" />
-            <Button android:id="@+id/btnEscPhAlto" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="pH alto" />
-            <Button android:id="@+id/btnEscPhBajo" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="pH bajo" />
-            <Button android:id="@+id/btnEscEcBaja" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="EC baja" />
-            <Button android:id="@+id/btnEscEcAlta" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="EC alta" />
-            <Button android:id="@+id/btnEscOscuridad" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Poca luz" />
-            <Button android:id="@+id/btnEscNivelBajo" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Nivel bajo" />
-            <Button android:id="@+id/btnEscNivelCritico" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Nivel crítico" />
-            <Button android:id="@+id/btnEscNormal" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="Normal" />
+            <Button android:id="@+id/btnEscCalor" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_calor" />
+            <Button android:id="@+id/btnEscFrio" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_frio" />
+            <Button android:id="@+id/btnEscAguaCal" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_agua_caliente" />
+            <Button android:id="@+id/btnEscAguaFria" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_agua_fria" />
+            <Button android:id="@+id/btnEscPhAlto" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_ph_alto" />
+            <Button android:id="@+id/btnEscPhBajo" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_ph_bajo" />
+            <Button android:id="@+id/btnEscEcBaja" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_ec_baja" />
+            <Button android:id="@+id/btnEscEcAlta" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_ec_alta" />
+            <Button android:id="@+id/btnEscOscuridad" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_poca_luz" />
+            <Button android:id="@+id/btnEscNivelBajo" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_nivel_bajo" />
+            <Button android:id="@+id/btnEscNivelCritico" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_nivel_critico" />
+            <Button android:id="@+id/btnEscNormal" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="2dp" android:text="@string/control_escenario_normal" />
         </GridLayout>
 
         <Button
@@ -201,7 +201,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Rellenar estanque (100 %)" />
+            android:text="@string/control_rellenar_estanque" />
 
     </LinearLayout>
 </ScrollView>

@@ -113,7 +113,7 @@ public class ControlFragment extends Fragment {
                 actualizandoCheckboxes = true;
                 chk.setChecked(!isChecked);
                 actualizandoCheckboxes = false;
-                Toast.makeText(requireContext(), "Activa el Switch 'Modo Manual' para operar este actuador", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.mensaje_activa_modo_manual, Toast.LENGTH_SHORT).show();
                 return;
             }
             RespuestaComando res = viewModel.enviarComando(actuador, isChecked);
@@ -121,7 +121,7 @@ public class ControlFragment extends Fragment {
                 actualizandoCheckboxes = true;
                 chk.setChecked(!isChecked);
                 actualizandoCheckboxes = false;
-                Toast.makeText(requireContext(), res.mensaje, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), obtenerMensajeRespuesta(res), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -135,11 +135,26 @@ public class ControlFragment extends Fragment {
         chkCerradura.setEnabled(manual);
     }
 
+    private String obtenerMensajeRespuesta(RespuestaComando respuesta) {
+        switch (respuesta.codigoMensaje) {
+            case SIN_TORRE_ACTIVA:
+                return getString(R.string.error_sin_torre_activa);
+            case MODO_AUTOMATICO:
+                return getString(R.string.error_modo_automatico);
+            case COMANDO_DESCONOCIDO:
+                return getString(R.string.error_comando_desconocido);
+            case NIVEL_AGUA_CRITICO:
+                return getString(R.string.error_nivel_agua_critico);
+            default:
+                return respuesta.mensaje;
+        }
+    }
+
     private void configurarSliders() {
         seekAire.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                lblSeekAire.setText(String.format(Locale.US, "Temp. Aire: %d.0 °C", progress));
+                lblSeekAire.setText(String.format(Locale.getDefault(), getString(R.string.control_label_temp_aire_entero), progress));
                 if (fromUser) {
                     viewModel.forzarParametro("temp_ambiente", (double) progress, true);
                 }
@@ -149,7 +164,7 @@ public class ControlFragment extends Fragment {
         seekHum.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                lblSeekHum.setText(String.format(Locale.US, "Humedad: %d %%", progress));
+                lblSeekHum.setText(String.format(Locale.getDefault(), getString(R.string.control_label_humedad_entera), progress));
                 if (fromUser) {
                     viewModel.forzarParametro("humedad", (double) progress, true);
                 }
@@ -160,7 +175,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 double val = 5.0 + progress;
-                lblSeekAgua.setText(String.format(Locale.US, "Temp. Agua: %.1f °C", val));
+                lblSeekAgua.setText(String.format(Locale.getDefault(), getString(R.string.control_label_temp_agua), val));
                 if (fromUser) {
                     viewModel.forzarParametro("temp_agua", val, true);
                 }
@@ -171,7 +186,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 double val = 3.0 + (progress / 10.0);
-                lblSeekPh.setText(String.format(Locale.US, "pH: %.2f", val));
+                lblSeekPh.setText(String.format(Locale.getDefault(), getString(R.string.control_label_ph), val));
                 if (fromUser) {
                     viewModel.forzarParametro("ph", val, true);
                 }
@@ -182,7 +197,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 double val = progress / 10.0;
-                lblSeekEc.setText(String.format(Locale.US, "EC: %.2f mS/cm", val));
+                lblSeekEc.setText(String.format(Locale.getDefault(), getString(R.string.control_label_ec), val));
                 if (fromUser) {
                     viewModel.forzarParametro("ec", val, true);
                 }
@@ -193,7 +208,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 double val = progress * 100.0;
-                lblSeekLux.setText(String.format(Locale.US, "Luz: %.0f lux", val));
+                lblSeekLux.setText(String.format(Locale.getDefault(), getString(R.string.control_label_lux), val));
                 if (fromUser) {
                     viewModel.forzarParametro("lux", val, true);
                 }
@@ -203,7 +218,7 @@ public class ControlFragment extends Fragment {
         seekNivel.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                lblSeekNivel.setText(String.format(Locale.US, "Nivel Estanque: %d %%", progress));
+                lblSeekNivel.setText(String.format(Locale.getDefault(), getString(R.string.control_label_nivel_entero), progress));
                 if (fromUser) {
                     viewModel.forzarParametro("nivel_agua", (double) progress, true);
                 }
@@ -212,31 +227,33 @@ public class ControlFragment extends Fragment {
     }
 
     private void configurarBotonesEscenarios(View view) {
-        vincularEscenario(view, R.id.btnEscCalor, "calor");
-        vincularEscenario(view, R.id.btnEscFrio, "frio");
-        vincularEscenario(view, R.id.btnEscAguaCal, "agua_caliente");
-        vincularEscenario(view, R.id.btnEscAguaFria, "agua_fria");
-        vincularEscenario(view, R.id.btnEscPhAlto, "ph_alto");
-        vincularEscenario(view, R.id.btnEscPhBajo, "ph_bajo");
-        vincularEscenario(view, R.id.btnEscEcBaja, "ec_bajo");
-        vincularEscenario(view, R.id.btnEscEcAlta, "ec_alto");
-        vincularEscenario(view, R.id.btnEscOscuridad, "oscuridad");
-        vincularEscenario(view, R.id.btnEscNivelBajo, "nivel_bajo");
-        vincularEscenario(view, R.id.btnEscNivelCritico, "nivel_critico");
-        vincularEscenario(view, R.id.btnEscNormal, "normal");
+        vincularEscenario(view, R.id.btnEscCalor, "calor", R.string.control_escenario_calor);
+        vincularEscenario(view, R.id.btnEscFrio, "frio", R.string.control_escenario_frio);
+        vincularEscenario(view, R.id.btnEscAguaCal, "agua_caliente", R.string.control_escenario_agua_caliente);
+        vincularEscenario(view, R.id.btnEscAguaFria, "agua_fria", R.string.control_escenario_agua_fria);
+        vincularEscenario(view, R.id.btnEscPhAlto, "ph_alto", R.string.control_escenario_ph_alto);
+        vincularEscenario(view, R.id.btnEscPhBajo, "ph_bajo", R.string.control_escenario_ph_bajo);
+        vincularEscenario(view, R.id.btnEscEcBaja, "ec_bajo", R.string.control_escenario_ec_baja);
+        vincularEscenario(view, R.id.btnEscEcAlta, "ec_alto", R.string.control_escenario_ec_alta);
+        vincularEscenario(view, R.id.btnEscOscuridad, "oscuridad", R.string.control_escenario_poca_luz);
+        vincularEscenario(view, R.id.btnEscNivelBajo, "nivel_bajo", R.string.control_escenario_nivel_bajo);
+        vincularEscenario(view, R.id.btnEscNivelCritico, "nivel_critico", R.string.control_escenario_nivel_critico);
+        vincularEscenario(view, R.id.btnEscNormal, "normal", R.string.control_escenario_normal);
 
         Button btnRellenar = view.findViewById(R.id.btnRellenarEstanque);
         btnRellenar.setOnClickListener(v -> {
             viewModel.rellenarEstanque();
-            Toast.makeText(requireContext(), "Estanque rellenado al 100%", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.mensaje_estanque_rellenado, Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void vincularEscenario(View root, int botonId, String escenario) {
+    private void vincularEscenario(View root, int botonId, String escenario, int nombreResId) {
         Button btn = root.findViewById(botonId);
         btn.setOnClickListener(v -> {
             viewModel.aplicarEscenario(escenario);
-            Toast.makeText(requireContext(), "Escenario aplicado: " + escenario, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(),
+                    getString(R.string.mensaje_escenario_aplicado, getString(nombreResId)),
+                    Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -263,31 +280,31 @@ public class ControlFragment extends Fragment {
             if (!usuarioArrastrandoSlider) {
                 double aire = huerto.v.get("temp_ambiente");
                 seekAire.setProgress((int) Math.round(aire));
-                lblSeekAire.setText(String.format(Locale.US, "Temp. Aire: %.1f °C", aire));
+                lblSeekAire.setText(String.format(Locale.getDefault(), getString(R.string.control_label_temp_aire), aire));
 
                 double hum = huerto.v.get("humedad");
                 seekHum.setProgress((int) Math.round(hum));
-                lblSeekHum.setText(String.format(Locale.US, "Humedad: %.0f %%", hum));
+                lblSeekHum.setText(String.format(Locale.getDefault(), getString(R.string.control_label_humedad), hum));
 
                 double agua = huerto.v.get("temp_agua");
                 seekAgua.setProgress((int) Math.max(0, Math.round(agua - 5.0)));
-                lblSeekAgua.setText(String.format(Locale.US, "Temp. Agua: %.1f °C", agua));
+                lblSeekAgua.setText(String.format(Locale.getDefault(), getString(R.string.control_label_temp_agua), agua));
 
                 double ph = huerto.v.get("ph");
                 seekPh.setProgress((int) Math.max(0, Math.round((ph - 3.0) * 10.0)));
-                lblSeekPh.setText(String.format(Locale.US, "pH: %.2f", ph));
+                lblSeekPh.setText(String.format(Locale.getDefault(), getString(R.string.control_label_ph), ph));
 
                 double ec = huerto.v.get("ec");
                 seekEc.setProgress((int) Math.max(0, Math.round(ec * 10.0)));
-                lblSeekEc.setText(String.format(Locale.US, "EC: %.2f mS/cm", ec));
+                lblSeekEc.setText(String.format(Locale.getDefault(), getString(R.string.control_label_ec), ec));
 
                 double lux = huerto.v.get("lux");
                 seekLux.setProgress((int) Math.max(0, Math.round(lux / 100.0)));
-                lblSeekLux.setText(String.format(Locale.US, "Luz: %.0f lux", lux));
+                lblSeekLux.setText(String.format(Locale.getDefault(), getString(R.string.control_label_lux), lux));
 
                 double nivel = huerto.v.get("nivel_agua");
                 seekNivel.setProgress((int) Math.round(nivel));
-                lblSeekNivel.setText(String.format(Locale.US, "Nivel Estanque: %.0f %%", nivel));
+                lblSeekNivel.setText(String.format(Locale.getDefault(), getString(R.string.control_label_nivel), nivel));
             }
         });
     }

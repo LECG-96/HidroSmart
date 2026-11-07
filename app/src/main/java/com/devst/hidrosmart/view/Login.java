@@ -32,7 +32,7 @@ public class Login extends AppCompatActivity {
             String contrasena = etContrasena.getText().toString().trim();
 
             if (usuario.isEmpty() || contrasena.isEmpty()) {
-                Toast.makeText(this, "Completa los campos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.mensaje_campos_incompletos, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -41,7 +41,7 @@ public class Login extends AppCompatActivity {
             } else if (usuario.equals("user") && contrasena.equals("1234")) {
                 abrirMain(ROL_USER, false, "user");
             } else {
-                Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.mensaje_login_incorrecto, Toast.LENGTH_SHORT).show();
             }
         });
 

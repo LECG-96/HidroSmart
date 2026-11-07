@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Panel de Monitoreo General"
+            android:text="@string/historial_titulo"
             android:textColor="@color/verde_primario"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Estadísticas de consumo y producción"
+            android:text="@string/historial_estadisticas"
             android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -46,7 +46,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Agua consumida hoy: 0.0 L"
+                    android:text="@string/historial_agua_consumida"
                     android:textColor="@color/texto_secundario"
                     android:textSize="14sp" />
 
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Ciclos de riego ejecutados: 0"
+                    android:text="@string/historial_ciclos_riego"
                     android:textColor="@color/texto_secundario"
                     android:textSize="14sp" />
 
@@ -62,7 +62,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Dosis de nutrientes A+B: 0"
+                    android:text="@string/historial_dosis_nutrientes"
                     android:textColor="@color/texto_secundario"
                     android:textSize="14sp" />
 
@@ -70,7 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="(Sin conexión con torre física: telemetría en espera)"
+                    android:text="@string/historial_sin_conexion"
                     android:textColor="@color/texto_terciario"
                     android:textSize="11sp" />
             </LinearLayout>
@@ -81,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Alertas e Historial reciente"
+            android:text="@string/historial_alertas_recientes"
             android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -102,7 +102,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="✓ No hay alertas pendientes."
+                    android:text="@string/historial_sin_alertas"
                     android:textColor="@color/alerta_ok"
                     android:textStyle="bold" />
 
@@ -110,7 +110,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="• [10:00] Calibración de sensores completada\n• [08:30] Verificación de red sin anomalías"
+                    android:text="@string/historial_eventos_demo"
                     android:textColor="@color/texto_secundario"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -121,7 +121,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Dejar observación o comentario"
+            android:text="@string/historial_dejar_observacion"
             android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -142,7 +142,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Torre / Cultivo relacionado:"
+                    android:text="@string/historial_torre_relacionada"
                     android:textColor="@color/texto_secundario"
                     android:textSize="12sp" />
 
@@ -155,7 +155,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Escribe tu observación...">
+                    android:hint="@string/historial_hint_observacion">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etComentario"
@@ -170,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="Enviar comentario" />
+                    android:text="@string/historial_enviar_comentario" />
 
                 <TextView
                     android:id="@+id/tvUltimoComentario"

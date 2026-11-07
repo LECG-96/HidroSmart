@@ -22,6 +22,7 @@ import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -91,7 +92,11 @@ public class InicioFragment extends Fragment {
 
     private void configurarSpinnerCultivos() {
         List<PerfilCultivo> lista = PerfilCultivo.todos();
-        ArrayAdapter<PerfilCultivo> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, lista);
+        List<String> nombresCultivos = new ArrayList<>();
+        for (PerfilCultivo perfil : lista) {
+            nombresCultivos.add(nombreCultivoLocalizado(perfil));
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, nombresCultivos);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnCultivo.setAdapter(adapter);
 
@@ -99,8 +104,10 @@ public class InicioFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (actualizandoSpinner) return;
-                PerfilCultivo seleccionado = (PerfilCultivo) parent.getItemAtPosition(position);
-                viewModel.cambiarCultivo(seleccionado);
+                List<PerfilCultivo> perfiles = PerfilCultivo.todos();
+                if (position >= 0 && position < perfiles.size()) {
+                    viewModel.cambiarCultivo(perfiles.get(position));
+                }
             }
 
             @Override
@@ -121,7 +128,8 @@ public class InicioFragment extends Fragment {
                 tabTorres.removeOnTabSelectedListener(tabListener);
                 tabTorres.removeAllTabs();
                 for (int i = 0; i < torres.size(); i++) {
-                    tabTorres.addTab(tabTorres.newTab().setText(String.format("T%d · %s", torres.get(i).idx, torres.get(i).perfil.nombre)));
+                    tabTorres.addTab(tabTorres.newTab().setText(getString(R.string.tab_torre_cultivo,
+                            torres.get(i).idx, nombreCultivoLocalizado(torres.get(i).perfil))));
                 }
                 TabLayout.Tab tab = tabTorres.getTabAt(sel);
                 if (tab != null) tab.select();
@@ -130,7 +138,8 @@ public class InicioFragment extends Fragment {
                 for (int i = 0; i < torres.size(); i++) {
                     TabLayout.Tab tab = tabTorres.getTabAt(i);
                     if (tab != null) {
-                        tab.setText(String.format("T%d · %s", torres.get(i).idx, torres.get(i).perfil.nombre));
+                        tab.setText(getString(R.string.tab_torre_cultivo,
+                                torres.get(i).idx, nombreCultivoLocalizado(torres.get(i).perfil)));
                     }
                 }
             }
@@ -139,7 +148,7 @@ public class InicioFragment extends Fragment {
         viewModel.getHuertoActual().observe(getViewLifecycleOwner(), huerto -> {
             if (huerto == null) return;
 
-            tvLabelCultivo.setText("Cultivo de Torre " + huerto.idx);
+            tvLabelCultivo.setText(getString(R.string.inicio_cultivo_torre, huerto.idx));
 
             actualizandoSpinner = true;
             List<PerfilCultivo> lista = PerfilCultivo.todos();
@@ -152,10 +161,10 @@ public class InicioFragment extends Fragment {
             actualizandoSpinner = false;
 
             PerfilCultivo p = huerto.perfil;
-            tvRangoAire.setText(String.format(Locale.US, "(%.0f - %.0f °C)", p.aireMin, p.aireMax));
-            tvRangoAgua.setText(String.format(Locale.US, "(%.0f - %.0f °C)", p.tempAguaMin, p.tempAguaMax));
-            tvRangoPh.setText(String.format(Locale.US, "(%.1f - %.1f)", p.phMin, p.phMax));
-            tvRangoEc.setText(String.format(Locale.US, "(%.1f - %.1f)", p.ecMin, p.ecMax));
+            tvRangoAire.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_temperatura), p.aireMin, p.aireMax));
+            tvRangoAgua.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_temperatura), p.tempAguaMin, p.tempAguaMax));
+            tvRangoPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_ph), p.phMin, p.phMax));
+            tvRangoEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_ec), p.ecMin, p.ecMax));
 
             double aire = huerto.v.get("temp_ambiente");
             double hum = huerto.v.get("humedad");
@@ -165,24 +174,24 @@ public class InicioFragment extends Fragment {
             double lux = huerto.v.get("lux");
             double nivel = huerto.v.get("nivel_agua");
 
-            tvTempAire.setText(String.format(Locale.US, "%.1f °C", aire));
+            tvTempAire.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), aire));
             pintarValor(tvTempAire, aire < p.aireMin || aire > p.aireMax);
 
-            tvHumedad.setText(String.format(Locale.US, "%.0f %%", hum));
+            tvHumedad.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), hum));
 
-            tvTempAgua.setText(String.format(Locale.US, "%.1f °C", agua));
+            tvTempAgua.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), agua));
             pintarValor(tvTempAgua, agua < p.tempAguaMin || agua > p.tempAguaMax);
 
-            tvPh.setText(String.format(Locale.US, "%.2f", ph));
+            tvPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_ph), ph));
             pintarValor(tvPh, ph < p.phMin || ph > p.phMax);
 
-            tvEc.setText(String.format(Locale.US, "%.2f mS/cm", ec));
+            tvEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_ec), ec));
             pintarValor(tvEc, ec < p.ecMin || ec > p.ecMax);
 
-            tvLux.setText(String.format(Locale.US, "%.0f lux", lux));
+            tvLux.setText(String.format(Locale.getDefault(), getString(R.string.formato_lux), lux));
             pintarValor(tvLux, lux < Huerto.LUX_LED_ON);
 
-            tvNivel.setText(String.format(Locale.US, "%.0f %%", nivel));
+            tvNivel.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), nivel));
             pintarValor(tvNivel, nivel < Huerto.NIVEL_BAJO);
         });
 
@@ -193,11 +202,15 @@ public class InicioFragment extends Fragment {
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (Alerta a : alertas) {
-                    sb.append("⚠ ").append(formatearNombreVariable(a.variable))
-                            .append(" ").append(a.nivel.toUpperCase())
-                            .append(" (").append(String.format(Locale.US, "%.1f", a.valor)).append(")\n")
-                            .append("→ ").append(a.accion)
-                            .append(a.automatica ? " [Auto]\n\n" : " [Acción manual requerida]\n\n");
+                    String sufijo = getString(a.automatica
+                            ? R.string.alerta_auto_sufijo
+                            : R.string.alerta_manual_sufijo);
+                    sb.append(String.format(Locale.getDefault(), getString(R.string.alerta_formato),
+                            formatearNombreVariable(a.variable),
+                            a.nivel.toUpperCase(Locale.getDefault()),
+                            a.valor,
+                            obtenerAccionAlerta(a),
+                            sufijo));
                 }
                 tvAlertas.setText(sb.toString().trim());
                 tvAlertas.setTextColor(ContextCompat.getColor(requireContext(), R.color.alerta_error));
@@ -208,13 +221,43 @@ public class InicioFragment extends Fragment {
     private String formatearNombreVariable(String raw) {
         if (raw == null) return "";
         switch (raw.toLowerCase()) {
-            case "temp_ambiente": return "Temperatura Aire";
-            case "temp_agua": return "Temperatura Agua";
-            case "ph": return "pH Solución";
-            case "ec": return "Conductividad (EC)";
-            case "lux": return "Luminosidad";
-            case "nivel_agua": return "Nivel de Estanque";
-            default: return raw.replace("_", " ").toUpperCase();
+            case "temp_ambiente": return getString(R.string.variable_temp_aire);
+            case "temp_agua": return getString(R.string.variable_temp_agua);
+            case "ph": return getString(R.string.variable_ph);
+            case "ec": return getString(R.string.variable_ec);
+            case "lux": return getString(R.string.variable_luz);
+            case "nivel_agua": return getString(R.string.variable_nivel_agua);
+            default: return raw.replace("_", " ").toUpperCase(Locale.getDefault());
+        }
+    }
+
+    private String nombreCultivoLocalizado(PerfilCultivo perfil) {
+        switch (perfil.clave) {
+            case "guia": return getString(R.string.cultivo_guia);
+            case "lechuga": return getString(R.string.cultivo_lechuga);
+            case "albahaca": return getString(R.string.cultivo_albahaca);
+            case "menta": return getString(R.string.cultivo_menta);
+            case "cilantro": return getString(R.string.cultivo_cilantro);
+            case "acelga": return getString(R.string.cultivo_acelga);
+            case "tomate_cherry": return getString(R.string.cultivo_tomate_cherry);
+            default: return perfil.nombre;
+        }
+    }
+
+    private String obtenerAccionAlerta(Alerta alerta) {
+        switch (alerta.getClave()) {
+            case "temp_ambiente_alta": return getString(R.string.accion_temp_aire_alta);
+            case "temp_ambiente_baja": return getString(R.string.accion_temp_aire_baja);
+            case "temp_agua_alta": return getString(R.string.accion_temp_agua_alta);
+            case "temp_agua_baja": return getString(R.string.accion_temp_agua_baja);
+            case "ph_alto": return getString(R.string.accion_ph_alto);
+            case "ph_bajo": return getString(R.string.accion_ph_bajo);
+            case "ec_alto": return getString(R.string.accion_ec_alto);
+            case "ec_bajo": return getString(R.string.accion_ec_bajo);
+            case "nivel_agua_critico": return getString(R.string.accion_nivel_critico);
+            case "nivel_agua_bajo": return getString(R.string.accion_nivel_bajo);
+            case "lux_bajo": return getString(R.string.accion_luz_baja);
+            default: return alerta.accion;
         }
     }
 

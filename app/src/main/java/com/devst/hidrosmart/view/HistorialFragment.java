@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.devst.hidrosmart.R;
 import com.devst.hidrosmart.modelo.Huerto;
+import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 
 import java.util.ArrayList;
@@ -61,7 +62,8 @@ public class HistorialFragment extends Fragment {
 
             List<String> nuevasOpciones = new ArrayList<>();
             for (Huerto h : torres) {
-                nuevasOpciones.add(String.format("Torre %d (%s)", h.idx, h.perfil.nombre));
+                nuevasOpciones.add(getString(R.string.formato_torre_cultivo,
+                        h.idx, nombreCultivoLocalizado(h.perfil)));
             }
 
             // Solo recarga si cambió el contenido real, evitando cerrar el desplegable
@@ -83,12 +85,12 @@ public class HistorialFragment extends Fragment {
         btnEnviarComentario.setOnClickListener(v -> {
             String texto = etComentario.getText().toString().trim();
             if (texto.isEmpty()) {
-                Toast.makeText(requireContext(), "Escribe una observación antes de enviar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.mensaje_escribe_observacion, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (spnTorreComentario.getSelectedItem() == null) {
-                Toast.makeText(requireContext(), "Selecciona una torre", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.mensaje_selecciona_torre, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -96,9 +98,22 @@ public class HistorialFragment extends Fragment {
             viewModel.registrarComentario(remitente, torreSeleccionada, texto);
 
             tvUltimoComentario.setVisibility(View.VISIBLE);
-            tvUltimoComentario.setText(String.format("✓ Observación guardada para %s:\n\"%s\"", torreSeleccionada, texto));
+            tvUltimoComentario.setText(getString(R.string.formato_observacion_guardada, torreSeleccionada, texto));
             etComentario.setText("");
-            Toast.makeText(requireContext(), "Observación enviada al supervisor", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.mensaje_observacion_enviada, Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private String nombreCultivoLocalizado(PerfilCultivo perfil) {
+        switch (perfil.clave) {
+            case "guia": return getString(R.string.cultivo_guia);
+            case "lechuga": return getString(R.string.cultivo_lechuga);
+            case "albahaca": return getString(R.string.cultivo_albahaca);
+            case "menta": return getString(R.string.cultivo_menta);
+            case "cilantro": return getString(R.string.cultivo_cilantro);
+            case "acelga": return getString(R.string.cultivo_acelga);
+            case "tomate_cherry": return getString(R.string.cultivo_tomate_cherry);
+            default: return perfil.nombre;
+        }
     }
 }

@@ -277,7 +277,8 @@ public class Huerto {
             }
 
             if (!modoManual) {
-                return new RespuestaComando(false, "ignorado: activa el switch Modo Manual para operar actuadores");
+                return new RespuestaComando(false, "ignorado: activa el switch Modo Manual para operar actuadores",
+                        RespuestaComando.CodigoMensaje.MODO_AUTOMATICO);
             }
 
             if ("ph".equals(cmd)) {
@@ -285,12 +286,14 @@ public class Huerto {
             }
 
             if (!act.containsKey(cmd)) {
-                return new RespuestaComando(false, "comando desconocido");
+                return new RespuestaComando(false, "comando desconocido",
+                        RespuestaComando.CodigoMensaje.COMANDO_DESCONOCIDO);
             }
 
             boolean on = "on".equals(val);
             if ("bomba_riego".equals(cmd) && on && v.get("nivel_agua") < NIVEL_CRITICO) {
-                return new RespuestaComando(false, "bloqueado: nivel de agua crítico (protección de la bomba)");
+                return new RespuestaComando(false, "bloqueado: nivel de agua crítico (protección de la bomba)",
+                        RespuestaComando.CodigoMensaje.NIVEL_AGUA_CRITICO);
             }
 
             act.put(cmd, on);

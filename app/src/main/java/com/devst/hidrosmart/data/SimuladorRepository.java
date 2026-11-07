@@ -162,7 +162,8 @@ public class SimuladorRepository {
 
     public synchronized RespuestaComando enviarComando(String actuador, String orden) {
         Huerto actual = getHuertoActual();
-        if (actual == null) return new RespuestaComando(false, "No hay torre activa");
+        if (actual == null) return new RespuestaComando(false, "No hay torre activa",
+                RespuestaComando.CodigoMensaje.SIN_TORRE_ACTIVA);
         RespuestaComando res = actual.enviarComando(actuador, orden);
         notificarObservadores();
         return res;

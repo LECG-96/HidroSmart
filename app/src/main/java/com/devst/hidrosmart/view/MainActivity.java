@@ -100,17 +100,17 @@ public class MainActivity extends AppCompatActivity {
 
         btnAgregarTorre.setOnClickListener(v -> {
             if (!viewModel.agregarTorre()) {
-                Toast.makeText(this, "Máximo 4 torres alcanzado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.mensaje_maximo_torres, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Torre agregada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.mensaje_torre_agregada, Toast.LENGTH_SHORT).show();
             }
         });
 
         btnEliminarTorre.setOnClickListener(v -> {
             if (!viewModel.eliminarTorre()) {
-                Toast.makeText(this, "Debe quedar al menos 1 torre", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.mensaje_minimo_torres, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Torre eliminada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.mensaje_torre_eliminada, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -223,18 +223,18 @@ public class MainActivity extends AppCompatActivity {
     private void mostrarDialogoUsuariosRegistrados() {
         List<String> usuarios = viewModel.getUsuariosGenerales().getValue();
         if (usuarios == null || usuarios.isEmpty()) {
-            Toast.makeText(this, "No hay usuarios registrados", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.mensaje_sin_usuarios, Toast.LENGTH_SHORT).show();
             return;
         }
 
         String[] listaArray = usuarios.toArray(new String[0]);
         new AlertDialog.Builder(this)
-                .setTitle("Usuarios Generales Registrados")
+                .setTitle(R.string.dialog_usuarios_titulo)
                 .setItems(listaArray, (dialog, which) -> {
                     String seleccionado = listaArray[which];
                     mostrarObservacionesUsuario(seleccionado);
                 })
-                .setPositiveButton("Cerrar", (d, w) -> {
+                .setPositiveButton(R.string.accion_cerrar, (d, w) -> {
                     TabLayout.Tab tab0 = tabNavegacionAdmin.getTabAt(0);
                     if (tab0 != null) tab0.select();
                 })
@@ -248,20 +248,20 @@ public class MainActivity extends AppCompatActivity {
         if (comentarios != null) {
             for (ComentarioUsuario c : comentarios) {
                 if (c.usuario.equals(usuario)) {
-                    sb.append("• [").append(c.fechaHora).append("] ").append(c.torre).append(":\n")
-                            .append("\"").append(c.mensaje).append("\"\n\n");
+                    sb.append(getString(R.string.formato_observacion_usuario,
+                            c.fechaHora, c.torre, c.mensaje));
                 }
             }
         }
 
         if (sb.length() == 0) {
-            sb.append("Este usuario aún no registra observaciones.");
+            sb.append(getString(R.string.dialog_usuario_sin_observaciones));
         }
 
         new AlertDialog.Builder(this)
-                .setTitle("Observaciones de: " + usuario)
+                .setTitle(getString(R.string.dialog_usuario_observaciones_titulo, usuario))
                 .setMessage(sb.toString().trim())
-                .setPositiveButton("Volver", (d, w) -> mostrarDialogoUsuariosRegistrados())
+                .setPositiveButton(R.string.accion_volver, (d, w) -> mostrarDialogoUsuariosRegistrados())
                 .show();
     }
 
