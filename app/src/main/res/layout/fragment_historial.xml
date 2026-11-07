@@ -20,7 +20,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- 1. Estadísticas (En cero por falta de conexión física) -->
+        <!-- Estado de conexión; no se muestran datos del simulador como telemetría -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,79 +44,16 @@
                 android:padding="12dp">
 
                 <TextView
+                    android:id="@+id/tvEstadoConexion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/historial_agua_consumida"
-                    android:textColor="@color/texto_secundario"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/historial_ciclos_riego"
-                    android:textColor="@color/texto_secundario"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/historial_dosis_nutrientes"
-                    android:textColor="@color/texto_secundario"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:text="@string/historial_sin_conexion"
-                    android:textColor="@color/texto_terciario"
-                    android:textSize="11sp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 2. Alertas e Historial -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/historial_alertas_recientes"
-            android:textColor="@color/texto_principal"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/historial_sin_alertas"
-                    android:textColor="@color/alerta_ok"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/historial_eventos_demo"
                     android:textColor="@color/texto_secundario"
-                    android:textSize="13sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 3. Dejar Comentario -->
+        <!-- Observaciones del operador -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

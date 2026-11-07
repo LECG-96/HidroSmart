@@ -140,15 +140,9 @@
     <string name="mensaje_estanque_rellenado" formatted="false">Estanque rellenado al 100%</string>
     <string name="mensaje_escenario_aplicado">Escenario aplicado: %1$s</string>
 
-    <string name="historial_titulo">Panel de Monitoreo General</string>
-    <string name="historial_estadisticas">Estadísticas de consumo y producción</string>
-    <string name="historial_agua_consumida">Agua consumida hoy: 0.0 L</string>
-    <string name="historial_ciclos_riego">Ciclos de riego ejecutados: 0</string>
-    <string name="historial_dosis_nutrientes">Dosis de nutrientes A+B: 0</string>
-    <string name="historial_sin_conexion">(Sin conexión con torre física: telemetría en espera)</string>
-    <string name="historial_alertas_recientes">Alertas e Historial reciente</string>
-    <string name="historial_sin_alertas">✓ No hay alertas pendientes.</string>
-    <string name="historial_eventos_demo">• [10:00] Calibración de sensores completada\n• [08:30] Verificación de red sin anomalías</string>
+    <string name="historial_titulo">Estado del huerto</string>
+    <string name="historial_estadisticas">Conexión y telemetría</string>
+    <string name="historial_sin_conexion">La app no está conectada a una torre física. No se muestran valores hasta recibir datos reales del sistema.</string>
     <string name="historial_dejar_observacion">Dejar observación o comentario</string>
     <string name="historial_torre_relacionada">Torre / Cultivo relacionado:</string>
     <string name="historial_hint_observacion">Escribe tu observación...</string>

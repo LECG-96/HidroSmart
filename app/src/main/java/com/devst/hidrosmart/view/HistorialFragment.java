@@ -52,14 +52,12 @@ public class HistorialFragment extends Fragment {
         etComentario = view.findViewById(R.id.etComentario);
         btnEnviarComentario = view.findViewById(R.id.btnEnviarComentario);
         tvUltimoComentario = view.findViewById(R.id.tvUltimoComentario);
-
         String usuarioActual = requireActivity().getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
         if (usuarioActual == null) usuarioActual = "user";
         final String remitente = usuarioActual;
 
         viewModel.getListaTorres().observe(getViewLifecycleOwner(), torres -> {
             if (torres == null) return;
-
             List<String> nuevasOpciones = new ArrayList<>();
             for (Huerto h : torres) {
                 nuevasOpciones.add(getString(R.string.formato_torre_cultivo,
