@@ -21,6 +21,6 @@
     <color name="superficie_tarjeta">#FFFFFF</color>
     <color name="texto_principal">#212121</color>
     <color name="texto_secundario">#616161</color>
-    <color name="texto_terciario">#9E9E9E</color>
+    <color name="texto_terciario">#757575</color>
     <color name="divisor">#E0E0E0</color>
 </resources>

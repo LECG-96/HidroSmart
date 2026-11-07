@@ -1,9 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.HidroSmart" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#4CAF50</item>
-        <item name="colorSecondary">#81C784</item>
-        <item name="android:statusBarColor">#121212</item>
-        <item name="android:windowBackground">#121212</item>
+        <item name="colorPrimary">@color/verde_primario</item>
+        <item name="colorPrimaryVariant">@color/verde_primario_variante</item>
+        <item name="colorOnPrimary">#17351D</item>
+        <item name="colorSecondary">@color/verde_secundario</item>
+        <item name="colorOnSecondary">#17351D</item>
+        <item name="colorSurface">@color/superficie_tarjeta</item>
+        <item name="colorOnSurface">@color/texto_principal</item>
+        <item name="colorSurfaceVariant">@color/fondo_pantalla</item>
+        <item name="colorOnSurfaceVariant">@color/texto_secundario</item>
+        <item name="colorOutline">@color/divisor</item>
+        <item name="colorError">@color/alerta_error</item>
+        <item name="colorOnError">#2B1018</item>
+        <item name="android:statusBarColor">@color/fondo_pantalla</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/fondo_pantalla</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowBackground">@color/fondo_pantalla</item>
     </style>
 
     <style name="Theme.HidroSmart" parent="Base.Theme.HidroSmart" />

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/fondo_pantalla"
     android:fillViewport="true">
 
     <LinearLayout
@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Panel de Monitoreo General"
-            android:textColor="#1B5E20"
+            android:textColor="@color/verde_primario"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Estadísticas de consumo y producción"
-            android:textColor="#212121"
+            android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Agua consumida hoy: 0.0 L"
-                    android:textColor="#424242"
+                    android:textColor="@color/texto_secundario"
                     android:textSize="14sp" />
 
                 <TextView
@@ -55,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Ciclos de riego ejecutados: 0"
-                    android:textColor="#424242"
+                    android:textColor="@color/texto_secundario"
                     android:textSize="14sp" />
 
                 <TextView
@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Dosis de nutrientes A+B: 0"
-                    android:textColor="#424242"
+                    android:textColor="@color/texto_secundario"
                     android:textSize="14sp" />
 
                 <TextView
@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="(Sin conexión con torre física: telemetría en espera)"
-                    android:textColor="#9E9E9E"
+                    android:textColor="@color/texto_terciario"
                     android:textSize="11sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Alertas e Historial reciente"
-            android:textColor="#212121"
+            android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -103,7 +103,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="✓ No hay alertas pendientes."
-                    android:textColor="#1B5E20"
+                    android:textColor="@color/alerta_ok"
                     android:textStyle="bold" />
 
                 <TextView
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="• [10:00] Calibración de sensores completada\n• [08:30] Verificación de red sin anomalías"
-                    android:textColor="#616161"
+                    android:textColor="@color/texto_secundario"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -122,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Dejar observación o comentario"
-            android:textColor="#212121"
+            android:textColor="@color/texto_principal"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -143,7 +143,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Torre / Cultivo relacionado:"
-                    android:textColor="#616161"
+                    android:textColor="@color/texto_secundario"
                     android:textSize="12sp" />
 
                 <Spinner
@@ -177,7 +177,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="#424242"
+                    android:textColor="@color/texto_secundario"
                     android:textSize="12sp"
                     android:visibility="gone" />
             </LinearLayout>

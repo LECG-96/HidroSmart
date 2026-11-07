@@ -1,0 +1,18 @@
+<resources>
+    <color name="verde_primario">#A5D6A7</color>
+    <color name="verde_primario_variante">#81C784</color>
+    <color name="verde_secundario">#81C784</color>
+    <color name="verde_claro">#26392D</color>
+    <color name="verde_acento">#A5D6A7</color>
+
+    <color name="alerta_error">#CF6679</color>
+    <color name="alerta_fondo_error">#4A252B</color>
+    <color name="alerta_ok">#A5D6A7</color>
+
+    <color name="fondo_pantalla">#111714</color>
+    <color name="superficie_tarjeta">#1B231E</color>
+    <color name="texto_principal">#E6EEE8</color>
+    <color name="texto_secundario">#BEC9C1</color>
+    <color name="texto_terciario">#98A69C</color>
+    <color name="divisor">#3B4840</color>
+</resources>

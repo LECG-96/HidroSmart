@@ -4,7 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/fondo_pantalla"
     android:orientation="vertical">
 
     <!-- Barra superior -->
@@ -12,7 +12,7 @@
         android:id="@+id/toolbarAdmin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/superficie_tarjeta"
         android:elevation="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="HidroSmart"
-            android:textColor="#1B5E20"
+            android:textColor="@color/verde_primario"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -50,7 +50,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="- Torre"
-            android:textColor="#B71C1C"
+            android:textColor="@color/alerta_error"
             android:textSize="11sp" />
 
         <Button
@@ -62,7 +62,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="Salir"
-            android:textColor="#757575"
+            android:textColor="@color/texto_secundario"
             android:textSize="11sp" />
     </LinearLayout>
 
@@ -71,10 +71,10 @@
         android:id="@+id/tabNavegacionAdmin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#E8F5E9"
-        app:tabIndicatorColor="#1B5E20"
+        android:background="@color/verde_claro"
+        app:tabIndicatorColor="@color/verde_primario"
         app:tabMode="fixed"
-        app:tabSelectedTextColor="#1B5E20">
+        app:tabSelectedTextColor="@color/verde_primario">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"

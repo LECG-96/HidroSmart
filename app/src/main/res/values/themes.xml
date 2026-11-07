@@ -2,8 +2,20 @@
     <style name="Base.Theme.HidroSmart" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/verde_primario</item>
         <item name="colorPrimaryVariant">@color/verde_primario_variante</item>
+        <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/verde_secundario</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/superficie_tarjeta</item>
+        <item name="colorOnSurface">@color/texto_principal</item>
+        <item name="colorSurfaceVariant">@color/fondo_pantalla</item>
+        <item name="colorOnSurfaceVariant">@color/texto_secundario</item>
+        <item name="colorOutline">@color/divisor</item>
+        <item name="colorError">@color/alerta_error</item>
+        <item name="colorOnError">@color/white</item>
         <item name="android:statusBarColor">@color/verde_primario</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/fondo_pantalla</item>
+        <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowBackground">@color/fondo_pantalla</item>
     </style>
 
