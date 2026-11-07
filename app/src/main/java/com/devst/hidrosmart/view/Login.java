@@ -55,8 +55,6 @@ public class Login extends AppCompatActivity {
         intent.putExtra(MainActivity.EXTRA_MODO_DEMO, esDemo);
         intent.putExtra(EXTRA_USUARIO_ACTUAL, nombreUsuario);
         startActivity(intent);
-        if (!esDemo) {
-            finish();
-        }
+        finish();
     }
 }

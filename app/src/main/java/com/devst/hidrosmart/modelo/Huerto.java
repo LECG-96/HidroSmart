@@ -309,7 +309,9 @@ public class Huerto {
     public void forzarParametro(String variable, double valor, boolean persistente) {
         synchronized (lock) {
             v.put(variable, valor);
-            base.put(variable, valor);
+            if (persistente) {
+                base.put(variable, valor);
+            }
         }
     }
 

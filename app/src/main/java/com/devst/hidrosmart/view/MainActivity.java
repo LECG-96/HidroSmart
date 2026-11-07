@@ -27,15 +27,16 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_MODO_DEMO = "modo_demo";
+    private static final String STATE_FRAGMENT_ACTIVO = "fragment_activo";
 
     private HuertoViewModel viewModel;
     private TabLayout tabNavegacionAdmin;
     private Button btnAgregarTorre, btnEliminarTorre, btnCerrarSesionTop;
     private TextView tvTituloToolbar;
 
-    private final Fragment fragmentInicio = new InicioFragment();
-    private final Fragment fragmentControl = new ControlFragment();
-    private final Fragment fragmentHistorial = new HistorialFragment();
+    private Fragment fragmentInicio;
+    private Fragment fragmentControl;
+    private Fragment fragmentHistorial;
     private Fragment fragmentActivo;
 
     private boolean esModoDemo = false;
@@ -60,8 +61,16 @@ public class MainActivity extends AppCompatActivity {
         esModoDemo = getIntent().getBooleanExtra(EXTRA_MODO_DEMO, false);
 
         inicializarComponentes();
-        configurarFragmentosIniciales();
+        configurarFragmentosIniciales(savedInstanceState);
         configurarNavegacionPorRol();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (fragmentActivo != null) {
+            outState.putString(STATE_FRAGMENT_ACTIVO, fragmentActivo.getTag());
+        }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -106,19 +115,51 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void configurarFragmentosIniciales() {
+    private void configurarFragmentosIniciales(Bundle savedInstanceState) {
         FragmentManager fm = getSupportFragmentManager();
         if (Login.ROL_USER.equals(rol)) {
-            fm.beginTransaction()
-                    .add(R.id.contenedorFragment, fragmentHistorial, "historial")
-                    .commit();
+            fragmentHistorial = fm.findFragmentByTag("historial");
+            if (fragmentHistorial == null) {
+                fragmentHistorial = new HistorialFragment();
+                fm.beginTransaction()
+                        .add(R.id.contenedorFragment, fragmentHistorial, "historial")
+                        .commitNow();
+            }
             fragmentActivo = fragmentHistorial;
         } else {
-            fm.beginTransaction()
-                    .add(R.id.contenedorFragment, fragmentControl, "control").hide(fragmentControl)
-                    .add(R.id.contenedorFragment, fragmentInicio, "inicio")
-                    .commit();
-            fragmentActivo = fragmentInicio;
+            fragmentInicio = fm.findFragmentByTag("inicio");
+            fragmentControl = fm.findFragmentByTag("control");
+
+            boolean necesitaAgregar = fragmentInicio == null || (!esModoDemo && fragmentControl == null);
+            if (necesitaAgregar) {
+                androidx.fragment.app.FragmentTransaction transaction = fm.beginTransaction();
+                if (fragmentInicio == null) {
+                    fragmentInicio = new InicioFragment();
+                    transaction.add(R.id.contenedorFragment, fragmentInicio, "inicio");
+                }
+                if (!esModoDemo && fragmentControl == null) {
+                    fragmentControl = new ControlFragment();
+                    transaction.add(R.id.contenedorFragment, fragmentControl, "control").hide(fragmentControl);
+                }
+                transaction.commitNow();
+            }
+
+            String tagActivo = savedInstanceState == null
+                    ? "inicio"
+                    : savedInstanceState.getString(STATE_FRAGMENT_ACTIVO, "inicio");
+            if (esModoDemo || !"control".equals(tagActivo) || fragmentControl == null) {
+                tagActivo = "inicio";
+            }
+            fragmentActivo = "control".equals(tagActivo) ? fragmentControl : fragmentInicio;
+
+            androidx.fragment.app.FragmentTransaction visibility = fm.beginTransaction();
+            if (fragmentControl != null) {
+                if (fragmentActivo == fragmentControl) visibility.show(fragmentControl);
+                else visibility.hide(fragmentControl);
+            }
+            if (fragmentActivo == fragmentInicio) visibility.show(fragmentInicio);
+            else visibility.hide(fragmentInicio);
+            visibility.commitNow();
         }
     }
 
@@ -142,9 +183,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (esModoDemo) {
             tvTituloToolbar.setText(R.string.titulo_demo);
-            if (tabNavegacionAdmin.getTabCount() >= 3) {
-                tabNavegacionAdmin.removeTabAt(2);
-            }
+            tabNavegacionAdmin.setVisibility(View.GONE);
+            btnAgregarTorre.setVisibility(View.GONE);
+            btnEliminarTorre.setVisibility(View.GONE);
+            return;
         } else {
             tvTituloToolbar.setText(R.string.titulo_admin);
         }
@@ -172,6 +214,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        int tabInicial = fragmentActivo == fragmentControl ? 1 : 0;
+        TabLayout.Tab tab = tabNavegacionAdmin.getTabAt(tabInicial);
+        if (tab != null && !tab.isSelected()) tab.select();
     }
 
     private void mostrarDialogoUsuariosRegistrados() {
