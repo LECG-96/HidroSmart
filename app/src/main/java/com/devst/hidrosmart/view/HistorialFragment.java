@@ -32,6 +32,7 @@ public class HistorialFragment extends Fragment {
     private EditText etComentario;
     private Button btnEnviarComentario;
     private TextView tvUltimoComentario;
+    private TextView tvEstadoConexion;
 
     // Control para no resetear el spinner a cada segundo
     private final List<String> opcionesPrevias = new ArrayList<>();
@@ -52,6 +53,12 @@ public class HistorialFragment extends Fragment {
         etComentario = view.findViewById(R.id.etComentario);
         btnEnviarComentario = view.findViewById(R.id.btnEnviarComentario);
         tvUltimoComentario = view.findViewById(R.id.tvUltimoComentario);
+        tvEstadoConexion = view.findViewById(R.id.tvEstadoConexion);
+        viewModel.getConectadoSistemaReal().observe(getViewLifecycleOwner(), conectado -> {
+            tvEstadoConexion.setText(Boolean.TRUE.equals(conectado)
+                    ? R.string.historial_conectado
+                    : R.string.historial_sin_conexion);
+        });
         String usuarioActual = requireActivity().getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
         if (usuarioActual == null) usuarioActual = "user";
         final String remitente = usuarioActual;

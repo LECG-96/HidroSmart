@@ -79,6 +79,9 @@ public class SimuladorRepository implements SimuladorDataSource {
     @Override
     public void stop() { pausarSimulacion(); }
 
+    @Override
+    public boolean estaConectadoAlSistemaReal() { return false; }
+
     public synchronized void reanudarSimulacion() {
         iniciarSimulacion();
     }

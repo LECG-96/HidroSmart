@@ -14,6 +14,7 @@ public interface HuertoDataSource {
     void removeObserver(Observer observer);
     void start();
     void stop();
+    boolean estaConectadoAlSistemaReal();
     List<Huerto> getTorres();
     Huerto getHuertoActual();
     int getTorreSeleccionada();
