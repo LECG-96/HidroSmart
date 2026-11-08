@@ -53,6 +53,32 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/historial_alertas_titulo"
+            android:textColor="@color/texto_principal"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp">
+
+            <TextView
+                android:id="@+id/tvAlertasReales"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:text="@string/historial_alertas_sin_conexion"
+                android:textColor="@color/texto_secundario"
+                android:textSize="14sp" />
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Observaciones del operador -->
         <TextView
             android:layout_width="wrap_content"

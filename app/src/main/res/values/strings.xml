@@ -144,6 +144,10 @@
     <string name="historial_estadisticas">Conexión y telemetría</string>
     <string name="historial_sin_conexion">La app no está conectada a una torre física. No se muestran valores hasta recibir datos reales del sistema.</string>
     <string name="historial_conectado">Conexión con el sistema real activa. La telemetría estará disponible al recibir datos.</string>
+    <string name="historial_alertas_titulo">Alertas del sistema</string>
+    <string name="historial_alertas_sin_conexion">Las alertas aparecerán cuando la app reciba datos de una torre real.</string>
+    <string name="historial_alertas_vacias">No se han recibido alertas del sistema.</string>
+    <string name="historial_alerta_formato">⚠ %1$s · %2$s (%3$.1f)\nAcción: %4$s</string>
     <string name="historial_dejar_observacion">Dejar observación o comentario</string>
     <string name="historial_torre_relacionada">Torre / Cultivo relacionado:</string>
     <string name="historial_hint_observacion">Escribe tu observación...</string>

@@ -17,12 +17,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.devst.hidrosmart.R;
+import com.devst.hidrosmart.modelo.Alerta;
 import com.devst.hidrosmart.modelo.Huerto;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class HistorialFragment extends Fragment {
 
@@ -33,6 +35,7 @@ public class HistorialFragment extends Fragment {
     private Button btnEnviarComentario;
     private TextView tvUltimoComentario;
     private TextView tvEstadoConexion;
+    private TextView tvAlertasReales;
 
     // Control para no resetear el spinner a cada segundo
     private final List<String> opcionesPrevias = new ArrayList<>();
@@ -54,11 +57,14 @@ public class HistorialFragment extends Fragment {
         btnEnviarComentario = view.findViewById(R.id.btnEnviarComentario);
         tvUltimoComentario = view.findViewById(R.id.tvUltimoComentario);
         tvEstadoConexion = view.findViewById(R.id.tvEstadoConexion);
+        tvAlertasReales = view.findViewById(R.id.tvAlertasReales);
         viewModel.getConectadoSistemaReal().observe(getViewLifecycleOwner(), conectado -> {
             tvEstadoConexion.setText(Boolean.TRUE.equals(conectado)
                     ? R.string.historial_conectado
                     : R.string.historial_sin_conexion);
+            actualizarAlertasReales();
         });
+        viewModel.getAlertasActuales().observe(getViewLifecycleOwner(), alertas -> actualizarAlertasReales());
         String usuarioActual = requireActivity().getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
         if (usuarioActual == null) usuarioActual = "user";
         final String remitente = usuarioActual;
@@ -120,5 +126,31 @@ public class HistorialFragment extends Fragment {
             case "tomate_cherry": return getString(R.string.cultivo_tomate_cherry);
             default: return perfil.nombre;
         }
+    }
+
+    private void actualizarAlertasReales() {
+        if (tvAlertasReales == null || viewModel == null) return;
+        Boolean conectado = viewModel.getConectadoSistemaReal().getValue();
+        if (!Boolean.TRUE.equals(conectado)) {
+            tvAlertasReales.setText(R.string.historial_alertas_sin_conexion);
+            return;
+        }
+
+        List<Alerta> alertas = viewModel.getAlertasActuales().getValue();
+        if (alertas == null || alertas.isEmpty()) {
+            tvAlertasReales.setText(R.string.historial_alertas_vacias);
+            return;
+        }
+
+        StringBuilder texto = new StringBuilder();
+        for (Alerta alerta : alertas) {
+            texto.append(getString(R.string.historial_alerta_formato,
+                    alerta.variable.replace('_', ' ').toUpperCase(Locale.getDefault()),
+                    alerta.nivel.toUpperCase(Locale.getDefault()),
+                    alerta.valor,
+                    alerta.accion))
+                    .append('\n');
+        }
+        tvAlertasReales.setText(texto.toString().trim());
     }
 }
