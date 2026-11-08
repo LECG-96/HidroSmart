@@ -151,8 +151,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             fragmentInicio = fm.findFragmentByTag("inicio");
             fragmentControl = fm.findFragmentByTag("control");
+            if (esModoDemo) fragmentHistorial = fm.findFragmentByTag("historial");
 
-            boolean necesitaAgregar = fragmentInicio == null || fragmentControl == null;
+            boolean necesitaAgregar = fragmentInicio == null || fragmentControl == null
+                    || (esModoDemo && fragmentHistorial == null);
             if (necesitaAgregar) {
                 androidx.fragment.app.FragmentTransaction transaction = fm.beginTransaction();
                 if (fragmentInicio == null) {
@@ -163,16 +165,24 @@ public class MainActivity extends AppCompatActivity {
                     fragmentControl = new ControlFragment();
                     transaction.add(R.id.contenedorFragment, fragmentControl, "control").hide(fragmentControl);
                 }
+                if (esModoDemo && fragmentHistorial == null) {
+                    fragmentHistorial = new HistorialFragment();
+                    transaction.add(R.id.contenedorFragment, fragmentHistorial, "historial").hide(fragmentHistorial);
+                }
                 transaction.commitNow();
             }
 
             String tagActivo = savedInstanceState == null
                     ? "inicio"
                     : savedInstanceState.getString(STATE_FRAGMENT_ACTIVO, "inicio");
-            if (!"control".equals(tagActivo) || fragmentControl == null) {
+            if ("historial".equals(tagActivo) && esModoDemo && fragmentHistorial != null) {
+                fragmentActivo = fragmentHistorial;
+            } else if ("control".equals(tagActivo) && fragmentControl != null) {
+                fragmentActivo = fragmentControl;
+            } else {
                 tagActivo = "inicio";
+                fragmentActivo = fragmentInicio;
             }
-            fragmentActivo = "control".equals(tagActivo) ? fragmentControl : fragmentInicio;
 
             androidx.fragment.app.FragmentTransaction visibility = fm.beginTransaction();
             if (fragmentControl != null) {
@@ -181,6 +191,10 @@ public class MainActivity extends AppCompatActivity {
             }
             if (fragmentActivo == fragmentInicio) visibility.show(fragmentInicio);
             else visibility.hide(fragmentInicio);
+            if (fragmentHistorial != null) {
+                if (fragmentActivo == fragmentHistorial) visibility.show(fragmentHistorial);
+                else visibility.hide(fragmentHistorial);
+            }
             visibility.commitNow();
         }
     }
@@ -188,6 +202,11 @@ public class MainActivity extends AppCompatActivity {
     private void cambiarFragment(Fragment nuevoFragment) {
         if (fragmentActivo == nuevoFragment) return;
         getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(
+                        R.anim.fragment_enter,
+                        R.anim.fragment_exit,
+                        R.anim.fragment_enter,
+                        R.anim.fragment_exit)
                 .hide(fragmentActivo)
                 .show(nuevoFragment)
                 .commit();
@@ -211,8 +230,11 @@ public class MainActivity extends AppCompatActivity {
             tvTituloToolbar.setText(R.string.titulo_demo);
             btnAgregarTorre.setVisibility(View.GONE);
             btnEliminarTorre.setVisibility(View.GONE);
-            TabLayout.Tab tabUsuarios = tabNavegacionAdmin.getTabAt(2);
-            if (tabUsuarios != null) tabNavegacionAdmin.removeTab(tabUsuarios);
+            if (tabNavegacionAdmin.getTabAt(0) != null) {
+                tabNavegacionAdmin.getTabAt(0).setText(R.string.tab_estado);
+            }
+            TabLayout.Tab tabHistorial = tabNavegacionAdmin.getTabAt(2);
+            if (tabHistorial != null) tabHistorial.setText(R.string.tab_historial);
         } else {
             tvTituloToolbar.setText(R.string.titulo_admin);
         }
@@ -229,6 +251,8 @@ public class MainActivity extends AppCompatActivity {
                     cambiarFragment(fragmentHistorial);
                 } else if (pos == 1) {
                     cambiarFragment(fragmentControl);
+                } else if (esModoDemo && pos == 2) {
+                    cambiarFragment(fragmentHistorial);
                 } else if (!esModoDemo && pos == 2) {
                     mostrarDialogoUsuariosRegistrados();
                 }
@@ -245,7 +269,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        int tabInicial = fragmentActivo == fragmentControl || fragmentActivo == fragmentHistorial ? 1 : 0;
+        int tabInicial = fragmentActivo == fragmentControl ? 1
+                : (esModoDemo && fragmentActivo == fragmentHistorial ? 2
+                : (Login.ROL_USER.equals(rol) && fragmentActivo == fragmentHistorial ? 1 : 0));
         TabLayout.Tab tab = tabNavegacionAdmin.getTabAt(tabInicial);
         if (tab != null && !tab.isSelected()) tab.select();
     }

@@ -46,28 +46,51 @@
                 android:id="@+id/layoutDatosHuerto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
                 android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="@string/inicio_titulo_resumen"
+                android:textColor="@color/texto_principal"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:text="@string/inicio_subtitulo_resumen"
+                android:textColor="@color/texto_secundario"
+                android:textSize="14sp" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabTorres"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:tabIndicatorColor="@color/verde_primario"
+                app:tabIndicatorFullWidth="false"
+                app:tabIndicatorHeight="3dp"
                 app:tabMode="fixed"
+                app:tabRippleColor="@color/verde_claro"
                 app:tabSelectedTextColor="@color/verde_primario" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="1dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divisor"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <TextView
                         android:id="@+id/tvLabelCultivo"
@@ -75,13 +98,15 @@
                         android:layout_height="wrap_content"
                         android:text="@string/inicio_cultivo_torre"
                         android:textColor="@color/texto_secundario"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.04" />
 
                     <Spinner
                         android:id="@+id/spnCultivo"
                         android:layout_width="match_parent"
-                        android:layout_height="44dp"
-                        android:layout_marginTop="2dp" />
+                        android:layout_height="48dp"
+                        android:layout_marginTop="4dp" />
 
                     <TextView
                         android:id="@+id/tvAvisoSoloLectura"
@@ -89,6 +114,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/inicio_demo_solo_lectura"
                         android:textColor="@color/texto_terciario"
+                        android:layout_marginTop="4dp"
                         android:textSize="12sp"
                         android:visibility="gone" />
                 </LinearLayout>
@@ -100,65 +126,74 @@
                 android:layout_marginTop="14dp"
                 android:text="@string/inicio_mediciones"
                 android:textColor="@color/texto_principal"
-                android:textSize="15sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.card.MaterialCardView
+            <GridLayout
+                android:id="@+id/gridMediciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="1dp">
+                android:layoutAnimation="@anim/metric_cards_layout"
+                android:layout_marginTop="8dp"
+                android:columnCount="2"
+                android:useDefaultMargins="false">
 
-                <TableLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:stretchColumns="1">
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_temp_aire" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvTempAire" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_temperatura" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvRangoAire" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <TableRow android:paddingBottom="6dp">
-                        <TextView android:text="@string/inicio_temp_aire" android:textColor="@color/texto_principal" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvTempAire" android:gravity="end" android:text="@string/placeholder_temperatura" android:textColor="@color/texto_principal" />
-                        <TextView android:id="@+id/tvRangoAire" android:layout_marginStart="8dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
-                    </TableRow>
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_humedad" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvHumedad" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_humedad" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/inicio_optimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <TableRow android:paddingBottom="6dp">
-                        <TextView android:text="@string/inicio_humedad" android:textColor="@color/texto_principal" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvHumedad" android:gravity="end" android:text="@string/placeholder_humedad" android:textColor="@color/texto_principal" />
-                        <TextView android:layout_marginStart="8dp" android:text="@string/inicio_optimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
-                    </TableRow>
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_temp_agua" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvTempAgua" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_temperatura" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvRangoAgua" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <TableRow android:paddingBottom="6dp">
-                        <TextView android:text="@string/inicio_temp_agua" android:textColor="@color/texto_principal" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvTempAgua" android:gravity="end" android:text="@string/placeholder_temperatura" android:textColor="@color/texto_principal" />
-                        <TextView android:id="@+id/tvRangoAgua" android:layout_marginStart="8dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
-                    </TableRow>
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_ph" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvPh" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/inicio_ph_placeholder" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvRangoPh" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <TableRow android:paddingBottom="6dp">
-                        <TextView android:text="@string/inicio_ph" android:textColor="@color/texto_principal" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvPh" android:gravity="end" android:text="@string/inicio_ph_placeholder" android:textColor="@color/texto_principal" />
-                        <TextView android:id="@+id/tvRangoPh" android:layout_marginStart="8dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
-                    </TableRow>
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_ec" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvEc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_ec" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvRangoEc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <TableRow android:paddingBottom="6dp">
-                        <TextView android:text="@string/inicio_ec" android:textColor="@color/texto_principal" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvEc" android:gravity="end" android:text="@string/placeholder_ec" android:textColor="@color/texto_principal" />
-                        <TextView android:id="@+id/tvRangoEc" android:layout_marginStart="8dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
-                    </TableRow>
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_luminosidad" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvLux" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_lux" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/inicio_lux_minimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <TableRow android:paddingBottom="6dp">
-                        <TextView android:text="@string/inicio_luminosidad" android:textColor="@color/texto_principal" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvLux" android:gravity="end" android:text="@string/placeholder_lux" android:textColor="@color/texto_principal" />
-                        <TextView android:layout_marginStart="8dp" android:text="@string/inicio_lux_minimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
-                    </TableRow>
-
-                    <TableRow>
-                        <TextView android:text="@string/inicio_nivel_estanque" android:textColor="@color/texto_principal" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvNivel" android:gravity="end" android:text="@string/placeholder_nivel" android:textColor="@color/texto_principal" />
-                        <TextView android:layout_marginStart="8dp" android:text="@string/inicio_nivel_minimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
-                    </TableRow>
-                </TableLayout>
-            </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_nivel_estanque" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvNivel" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_nivel" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/inicio_nivel_minimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </GridLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -173,15 +208,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="1dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divisor"
+                app:strokeWidth="1dp">
 
                 <TextView
                     android:id="@+id/tvAlertas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="3dp"
-                    android:padding="12dp"
+                    android:padding="16dp"
                     android:text="@string/alertas_todas_ok"
                     android:textColor="@color/alerta_ok"
                     android:textSize="13sp" />

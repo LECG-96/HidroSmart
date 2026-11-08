@@ -12,12 +12,29 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:text="@string/control_titulo_pantalla"
+            android:textColor="@color/texto_principal"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:text="@string/control_subtitulo_pantalla"
+            android:textColor="@color/texto_secundario"
+            android:textSize="14sp" />
+
         <!-- Conmutación de Modo y Corte de Datos -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,15 +70,15 @@
             android:layout_marginTop="14dp"
             android:text="@string/control_actuadores_titulo"
             android:textColor="@color/texto_principal"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
 
             <GridLayout
                 android:layout_width="match_parent"
@@ -120,15 +137,15 @@
             android:layout_marginTop="14dp"
             android:text="@string/control_forzar_parametros"
             android:textColor="@color/texto_principal"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -173,7 +190,7 @@
             android:layout_marginTop="14dp"
             android:text="@string/control_inyectar_escenarios"
             android:textColor="@color/texto_principal"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <GridLayout

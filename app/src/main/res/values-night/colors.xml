@@ -1,18 +1,18 @@
 <resources>
-    <color name="verde_primario">#A5D6A7</color>
-    <color name="verde_primario_variante">#81C784</color>
-    <color name="verde_secundario">#81C784</color>
-    <color name="verde_claro">#26392D</color>
-    <color name="verde_acento">#A5D6A7</color>
+    <color name="verde_primario">#A8D5BA</color>
+    <color name="verde_primario_variante">#79B995</color>
+    <color name="verde_secundario">#8CC7A5</color>
+    <color name="verde_claro">#24382E</color>
+    <color name="verde_acento">#C5DE8B</color>
 
-    <color name="alerta_error">#CF6679</color>
-    <color name="alerta_fondo_error">#4A252B</color>
-    <color name="alerta_ok">#A5D6A7</color>
+    <color name="alerta_error">#FFB4AB</color>
+    <color name="alerta_fondo_error">#5A2826</color>
+    <color name="alerta_ok">#A8D5BA</color>
 
-    <color name="fondo_pantalla">#111714</color>
-    <color name="superficie_tarjeta">#1B231E</color>
-    <color name="texto_principal">#E6EEE8</color>
-    <color name="texto_secundario">#BEC9C1</color>
-    <color name="texto_terciario">#98A69C</color>
-    <color name="divisor">#3B4840</color>
+    <color name="fondo_pantalla">#101713</color>
+    <color name="superficie_tarjeta">#1A241E</color>
+    <color name="texto_principal">#E1EAE3</color>
+    <color name="texto_secundario">#B9C8BD</color>
+    <color name="texto_terciario">#91A196</color>
+    <color name="divisor">#35453A</color>
 </resources>

@@ -3,8 +3,12 @@
         <item name="colorPrimary">@color/verde_primario</item>
         <item name="colorPrimaryVariant">@color/verde_primario_variante</item>
         <item name="colorOnPrimary">#17351D</item>
+        <item name="colorPrimaryContainer">@color/verde_claro</item>
+        <item name="colorOnPrimaryContainer">@color/texto_principal</item>
         <item name="colorSecondary">@color/verde_secundario</item>
         <item name="colorOnSecondary">#17351D</item>
+        <item name="colorSecondaryContainer">@color/verde_claro</item>
+        <item name="colorOnSecondaryContainer">@color/texto_principal</item>
         <item name="colorSurface">@color/superficie_tarjeta</item>
         <item name="colorOnSurface">@color/texto_principal</item>
         <item name="colorSurfaceVariant">@color/fondo_pantalla</item>
@@ -12,11 +16,15 @@
         <item name="colorOutline">@color/divisor</item>
         <item name="colorError">@color/alerta_error</item>
         <item name="colorOnError">#2B1018</item>
+        <item name="materialCardViewStyle">@style/Widget.Hidro.Card</item>
+        <item name="materialButtonStyle">@style/Widget.HidroSmart.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.HidroSmart.Button.Outlined</item>
         <item name="android:statusBarColor">@color/fondo_pantalla</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@color/fondo_pantalla</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowBackground">@color/fondo_pantalla</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
     <style name="Theme.HidroSmart" parent="Base.Theme.HidroSmart" />

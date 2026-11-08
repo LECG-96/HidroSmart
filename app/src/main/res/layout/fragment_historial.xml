@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:text="@string/historial_titulo"
             android:textColor="@color/verde_primario"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <!-- Estado de conexión; no se muestran datos del simulador como telemetría -->
@@ -27,15 +27,15 @@
             android:layout_marginTop="16dp"
             android:text="@string/historial_estadisticas"
             android:textColor="@color/texto_principal"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -59,15 +59,15 @@
             android:layout_marginTop="16dp"
             android:text="@string/historial_alertas_titulo"
             android:textColor="@color/texto_principal"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/tvAlertasReales"
@@ -86,15 +86,15 @@
             android:layout_marginTop="16dp"
             android:text="@string/historial_dejar_observacion"
             android:textColor="@color/texto_principal"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -151,8 +151,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/tvObservacionesGuardadas"

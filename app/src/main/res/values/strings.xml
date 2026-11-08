@@ -51,6 +51,8 @@
     <string name="formato_observacion_usuario">• [%1$s] %2$s:\n\"%3$s\"\n\n</string>
 
     <string name="inicio_cultivo_torre">Cultivo de Torre %1$d</string>
+    <string name="inicio_titulo_resumen">Resumen del cultivo</string>
+    <string name="inicio_subtitulo_resumen">Parámetros y estado de la torre seleccionada</string>
     <string name="inicio_demo_solo_lectura">Modo Demo: usa Control &amp; Sim para interactuar con la simulación.</string>
     <string name="inicio_operador_solo_lectura">El cultivo y sus parámetros son administrados por el administrador.</string>
     <string name="inicio_sin_datos_reales">Sin conexión a una torre real. Las mediciones y alertas aparecerán cuando se reciban datos del sistema.</string>
@@ -105,6 +107,8 @@
     <string name="accion_luz_baja">LED de cultivo encendido automáticamente</string>
 
     <string name="control_modo_manual">Modo Manual</string>
+    <string name="control_titulo_pantalla">Control de la torre</string>
+    <string name="control_subtitulo_pantalla">Ajusta actuadores o prepara escenarios de demostración</string>
     <string name="control_corte_datos">Corte datos</string>
     <string name="control_actuadores_titulo">Actuadores directos (activos en modo manual)</string>
     <string name="control_ventilador">Ventilador</string>
@@ -155,6 +159,7 @@
 
     <string name="historial_titulo">Estado del huerto</string>
     <string name="historial_estadisticas">Conexión y telemetría</string>
+    <string name="historial_demo_simulacion">Modo Demo: mostrando datos simulados del operador.</string>
     <string name="historial_sin_conexion">La app no está conectada a una torre física. No se muestran valores hasta recibir datos reales del sistema.</string>
     <string name="historial_conectado">Conexión con el sistema real activa. La telemetría estará disponible al recibir datos.</string>
     <string name="historial_esperando_datos">Conexión establecida; esperando la primera lectura real de la torre.</string>

@@ -12,14 +12,14 @@
         android:id="@+id/toolbarAdmin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/superficie_tarjeta"
-        android:elevation="2dp"
+        android:background="@color/verde_primario"
+        android:elevation="0dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="16dp"
-        android:paddingTop="10dp"
+        android:paddingTop="12dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="10dp">
+        android:paddingBottom="12dp">
 
         <TextView
             android:id="@+id/tvTituloToolbar"
@@ -27,52 +27,56 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/app_name"
-            android:textColor="@color/verde_primario"
-            android:textSize="18sp"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/btnAjustesTop"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/ajustes_titulo"
             android:src="@android:drawable/ic_menu_preferences"
-            android:tint="@color/verde_primario" />
+            android:tint="?attr/colorOnPrimary" />
 
         <Button
             android:id="@+id/btnAgregarTorre"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="40dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/btn_agregar_torre"
-            android:textSize="11sp" />
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="11sp"
+            app:strokeColor="?attr/colorOnPrimary" />
 
         <Button
             android:id="@+id/btnEliminarTorre"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="40dp"
             android:layout_marginStart="4dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/btn_eliminar_torre"
-            android:textColor="@color/alerta_error"
-            android:textSize="11sp" />
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="11sp"
+            app:strokeColor="?attr/colorOnPrimary" />
 
         <Button
             android:id="@+id/btnCerrarSesionTop"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="40dp"
             android:layout_marginStart="4dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/btn_salir"
-            android:textColor="@color/texto_secundario"
-            android:textSize="11sp" />
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="11sp"
+            app:strokeColor="?attr/colorOnPrimary" />
     </LinearLayout>
 
     <!-- Pestañas de navegación Admin -->
@@ -80,10 +84,14 @@
         android:id="@+id/tabNavegacionAdmin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/verde_claro"
+        android:background="@color/superficie_tarjeta"
+        app:tabIndicatorFullWidth="false"
         app:tabIndicatorColor="@color/verde_primario"
+        app:tabIndicatorHeight="3dp"
         app:tabMode="fixed"
-        app:tabSelectedTextColor="@color/verde_primario">
+        app:tabRippleColor="@color/verde_claro"
+        app:tabSelectedTextColor="@color/verde_primario"
+        app:tabTextColor="@color/texto_secundario">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"

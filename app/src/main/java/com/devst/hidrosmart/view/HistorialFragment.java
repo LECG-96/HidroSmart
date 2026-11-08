@@ -43,6 +43,7 @@ public class HistorialFragment extends Fragment {
     private List<HuertoSnapshot> torresDisponibles = new ArrayList<>();
     private boolean conectadoReal = false;
     private boolean datosRealesDisponibles = false;
+    private boolean esModoDemo = false;
 
     @Nullable
     @Override
@@ -62,13 +63,15 @@ public class HistorialFragment extends Fragment {
         tvEstadoConexion = view.findViewById(R.id.tvEstadoConexion);
         tvAlertasReales = view.findViewById(R.id.tvAlertasReales);
         tvObservacionesGuardadas = view.findViewById(R.id.tvObservacionesGuardadas);
+        esModoDemo = requireActivity().getIntent()
+                .getBooleanExtra(MainActivity.EXTRA_MODO_DEMO, false);
         viewModel.getConectadoSistemaReal().observe(getViewLifecycleOwner(), conectado -> {
             conectadoReal = Boolean.TRUE.equals(conectado);
             actualizarEstadoConexion();
             actualizarAlertasReales();
         });
         viewModel.getDatosRealesDisponibles().observe(getViewLifecycleOwner(), disponibles -> {
-            datosRealesDisponibles = Boolean.TRUE.equals(disponibles);
+            datosRealesDisponibles = esModoDemo || Boolean.TRUE.equals(disponibles);
             actualizarEstadoConexion();
             actualizarSelectorTorre();
             actualizarAlertasReales();
@@ -122,7 +125,7 @@ public class HistorialFragment extends Fragment {
 
     private void actualizarSelectorTorre() {
         List<String> nuevasOpciones = new ArrayList<>();
-        if (!datosRealesDisponibles) {
+        if (!esModoDemo && !datosRealesDisponibles) {
             nuevasOpciones.add(getString(R.string.historial_torre_sin_conexion));
         } else {
             for (HuertoSnapshot huerto : torresDisponibles) {
@@ -147,6 +150,10 @@ public class HistorialFragment extends Fragment {
     }
 
     private void actualizarEstadoConexion() {
+        if (esModoDemo) {
+            tvEstadoConexion.setText(R.string.historial_demo_simulacion);
+            return;
+        }
         if (!conectadoReal) {
             tvEstadoConexion.setText(R.string.historial_sin_conexion);
         } else if (!datosRealesDisponibles) {
@@ -158,7 +165,7 @@ public class HistorialFragment extends Fragment {
 
     private void actualizarAlertasReales() {
         if (tvAlertasReales == null || viewModel == null) return;
-        if (!datosRealesDisponibles) {
+        if (!esModoDemo && !datosRealesDisponibles) {
             tvAlertasReales.setText(conectadoReal
                     ? R.string.historial_alertas_esperando_datos
                     : R.string.historial_alertas_sin_conexion);

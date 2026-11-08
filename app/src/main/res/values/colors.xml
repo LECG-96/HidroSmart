@@ -5,22 +5,22 @@
     <color name="black">#FF000000</color>
 
     <!-- Paleta Verde HidroSmart -->
-    <color name="verde_primario">#1B5E20</color>
-    <color name="verde_primario_variante">#003300</color>
-    <color name="verde_secundario">#2E7D32</color>
-    <color name="verde_claro">#E8F5E9</color>
-    <color name="verde_acento">#4CAF50</color>
+    <color name="verde_primario">#1D5C45</color>
+    <color name="verde_primario_variante">#123F30</color>
+    <color name="verde_secundario">#417A62</color>
+    <color name="verde_claro">#E5F1E9</color>
+    <color name="verde_acento">#B9D978</color>
 
     <!-- Estados y Alertas -->
-    <color name="alerta_error">#B71C1C</color>
-    <color name="alerta_fondo_error">#FFEBEE</color>
-    <color name="alerta_ok">#1B5E20</color>
+    <color name="alerta_error">#B3261E</color>
+    <color name="alerta_fondo_error">#FCE8E6</color>
+    <color name="alerta_ok">#256448</color>
 
     <!-- Neutros -->
-    <color name="fondo_pantalla">#FAFAFA</color>
+    <color name="fondo_pantalla">#F3F6F2</color>
     <color name="superficie_tarjeta">#FFFFFF</color>
-    <color name="texto_principal">#212121</color>
-    <color name="texto_secundario">#616161</color>
-    <color name="texto_terciario">#757575</color>
-    <color name="divisor">#E0E0E0</color>
+    <color name="texto_principal">#18231D</color>
+    <color name="texto_secundario">#53635A</color>
+    <color name="texto_terciario">#748178</color>
+    <color name="divisor">#DCE5DD</color>
 </resources>

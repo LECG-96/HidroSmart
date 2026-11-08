@@ -24,7 +24,7 @@
                 android:layout_weight="1"
                 android:text="@string/ajustes_titulo"
                 android:textColor="@color/verde_primario"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <Button
@@ -48,8 +48,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="1dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divisor"
+            app:strokeWidth="1dp">
 
             <RadioGroup
                 android:id="@+id/grupoTema"
