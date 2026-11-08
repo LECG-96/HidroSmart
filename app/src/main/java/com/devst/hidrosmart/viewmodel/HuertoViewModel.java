@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.devst.hidrosmart.data.SimuladorRepository;
+import com.devst.hidrosmart.data.HuertoDataSource;
+import com.devst.hidrosmart.data.HuertoDataSourceProvider;
+import com.devst.hidrosmart.data.SimuladorDataSource;
 import com.devst.hidrosmart.modelo.Alerta;
 import com.devst.hidrosmart.modelo.ComentarioUsuario;
 import com.devst.hidrosmart.modelo.Huerto;
@@ -14,9 +16,10 @@ import com.devst.hidrosmart.modelo.RespuestaComando;
 import java.util.Collections;
 import java.util.List;
 
-public class HuertoViewModel extends ViewModel implements SimuladorRepository.ObservadorSimulador {
+public class HuertoViewModel extends ViewModel implements HuertoDataSource.Observer {
 
-    private final SimuladorRepository repository;
+    private final HuertoDataSource repository;
+    private final SimuladorDataSource simulador;
 
     private final MutableLiveData<Huerto> huertoActual = new MutableLiveData<>();
     private final MutableLiveData<List<Huerto>> listaTorres = new MutableLiveData<>();
@@ -26,14 +29,16 @@ public class HuertoViewModel extends ViewModel implements SimuladorRepository.Ob
     private final MutableLiveData<Boolean> corteDatosActivo = new MutableLiveData<>();
 
     public HuertoViewModel() {
-        this.repository = SimuladorRepository.getInstancia();
-        this.repository.agregarObservador(this);
-        this.repository.iniciarSimulacion();
+        this.repository = HuertoDataSourceProvider.get();
+        this.simulador = repository instanceof SimuladorDataSource
+                ? (SimuladorDataSource) repository : null;
+        this.repository.addObserver(this);
+        this.repository.start();
         actualizarDatos();
     }
 
     @Override
-    public void onTickSimulacion() {
+    public void onDataChanged() {
         actualizarDatos();
     }
 
@@ -43,7 +48,7 @@ public class HuertoViewModel extends ViewModel implements SimuladorRepository.Ob
         listaTorres.postValue(repository.getTorres());
         usuariosGenerales.postValue(repository.getUsuariosGenerales());
         comentarios.postValue(repository.getComentariosRegistrados());
-        corteDatosActivo.postValue(repository.isCorteDatos());
+        corteDatosActivo.postValue(simulador != null && simulador.isCorteDatos());
 
         if (actual != null) {
             alertasActuales.postValue(actual.alertas());
@@ -62,11 +67,11 @@ public class HuertoViewModel extends ViewModel implements SimuladorRepository.Ob
     public int getIndiceTorreSeleccionada() { return repository.getTorreSeleccionada(); }
 
     public void pausarSimulacion() {
-        repository.pausarSimulacion();
+        repository.stop();
     }
 
     public void reanudarSimulacion() {
-        repository.reanudarSimulacion();
+        repository.start();
     }
 
     public void seleccionarTorre(int indice) {
@@ -105,22 +110,28 @@ public class HuertoViewModel extends ViewModel implements SimuladorRepository.Ob
     }
 
     public void aplicarEscenario(String escenario) {
-        repository.aplicarEscenario(escenario);
-        actualizarDatos();
+        if (simulador != null) {
+            simulador.aplicarEscenario(escenario);
+            actualizarDatos();
+        }
     }
 
     public void forzarParametro(String variable, double valor, boolean persistente) {
-        repository.forzarParametro(variable, valor, persistente);
-        actualizarDatos();
+        if (simulador != null) {
+            simulador.forzarParametro(variable, valor, persistente);
+            actualizarDatos();
+        }
     }
 
     public void rellenarEstanque() {
-        repository.rellenarEstanque();
-        actualizarDatos();
+        if (simulador != null) {
+            simulador.rellenarEstanque();
+            actualizarDatos();
+        }
     }
 
     public void setCorteDatos(boolean activo) {
-        repository.setCorteDatos(activo);
+        if (simulador != null) simulador.setCorteDatos(activo);
     }
 
     public void registrarComentario(String usuario, String torre, String mensaje) {
@@ -131,6 +142,6 @@ public class HuertoViewModel extends ViewModel implements SimuladorRepository.Ob
     @Override
     protected void onCleared() {
         super.onCleared();
-        repository.removerObservador(this);
+        repository.removeObserver(this);
     }
 }

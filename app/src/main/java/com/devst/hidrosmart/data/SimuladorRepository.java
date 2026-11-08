@@ -12,15 +12,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SimuladorRepository {
+public class SimuladorRepository implements SimuladorDataSource {
 
     private static SimuladorRepository instancia;
 
-    public interface ObservadorSimulador {
-        void onTickSimulacion();
-    }
-
-    private final List<ObservadorSimulador> observadores = new ArrayList<>();
+    private final List<Observer> observadores = new ArrayList<>();
     private final List<Huerto> torres = new ArrayList<>();
     private final List<String> usuariosGenerales = new ArrayList<>();
     private final List<ComentarioUsuario> comentariosRegistrados = new ArrayList<>();
@@ -72,31 +68,39 @@ public class SimuladorRepository {
         }
     }
 
+    @Override
+    public void start() { iniciarSimulacion(); }
+
     public synchronized void pausarSimulacion() {
         simulacionActiva = false;
         handler.removeCallbacks(runnableTick);
     }
 
+    @Override
+    public void stop() { pausarSimulacion(); }
+
     public synchronized void reanudarSimulacion() {
         iniciarSimulacion();
     }
 
-    public synchronized void agregarObservador(ObservadorSimulador obs) {
+    @Override
+    public synchronized void addObserver(Observer obs) {
         if (!observadores.contains(obs)) observadores.add(obs);
     }
 
-    public synchronized void removerObservador(ObservadorSimulador obs) {
+    @Override
+    public synchronized void removeObserver(Observer obs) {
         observadores.remove(obs);
     }
 
     public void notificarObservadores() {
         Runnable r = () -> {
-            List<ObservadorSimulador> copia;
+            List<Observer> copia;
             synchronized (SimuladorRepository.this) {
                 copia = new ArrayList<>(observadores);
             }
-            for (ObservadorSimulador obs : copia) {
-                obs.onTickSimulacion();
+            for (Observer obs : copia) {
+                obs.onDataChanged();
             }
         };
 
@@ -107,20 +111,24 @@ public class SimuladorRepository {
         }
     }
 
+    @Override
     public synchronized List<Huerto> getTorres() {
         return Collections.unmodifiableList(new ArrayList<>(torres));
     }
 
+    @Override
     public synchronized Huerto getHuertoActual() {
         if (torres.isEmpty()) return null;
         if (torreSeleccionada >= torres.size()) torreSeleccionada = 0;
         return torres.get(torreSeleccionada);
     }
 
+    @Override
     public synchronized int getTorreSeleccionada() {
         return torreSeleccionada;
     }
 
+    @Override
     public synchronized void setTorreSeleccionada(int indice) {
         if (indice >= 0 && indice < torres.size()) {
             this.torreSeleccionada = indice;
@@ -128,6 +136,7 @@ public class SimuladorRepository {
         }
     }
 
+    @Override
     public synchronized boolean agregarTorre() {
         if (torres.size() >= 4) return false;
         int nuevoIdx = torres.size() + 1;
@@ -138,6 +147,7 @@ public class SimuladorRepository {
         return true;
     }
 
+    @Override
     public synchronized boolean eliminarTorre() {
         if (torres.size() <= 1) return false;
         torres.remove(torres.size() - 1);
@@ -148,6 +158,7 @@ public class SimuladorRepository {
         return true;
     }
 
+    @Override
     public synchronized void cambiarCultivoTorreActual(String perfilClave) {
         Huerto actual = getHuertoActual();
         if (actual == null) return;
@@ -160,6 +171,7 @@ public class SimuladorRepository {
         }
     }
 
+    @Override
     public synchronized RespuestaComando enviarComando(String actuador, String orden) {
         Huerto actual = getHuertoActual();
         if (actual == null) return new RespuestaComando(false, "No hay torre activa",
@@ -169,6 +181,7 @@ public class SimuladorRepository {
         return res;
     }
 
+    @Override
     public synchronized void aplicarEscenario(String escenario) {
         Huerto actual = getHuertoActual();
         if (actual != null) {
@@ -177,6 +190,7 @@ public class SimuladorRepository {
         }
     }
 
+    @Override
     public synchronized void forzarParametro(String variable, double valor, boolean persistente) {
         Huerto actual = getHuertoActual();
         if (actual != null) {
@@ -196,6 +210,7 @@ public class SimuladorRepository {
         }
     }
 
+    @Override
     public synchronized void rellenarEstanque() {
         Huerto actual = getHuertoActual();
         if (actual != null) {
@@ -204,23 +219,28 @@ public class SimuladorRepository {
         }
     }
 
+    @Override
     public synchronized void setCorteDatos(boolean corte) {
         this.corteDatos = corte;
         notificarObservadores();
     }
 
+    @Override
     public synchronized boolean isCorteDatos() {
         return corteDatos;
     }
 
+    @Override
     public synchronized List<String> getUsuariosGenerales() {
         return Collections.unmodifiableList(new ArrayList<>(usuariosGenerales));
     }
 
+    @Override
     public synchronized List<ComentarioUsuario> getComentariosRegistrados() {
         return Collections.unmodifiableList(new ArrayList<>(comentariosRegistrados));
     }
 
+    @Override
     public synchronized void agregarComentario(String usuario, String torre, String mensaje) {
         ComentarioUsuario nuevo = new ComentarioUsuario(usuario, torre, mensaje);
         comentariosRegistrados.add(0, nuevo);
