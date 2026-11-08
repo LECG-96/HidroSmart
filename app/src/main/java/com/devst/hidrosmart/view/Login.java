@@ -47,7 +47,7 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        // Modo Demo: entra como admin para ver la simulación, pero bloquea pestañas de supervisión
+        // Modo Demo permite interactuar con Control & Sim sin mostrar acciones de administración.
         btnDemo.setOnClickListener(v -> abrirMain(ROL_ADMIN, true, "demo"));
     }
 

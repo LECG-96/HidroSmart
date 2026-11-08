@@ -33,6 +33,7 @@ public class InicioFragment extends Fragment {
     private TextView tvTempAire, tvHumedad, tvTempAgua, tvPh, tvEc, tvLux, tvNivel;
     private TextView tvRangoAire, tvRangoAgua, tvRangoPh, tvRangoEc;
     private TextView tvAlertas, tvLabelCultivo, tvBannerCorte;
+    private TextView tvAvisoSoloLectura;
     private Spinner spnCultivo;
     private TabLayout tabTorres;
 
@@ -65,6 +66,7 @@ public class InicioFragment extends Fragment {
 
         inicializarVistas(view);
         configurarSpinnerCultivos();
+        configurarModoSoloLectura();
         tabTorres.addOnTabSelectedListener(tabListener);
         observarViewModel();
     }
@@ -86,8 +88,16 @@ public class InicioFragment extends Fragment {
 
         tvAlertas = view.findViewById(R.id.tvAlertas);
         tvLabelCultivo = view.findViewById(R.id.tvLabelCultivo);
+        tvAvisoSoloLectura = view.findViewById(R.id.tvAvisoSoloLectura);
         spnCultivo = view.findViewById(R.id.spnCultivo);
         tabTorres = view.findViewById(R.id.tabTorres);
+    }
+
+    private void configurarModoSoloLectura() {
+        boolean esModoDemo = requireActivity().getIntent()
+                .getBooleanExtra(MainActivity.EXTRA_MODO_DEMO, false);
+        spnCultivo.setEnabled(!esModoDemo);
+        tvAvisoSoloLectura.setVisibility(esModoDemo ? View.VISIBLE : View.GONE);
     }
 
     private void configurarSpinnerCultivos() {

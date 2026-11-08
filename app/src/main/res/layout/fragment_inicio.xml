@@ -65,6 +65,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="44dp"
                         android:layout_marginTop="2dp" />
+
+                    <TextView
+                        android:id="@+id/tvAvisoSoloLectura"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/inicio_demo_solo_lectura"
+                        android:textColor="@color/texto_terciario"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

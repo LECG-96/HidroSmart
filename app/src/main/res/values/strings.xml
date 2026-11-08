@@ -43,6 +43,7 @@
     <string name="formato_observacion_usuario">• [%1$s] %2$s:\n\"%3$s\"\n\n</string>
 
     <string name="inicio_cultivo_torre">Cultivo de Torre %1$d</string>
+    <string name="inicio_demo_solo_lectura">Modo Demo: usa Control &amp; Sim para interactuar con la simulación.</string>
     <string name="tab_torre_cultivo">T%1$d · %2$s</string>
     <string name="inicio_mediciones">Mediciones de sensores</string>
     <string name="inicio_temp_aire">Temp. Aire</string>

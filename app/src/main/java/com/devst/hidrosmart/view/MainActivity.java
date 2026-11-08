@@ -130,14 +130,14 @@ public class MainActivity extends AppCompatActivity {
             fragmentInicio = fm.findFragmentByTag("inicio");
             fragmentControl = fm.findFragmentByTag("control");
 
-            boolean necesitaAgregar = fragmentInicio == null || (!esModoDemo && fragmentControl == null);
+            boolean necesitaAgregar = fragmentInicio == null || fragmentControl == null;
             if (necesitaAgregar) {
                 androidx.fragment.app.FragmentTransaction transaction = fm.beginTransaction();
                 if (fragmentInicio == null) {
                     fragmentInicio = new InicioFragment();
                     transaction.add(R.id.contenedorFragment, fragmentInicio, "inicio");
                 }
-                if (!esModoDemo && fragmentControl == null) {
+                if (fragmentControl == null) {
                     fragmentControl = new ControlFragment();
                     transaction.add(R.id.contenedorFragment, fragmentControl, "control").hide(fragmentControl);
                 }
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
             String tagActivo = savedInstanceState == null
                     ? "inicio"
                     : savedInstanceState.getString(STATE_FRAGMENT_ACTIVO, "inicio");
-            if (esModoDemo || !"control".equals(tagActivo) || fragmentControl == null) {
+            if (!"control".equals(tagActivo) || fragmentControl == null) {
                 tagActivo = "inicio";
             }
             fragmentActivo = "control".equals(tagActivo) ? fragmentControl : fragmentInicio;
@@ -183,13 +183,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (esModoDemo) {
             tvTituloToolbar.setText(R.string.titulo_demo);
-            tabNavegacionAdmin.setVisibility(View.GONE);
             btnAgregarTorre.setVisibility(View.GONE);
             btnEliminarTorre.setVisibility(View.GONE);
-            return;
+            TabLayout.Tab tabUsuarios = tabNavegacionAdmin.getTabAt(2);
+            if (tabUsuarios != null) tabNavegacionAdmin.removeTab(tabUsuarios);
         } else {
             tvTituloToolbar.setText(R.string.titulo_admin);
         }
+
+        tabNavegacionAdmin.setVisibility(View.VISIBLE);
 
         tabNavegacionAdmin.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
