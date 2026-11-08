@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private HuertoViewModel viewModel;
     private TabLayout tabNavegacionAdmin;
     private Button btnAgregarTorre, btnEliminarTorre, btnCerrarSesionTop;
+    private ImageButton btnAjustesTop;
     private TextView tvTituloToolbar;
 
     private Fragment fragmentInicio;
@@ -95,8 +97,11 @@ public class MainActivity extends AppCompatActivity {
         btnAgregarTorre = findViewById(R.id.btnAgregarTorre);
         btnEliminarTorre = findViewById(R.id.btnEliminarTorre);
         btnCerrarSesionTop = findViewById(R.id.btnCerrarSesionTop);
+        btnAjustesTop = findViewById(R.id.btnAjustesTop);
 
         btnCerrarSesionTop.setOnClickListener(v -> cerrarSesion());
+        btnAjustesTop.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, AjustesActivity.class)));
 
         btnAgregarTorre.setOnClickListener(v -> {
             if (!viewModel.agregarTorre()) {

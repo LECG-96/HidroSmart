@@ -4,6 +4,12 @@
     <string name="titulo_usuario">HidroSmart • Usuario</string>
     <string name="titulo_demo">HidroSmart • Demo</string>
     <string name="btn_salir">Salir</string>
+    <string name="ajustes_titulo">Ajustes</string>
+    <string name="ajustes_apariencia">Apariencia</string>
+    <string name="ajustes_tema_sistema">Usar tema del dispositivo</string>
+    <string name="ajustes_tema_claro">Tema claro</string>
+    <string name="ajustes_tema_oscuro">Tema oscuro</string>
+    <string name="ajustes_tema_ayuda">La preferencia se guarda en este dispositivo y se aplica a toda la app.</string>
     <string name="btn_agregar_torre">+ Torre</string>
     <string name="btn_eliminar_torre">- Torre</string>
     <string name="tab_sensores">Sensores</string>
