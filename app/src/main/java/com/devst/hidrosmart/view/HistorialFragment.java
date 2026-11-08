@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.devst.hidrosmart.R;
 import com.devst.hidrosmart.modelo.Alerta;
 import com.devst.hidrosmart.modelo.ComentarioUsuario;
-import com.devst.hidrosmart.modelo.Huerto;
+import com.devst.hidrosmart.modelo.HuertoSnapshot;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 
@@ -40,7 +40,7 @@ public class HistorialFragment extends Fragment {
 
     // Control para no resetear el spinner a cada segundo
     private final List<String> opcionesPrevias = new ArrayList<>();
-    private List<Huerto> torresDisponibles = new ArrayList<>();
+    private List<HuertoSnapshot> torresDisponibles = new ArrayList<>();
     private boolean conectadoReal = false;
     private boolean datosRealesDisponibles = false;
 
@@ -125,7 +125,7 @@ public class HistorialFragment extends Fragment {
         if (!datosRealesDisponibles) {
             nuevasOpciones.add(getString(R.string.historial_torre_sin_conexion));
         } else {
-            for (Huerto huerto : torresDisponibles) {
+            for (HuertoSnapshot huerto : torresDisponibles) {
                 nuevasOpciones.add(getString(R.string.formato_torre_cultivo,
                         huerto.idx, nombreCultivoLocalizado(huerto.perfil)));
             }

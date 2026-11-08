@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.devst.hidrosmart.R;
 import com.devst.hidrosmart.modelo.Alerta;
 import com.devst.hidrosmart.modelo.Huerto;
+import com.devst.hidrosmart.modelo.HuertoSnapshot;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 import com.google.android.material.tabs.TabLayout;
@@ -41,6 +42,7 @@ public class InicioFragment extends Fragment {
 
     private boolean actualizandoSpinner = false;
     private boolean soloDatosReales = false;
+    private boolean esModoDemo = false;
 
     private final TabLayout.OnTabSelectedListener tabListener = new TabLayout.OnTabSelectedListener() {
         @Override
@@ -101,7 +103,7 @@ public class InicioFragment extends Fragment {
     private void configurarModoSoloLectura() {
         String rol = requireActivity().getIntent().getStringExtra(Login.EXTRA_ROL);
         soloDatosReales = Login.ROL_USER.equals(rol);
-        boolean esModoDemo = requireActivity().getIntent()
+        esModoDemo = requireActivity().getIntent()
                 .getBooleanExtra(MainActivity.EXTRA_MODO_DEMO, false);
         boolean soloLecturaCultivo = esModoDemo || soloDatosReales;
         spnCultivo.setEnabled(!soloLecturaCultivo);
@@ -126,9 +128,11 @@ public class InicioFragment extends Fragment {
         spnCultivo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (actualizandoSpinner || soloDatosReales) return;
+                if (actualizandoSpinner || soloDatosReales || esModoDemo) return;
                 List<PerfilCultivo> perfiles = PerfilCultivo.todos();
                 if (position >= 0 && position < perfiles.size()) {
+                    HuertoSnapshot actual = viewModel.getHuertoActual().getValue();
+                    if (actual != null && actual.perfil.clave.equals(perfiles.get(position).clave)) return;
                     viewModel.cambiarCultivo(perfiles.get(position));
                 }
             }
@@ -171,9 +175,10 @@ public class InicioFragment extends Fragment {
             } else {
                 for (int i = 0; i < torres.size(); i++) {
                     TabLayout.Tab tab = tabTorres.getTabAt(i);
-                    if (tab != null) {
-                        tab.setText(getString(R.string.tab_torre_cultivo,
-                                torres.get(i).idx, nombreCultivoLocalizado(torres.get(i).perfil)));
+                    String textoTab = getString(R.string.tab_torre_cultivo,
+                            torres.get(i).idx, nombreCultivoLocalizado(torres.get(i).perfil));
+                    if (tab != null && !textoTab.contentEquals(tab.getText())) {
+                        tab.setText(textoTab);
                     }
                 }
             }
@@ -216,7 +221,7 @@ public class InicioFragment extends Fragment {
         }
     }
 
-    private void actualizarDatosHuerto(Huerto huerto) {
+    private void actualizarDatosHuerto(HuertoSnapshot huerto) {
         if (huerto == null) return;
         boolean datosRealesDisponibles = Boolean.TRUE.equals(viewModel.getDatosRealesDisponibles().getValue());
         if (soloDatosReales && !datosRealesDisponibles) {

@@ -56,11 +56,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        viewModel = new ViewModelProvider(this).get(HuertoViewModel.class);
-
         rol = getIntent().getStringExtra(Login.EXTRA_ROL);
         if (rol == null) rol = Login.ROL_ADMIN;
         esModoDemo = getIntent().getBooleanExtra(EXTRA_MODO_DEMO, false);
+        viewModel = new ViewModelProvider(this).get(HuertoViewModel.class);
 
         inicializarComponentes();
         configurarFragmentosIniciales(savedInstanceState);
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (viewModel != null) {
-            viewModel.reanudarSimulacion();
+            viewModel.reanudarSimulacion(Login.ROL_USER.equals(rol));
         }
     }
 

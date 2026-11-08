@@ -35,6 +35,7 @@ public class ControlFragment extends Fragment {
     private boolean usuarioArrastrandoSlider = false;
     private boolean actualizandoCheckboxes = false;
     private boolean actualizandoSwitches = false;
+    private boolean actualizandoCorteDatos = false;
 
     @Nullable
     @Override
@@ -93,6 +94,7 @@ public class ControlFragment extends Fragment {
         });
 
         swCorteDatos.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (actualizandoCorteDatos) return;
             viewModel.setCorteDatos(isChecked);
         });
     }
@@ -258,6 +260,15 @@ public class ControlFragment extends Fragment {
     }
 
     private void observarViewModel() {
+        viewModel.getCorteDatosActivo().observe(getViewLifecycleOwner(), activo -> {
+            boolean corte = Boolean.TRUE.equals(activo);
+            if (swCorteDatos.isChecked() != corte) {
+                actualizandoCorteDatos = true;
+                swCorteDatos.setChecked(corte);
+                actualizandoCorteDatos = false;
+            }
+        });
+
         viewModel.getHuertoActual().observe(getViewLifecycleOwner(), huerto -> {
             if (huerto == null) return;
 
@@ -279,34 +290,50 @@ public class ControlFragment extends Fragment {
 
             if (!usuarioArrastrandoSlider) {
                 double aire = huerto.v.get("temp_ambiente");
-                seekAire.setProgress((int) Math.round(aire));
-                lblSeekAire.setText(String.format(Locale.getDefault(), getString(R.string.control_label_temp_aire), aire));
+                establecerProgresoSiCambio(seekAire, (int) Math.round(aire));
+                establecerTextoSiCambio(lblSeekAire,
+                        String.format(Locale.getDefault(), getString(R.string.control_label_temp_aire), aire));
 
                 double hum = huerto.v.get("humedad");
-                seekHum.setProgress((int) Math.round(hum));
-                lblSeekHum.setText(String.format(Locale.getDefault(), getString(R.string.control_label_humedad), hum));
+                establecerProgresoSiCambio(seekHum, (int) Math.round(hum));
+                establecerTextoSiCambio(lblSeekHum,
+                        String.format(Locale.getDefault(), getString(R.string.control_label_humedad), hum));
 
                 double agua = huerto.v.get("temp_agua");
-                seekAgua.setProgress((int) Math.max(0, Math.round(agua - 5.0)));
-                lblSeekAgua.setText(String.format(Locale.getDefault(), getString(R.string.control_label_temp_agua), agua));
+                establecerProgresoSiCambio(seekAgua, (int) Math.max(0, Math.round(agua - 5.0)));
+                establecerTextoSiCambio(lblSeekAgua,
+                        String.format(Locale.getDefault(), getString(R.string.control_label_temp_agua), agua));
 
                 double ph = huerto.v.get("ph");
-                seekPh.setProgress((int) Math.max(0, Math.round((ph - 3.0) * 10.0)));
-                lblSeekPh.setText(String.format(Locale.getDefault(), getString(R.string.control_label_ph), ph));
+                establecerProgresoSiCambio(seekPh, (int) Math.max(0, Math.round((ph - 3.0) * 10.0)));
+                establecerTextoSiCambio(lblSeekPh,
+                        String.format(Locale.getDefault(), getString(R.string.control_label_ph), ph));
 
                 double ec = huerto.v.get("ec");
-                seekEc.setProgress((int) Math.max(0, Math.round(ec * 10.0)));
-                lblSeekEc.setText(String.format(Locale.getDefault(), getString(R.string.control_label_ec), ec));
+                establecerProgresoSiCambio(seekEc, (int) Math.max(0, Math.round(ec * 10.0)));
+                establecerTextoSiCambio(lblSeekEc,
+                        String.format(Locale.getDefault(), getString(R.string.control_label_ec), ec));
 
                 double lux = huerto.v.get("lux");
-                seekLux.setProgress((int) Math.max(0, Math.round(lux / 100.0)));
-                lblSeekLux.setText(String.format(Locale.getDefault(), getString(R.string.control_label_lux), lux));
+                establecerProgresoSiCambio(seekLux, (int) Math.max(0, Math.round(lux / 100.0)));
+                establecerTextoSiCambio(lblSeekLux,
+                        String.format(Locale.getDefault(), getString(R.string.control_label_lux), lux));
 
                 double nivel = huerto.v.get("nivel_agua");
-                seekNivel.setProgress((int) Math.round(nivel));
-                lblSeekNivel.setText(String.format(Locale.getDefault(), getString(R.string.control_label_nivel), nivel));
+                establecerProgresoSiCambio(seekNivel, (int) Math.round(nivel));
+                establecerTextoSiCambio(lblSeekNivel,
+                        String.format(Locale.getDefault(), getString(R.string.control_label_nivel), nivel));
             }
         });
+    }
+
+    private void establecerProgresoSiCambio(SeekBar seekBar, int progreso) {
+        int progresoLimitado = Math.max(0, Math.min(seekBar.getMax(), progreso));
+        if (seekBar.getProgress() != progresoLimitado) seekBar.setProgress(progresoLimitado);
+    }
+
+    private void establecerTextoSiCambio(TextView vista, String texto) {
+        if (!texto.contentEquals(vista.getText())) vista.setText(texto);
     }
 
     private abstract class SimpleSeekBarListener implements SeekBar.OnSeekBarChangeListener {

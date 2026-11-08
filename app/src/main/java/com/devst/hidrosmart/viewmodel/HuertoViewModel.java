@@ -12,20 +12,24 @@ import com.devst.hidrosmart.data.SimuladorDataSource;
 import com.devst.hidrosmart.modelo.Alerta;
 import com.devst.hidrosmart.modelo.ComentarioUsuario;
 import com.devst.hidrosmart.modelo.Huerto;
+import com.devst.hidrosmart.modelo.HuertoSnapshot;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.modelo.RespuestaComando;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HuertoViewModel extends AndroidViewModel implements HuertoDataSource.Observer {
 
     private final HuertoDataSource repository;
     private final ComentarioLocalDataSource comentarioDataSource;
     private final SimuladorDataSource simulador;
+    private final ExecutorService comentariosExecutor = Executors.newSingleThreadExecutor();
 
-    private final MutableLiveData<Huerto> huertoActual = new MutableLiveData<>();
-    private final MutableLiveData<List<Huerto>> listaTorres = new MutableLiveData<>();
+    private final MutableLiveData<HuertoSnapshot> huertoActual = new MutableLiveData<>();
+    private final MutableLiveData<List<HuertoSnapshot>> listaTorres = new MutableLiveData<>();
     private final MutableLiveData<List<Alerta>> alertasActuales = new MutableLiveData<>();
     private final MutableLiveData<List<String>> usuariosGenerales = new MutableLiveData<>();
     private final MutableLiveData<List<ComentarioUsuario>> comentarios = new MutableLiveData<>();
@@ -39,9 +43,9 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
         this.comentarioDataSource = HuertoDataSourceProvider.getComentarios(application);
         this.simulador = repository instanceof SimuladorDataSource
                 ? (SimuladorDataSource) repository : null;
-        comentarios.setValue(comentarioDataSource.obtenerTodos());
+        comentarios.setValue(Collections.emptyList());
         this.repository.addObserver(this);
-        this.repository.start();
+        comentariosExecutor.execute(() -> comentarios.postValue(comentarioDataSource.obtenerTodos()));
         actualizarDatos();
     }
 
@@ -52,22 +56,27 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
 
     private void actualizarDatos() {
         Huerto actual = repository.getHuertoActual();
-        huertoActual.postValue(actual);
-        listaTorres.postValue(repository.getTorres());
+        HuertoSnapshot actualSnapshot = HuertoSnapshot.desde(actual);
+        huertoActual.postValue(actualSnapshot);
+        List<HuertoSnapshot> torresSnapshot = new java.util.ArrayList<>();
+        for (Huerto torre : repository.getTorres()) {
+            torresSnapshot.add(HuertoSnapshot.desde(torre));
+        }
+        listaTorres.postValue(java.util.Collections.unmodifiableList(torresSnapshot));
         usuariosGenerales.postValue(repository.getUsuariosGenerales());
         corteDatosActivo.postValue(simulador != null && simulador.isCorteDatos());
         conectadoSistemaReal.postValue(repository.estaConectadoAlSistemaReal());
         datosRealesDisponibles.postValue(repository.hayDatosRealesDisponibles());
 
-        if (actual != null) {
-            alertasActuales.postValue(actual.alertas());
+        if (actualSnapshot != null) {
+            alertasActuales.postValue(actualSnapshot.alertas);
         } else {
             alertasActuales.postValue(Collections.emptyList());
         }
     }
 
-    public LiveData<Huerto> getHuertoActual() { return huertoActual; }
-    public LiveData<List<Huerto>> getListaTorres() { return listaTorres; }
+    public LiveData<HuertoSnapshot> getHuertoActual() { return huertoActual; }
+    public LiveData<List<HuertoSnapshot>> getListaTorres() { return listaTorres; }
     public LiveData<List<Alerta>> getAlertasActuales() { return alertasActuales; }
     public LiveData<List<String>> getUsuariosGenerales() { return usuariosGenerales; }
     public LiveData<List<ComentarioUsuario>> getComentarios() { return comentarios; }
@@ -81,8 +90,8 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
         repository.stop();
     }
 
-    public void reanudarSimulacion() {
-        repository.start();
+    public void reanudarSimulacion(boolean soloDatosReales) {
+        if (simulador == null || !soloDatosReales) repository.start();
     }
 
     public void seleccionarTorre(int indice) {
@@ -146,14 +155,17 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
     }
 
     public void registrarComentario(String usuario, String torre, String mensaje) {
-        comentarioDataSource.guardar(new ComentarioUsuario(usuario, torre, mensaje));
-        comentarios.postValue(comentarioDataSource.obtenerTodos());
-        actualizarDatos();
+        ComentarioUsuario comentario = new ComentarioUsuario(usuario, torre, mensaje);
+        comentariosExecutor.execute(() -> {
+            comentarioDataSource.guardar(comentario);
+            comentarios.postValue(comentarioDataSource.obtenerTodos());
+        });
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
         repository.removeObserver(this);
+        comentariosExecutor.shutdown();
     }
 }
