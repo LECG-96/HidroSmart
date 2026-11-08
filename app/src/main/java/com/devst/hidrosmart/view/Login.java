@@ -9,13 +9,15 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.devst.hidrosmart.R;
+import com.devst.hidrosmart.data.AutenticacionDataSource;
+import com.devst.hidrosmart.data.HuertoDataSourceProvider;
 
 public class Login extends AppCompatActivity {
 
     public static final String EXTRA_ROL = "extra_rol";
     public static final String EXTRA_USUARIO_ACTUAL = "extra_usuario_actual";
-    public static final String ROL_ADMIN = "ADMIN";
-    public static final String ROL_USER = "USER";
+    public static final String ROL_ADMIN = AutenticacionDataSource.ROL_ADMIN;
+    public static final String ROL_USER = AutenticacionDataSource.ROL_USER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,22 +28,22 @@ public class Login extends AppCompatActivity {
         EditText etContrasena = findViewById(R.id.etContrasena);
         Button btnIngresar = findViewById(R.id.btnIngresar);
         Button btnDemo = findViewById(R.id.btnDemo);
+        AutenticacionDataSource autenticacion = HuertoDataSourceProvider.getAutenticacion();
 
         btnIngresar.setOnClickListener(v -> {
             String usuario = etUsuario.getText().toString().trim();
-            String contrasena = etContrasena.getText().toString().trim();
+            String contrasena = etContrasena.getText().toString();
 
             if (usuario.isEmpty() || contrasena.isEmpty()) {
                 Toast.makeText(this, R.string.mensaje_campos_incompletos, Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (usuario.equals("admin") && contrasena.equals("1234")) {
-                abrirMain(ROL_ADMIN, false, "admin");
-            } else if (usuario.equals("user") && contrasena.equals("1234")) {
-                abrirMain(ROL_USER, false, "user");
-            } else {
+            String rol = autenticacion.autenticar(usuario, contrasena);
+            if (rol == null) {
                 Toast.makeText(this, R.string.mensaje_login_incorrecto, Toast.LENGTH_SHORT).show();
+            } else {
+                abrirMain(rol, false, usuario);
             }
         });
 
