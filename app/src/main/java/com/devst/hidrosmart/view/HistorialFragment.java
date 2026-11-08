@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.devst.hidrosmart.R;
 import com.devst.hidrosmart.modelo.Alerta;
+import com.devst.hidrosmart.modelo.ComentarioUsuario;
 import com.devst.hidrosmart.modelo.Huerto;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
@@ -33,9 +34,9 @@ public class HistorialFragment extends Fragment {
     private Spinner spnTorreComentario;
     private EditText etComentario;
     private Button btnEnviarComentario;
-    private TextView tvUltimoComentario;
     private TextView tvEstadoConexion;
     private TextView tvAlertasReales;
+    private TextView tvObservacionesGuardadas;
 
     // Control para no resetear el spinner a cada segundo
     private final List<String> opcionesPrevias = new ArrayList<>();
@@ -55,9 +56,9 @@ public class HistorialFragment extends Fragment {
         spnTorreComentario = view.findViewById(R.id.spnTorreComentario);
         etComentario = view.findViewById(R.id.etComentario);
         btnEnviarComentario = view.findViewById(R.id.btnEnviarComentario);
-        tvUltimoComentario = view.findViewById(R.id.tvUltimoComentario);
         tvEstadoConexion = view.findViewById(R.id.tvEstadoConexion);
         tvAlertasReales = view.findViewById(R.id.tvAlertasReales);
+        tvObservacionesGuardadas = view.findViewById(R.id.tvObservacionesGuardadas);
         viewModel.getConectadoSistemaReal().observe(getViewLifecycleOwner(), conectado -> {
             tvEstadoConexion.setText(Boolean.TRUE.equals(conectado)
                     ? R.string.historial_conectado
@@ -68,6 +69,9 @@ public class HistorialFragment extends Fragment {
         String usuarioActual = requireActivity().getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
         if (usuarioActual == null) usuarioActual = "user";
         final String remitente = usuarioActual;
+
+        viewModel.getComentarios().observe(getViewLifecycleOwner(), comentarios ->
+                mostrarObservacionesGuardadas(comentarios, remitente));
 
         viewModel.getListaTorres().observe(getViewLifecycleOwner(), torres -> {
             if (torres == null) return;
@@ -108,8 +112,6 @@ public class HistorialFragment extends Fragment {
             String torreSeleccionada = spnTorreComentario.getSelectedItem().toString();
             viewModel.registrarComentario(remitente, torreSeleccionada, texto);
 
-            tvUltimoComentario.setVisibility(View.VISIBLE);
-            tvUltimoComentario.setText(getString(R.string.formato_observacion_guardada, torreSeleccionada, texto));
             etComentario.setText("");
             Toast.makeText(requireContext(), R.string.mensaje_observacion_enviada, Toast.LENGTH_SHORT).show();
         });
@@ -152,5 +154,24 @@ public class HistorialFragment extends Fragment {
                     .append('\n');
         }
         tvAlertasReales.setText(texto.toString().trim());
+    }
+
+    private void mostrarObservacionesGuardadas(List<ComentarioUsuario> comentarios, String usuarioActual) {
+        if (comentarios == null || comentarios.isEmpty()) {
+            tvObservacionesGuardadas.setText(R.string.historial_sin_observaciones);
+            return;
+        }
+
+        StringBuilder texto = new StringBuilder();
+        for (ComentarioUsuario comentario : comentarios) {
+            if (usuarioActual.equals(comentario.usuario)) {
+                texto.append(getString(R.string.historial_observacion_formato,
+                        comentario.fechaHora, comentario.torre, comentario.mensaje))
+                        .append('\n');
+            }
+        }
+        tvObservacionesGuardadas.setText(texto.length() == 0
+                ? getString(R.string.historial_sin_observaciones)
+                : texto.toString().trim());
     }
 }

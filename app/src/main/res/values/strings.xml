@@ -153,6 +153,9 @@
     <string name="historial_torre_relacionada">Torre / Cultivo relacionado:</string>
     <string name="historial_hint_observacion">Escribe tu observación...</string>
     <string name="historial_enviar_comentario">Guardar observación</string>
+    <string name="historial_observaciones_guardadas">Mis observaciones guardadas en este dispositivo</string>
+    <string name="historial_sin_observaciones">Todavía no tienes observaciones guardadas.</string>
+    <string name="historial_observacion_formato">%1$s · %2$s\n%3$s</string>
     <string name="formato_torre_cultivo">Torre %1$d (%2$s)</string>
     <string name="mensaje_escribe_observacion">Escribe una observación antes de guardar</string>
     <string name="mensaje_selecciona_torre">Selecciona una torre</string>
