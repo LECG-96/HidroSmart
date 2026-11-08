@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">HidroSmart</string>
     <string name="titulo_admin">HidroSmart • Admin</string>
-    <string name="titulo_usuario">HidroSmart • Usuario</string>
+    <string name="titulo_usuario">HidroSmart • Operador</string>
     <string name="titulo_demo">HidroSmart • Demo</string>
     <string name="btn_salir">Salir</string>
     <string name="ajustes_titulo">Ajustes</string>
@@ -15,6 +15,8 @@
     <string name="tab_sensores">Sensores</string>
     <string name="tab_control">Control &amp; Sim</string>
     <string name="tab_usuarios">Usuarios</string>
+    <string name="tab_estado">Estado</string>
+    <string name="tab_historial">Historial</string>
     <string name="aviso_corte_datos">⚠ TELEMETRÍA EN PAUSA (SIMULACIÓN DE CORTE DE DATOS)</string>
     <string name="alertas_todas_ok">✓ Todos los parámetros dentro de rango.</string>
     <string name="accion_cerrar">Cerrar</string>
@@ -50,6 +52,9 @@
 
     <string name="inicio_cultivo_torre">Cultivo de Torre %1$d</string>
     <string name="inicio_demo_solo_lectura">Modo Demo: usa Control &amp; Sim para interactuar con la simulación.</string>
+    <string name="inicio_operador_solo_lectura">El cultivo y sus parámetros son administrados por el administrador.</string>
+    <string name="inicio_sin_datos_reales">Sin conexión a una torre real. Las mediciones y alertas aparecerán cuando se reciban datos del sistema.</string>
+    <string name="inicio_esperando_datos_reales">Conexión establecida. Esperando la primera lectura real de la torre.</string>
     <string name="tab_torre_cultivo">T%1$d · %2$s</string>
     <string name="inicio_mediciones">Mediciones de sensores</string>
     <string name="inicio_temp_aire">Temp. Aire</string>
@@ -152,12 +157,15 @@
     <string name="historial_estadisticas">Conexión y telemetría</string>
     <string name="historial_sin_conexion">La app no está conectada a una torre física. No se muestran valores hasta recibir datos reales del sistema.</string>
     <string name="historial_conectado">Conexión con el sistema real activa. La telemetría estará disponible al recibir datos.</string>
+    <string name="historial_esperando_datos">Conexión establecida; esperando la primera lectura real de la torre.</string>
     <string name="historial_alertas_titulo">Alertas del sistema</string>
     <string name="historial_alertas_sin_conexion">Las alertas aparecerán cuando la app reciba datos de una torre real.</string>
+    <string name="historial_alertas_esperando_datos">La conexión está activa; las alertas aparecerán al recibir la primera lectura real.</string>
     <string name="historial_alertas_vacias">No se han recibido alertas del sistema.</string>
     <string name="historial_alerta_formato">⚠ %1$s · %2$s (%3$.1f)\nAcción: %4$s</string>
     <string name="historial_dejar_observacion">Dejar observación o comentario</string>
     <string name="historial_torre_relacionada">Torre / Cultivo relacionado:</string>
+    <string name="historial_torre_sin_conexion">Observación general (sin torre conectada)</string>
     <string name="historial_hint_observacion">Escribe tu observación...</string>
     <string name="historial_enviar_comentario">Guardar observación</string>
     <string name="historial_observaciones_guardadas">Mis observaciones guardadas en este dispositivo</string>

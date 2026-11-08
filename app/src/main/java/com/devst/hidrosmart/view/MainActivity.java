@@ -123,14 +123,32 @@ public class MainActivity extends AppCompatActivity {
     private void configurarFragmentosIniciales(Bundle savedInstanceState) {
         FragmentManager fm = getSupportFragmentManager();
         if (Login.ROL_USER.equals(rol)) {
+            fragmentInicio = fm.findFragmentByTag("inicio");
             fragmentHistorial = fm.findFragmentByTag("historial");
-            if (fragmentHistorial == null) {
-                fragmentHistorial = new HistorialFragment();
-                fm.beginTransaction()
-                        .add(R.id.contenedorFragment, fragmentHistorial, "historial")
-                        .commitNow();
+
+            if (fragmentInicio == null || fragmentHistorial == null) {
+                androidx.fragment.app.FragmentTransaction transaction = fm.beginTransaction();
+                if (fragmentInicio == null) {
+                    fragmentInicio = new InicioFragment();
+                    transaction.add(R.id.contenedorFragment, fragmentInicio, "inicio");
+                }
+                if (fragmentHistorial == null) {
+                    fragmentHistorial = new HistorialFragment();
+                    transaction.add(R.id.contenedorFragment, fragmentHistorial, "historial").hide(fragmentHistorial);
+                }
+                transaction.commitNow();
             }
-            fragmentActivo = fragmentHistorial;
+
+            String tagActivo = savedInstanceState == null
+                    ? "inicio"
+                    : savedInstanceState.getString(STATE_FRAGMENT_ACTIVO, "inicio");
+            fragmentActivo = "historial".equals(tagActivo) ? fragmentHistorial : fragmentInicio;
+            androidx.fragment.app.FragmentTransaction visibility = fm.beginTransaction();
+            if (fragmentActivo == fragmentInicio) visibility.show(fragmentInicio);
+            else visibility.hide(fragmentInicio);
+            if (fragmentActivo == fragmentHistorial) visibility.show(fragmentHistorial);
+            else visibility.hide(fragmentHistorial);
+            visibility.commitNow();
         } else {
             fragmentInicio = fm.findFragmentByTag("inicio");
             fragmentControl = fm.findFragmentByTag("control");
@@ -180,13 +198,17 @@ public class MainActivity extends AppCompatActivity {
     private void configurarNavegacionPorRol() {
         if (Login.ROL_USER.equals(rol)) {
             tvTituloToolbar.setText(R.string.titulo_usuario);
-            tabNavegacionAdmin.setVisibility(View.GONE);
             btnAgregarTorre.setVisibility(View.GONE);
             btnEliminarTorre.setVisibility(View.GONE);
-            return;
-        }
-
-        if (esModoDemo) {
+            if (tabNavegacionAdmin.getTabAt(0) != null) {
+                tabNavegacionAdmin.getTabAt(0).setText(R.string.tab_estado);
+            }
+            if (tabNavegacionAdmin.getTabAt(1) != null) {
+                tabNavegacionAdmin.getTabAt(1).setText(R.string.tab_historial);
+            }
+            TabLayout.Tab tabUsuarios = tabNavegacionAdmin.getTabAt(2);
+            if (tabUsuarios != null) tabNavegacionAdmin.removeTab(tabUsuarios);
+        } else if (esModoDemo) {
             tvTituloToolbar.setText(R.string.titulo_demo);
             btnAgregarTorre.setVisibility(View.GONE);
             btnEliminarTorre.setVisibility(View.GONE);
@@ -204,9 +226,11 @@ public class MainActivity extends AppCompatActivity {
                 int pos = tab.getPosition();
                 if (pos == 0) {
                     cambiarFragment(fragmentInicio);
+                } else if (Login.ROL_USER.equals(rol) && pos == 1) {
+                    cambiarFragment(fragmentHistorial);
                 } else if (pos == 1) {
                     cambiarFragment(fragmentControl);
-                } else if (pos == 2) {
+                } else if (!esModoDemo && pos == 2) {
                     mostrarDialogoUsuariosRegistrados();
                 }
             }
@@ -216,13 +240,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 2) {
+                if (!Login.ROL_USER.equals(rol) && !esModoDemo && tab.getPosition() == 2) {
                     mostrarDialogoUsuariosRegistrados();
                 }
             }
         });
 
-        int tabInicial = fragmentActivo == fragmentControl ? 1 : 0;
+        int tabInicial = fragmentActivo == fragmentControl || fragmentActivo == fragmentHistorial ? 1 : 0;
         TabLayout.Tab tab = tabNavegacionAdmin.getTabAt(tabInicial);
         if (tab != null && !tab.isSelected()) tab.select();
     }

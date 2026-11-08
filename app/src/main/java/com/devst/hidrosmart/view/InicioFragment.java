@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -33,11 +34,13 @@ public class InicioFragment extends Fragment {
     private TextView tvTempAire, tvHumedad, tvTempAgua, tvPh, tvEc, tvLux, tvNivel;
     private TextView tvRangoAire, tvRangoAgua, tvRangoPh, tvRangoEc;
     private TextView tvAlertas, tvLabelCultivo, tvBannerCorte;
-    private TextView tvAvisoSoloLectura;
+    private TextView tvAvisoSoloLectura, tvSinDatosReales;
+    private LinearLayout layoutDatosHuerto;
     private Spinner spnCultivo;
     private TabLayout tabTorres;
 
     private boolean actualizandoSpinner = false;
+    private boolean soloDatosReales = false;
 
     private final TabLayout.OnTabSelectedListener tabListener = new TabLayout.OnTabSelectedListener() {
         @Override
@@ -89,15 +92,25 @@ public class InicioFragment extends Fragment {
         tvAlertas = view.findViewById(R.id.tvAlertas);
         tvLabelCultivo = view.findViewById(R.id.tvLabelCultivo);
         tvAvisoSoloLectura = view.findViewById(R.id.tvAvisoSoloLectura);
+        tvSinDatosReales = view.findViewById(R.id.tvSinDatosReales);
+        layoutDatosHuerto = view.findViewById(R.id.layoutDatosHuerto);
         spnCultivo = view.findViewById(R.id.spnCultivo);
         tabTorres = view.findViewById(R.id.tabTorres);
     }
 
     private void configurarModoSoloLectura() {
+        String rol = requireActivity().getIntent().getStringExtra(Login.EXTRA_ROL);
+        soloDatosReales = Login.ROL_USER.equals(rol);
         boolean esModoDemo = requireActivity().getIntent()
                 .getBooleanExtra(MainActivity.EXTRA_MODO_DEMO, false);
-        spnCultivo.setEnabled(!esModoDemo);
-        tvAvisoSoloLectura.setVisibility(esModoDemo ? View.VISIBLE : View.GONE);
+        boolean soloLecturaCultivo = esModoDemo || soloDatosReales;
+        spnCultivo.setEnabled(!soloLecturaCultivo);
+        tvAvisoSoloLectura.setVisibility(soloLecturaCultivo ? View.VISIBLE : View.GONE);
+        tvAvisoSoloLectura.setText(esModoDemo
+                ? R.string.inicio_demo_solo_lectura
+                : R.string.inicio_operador_solo_lectura);
+        actualizarVisibilidadTelemetria(Boolean.TRUE.equals(
+                viewModel.getDatosRealesDisponibles().getValue()));
     }
 
     private void configurarSpinnerCultivos() {
@@ -113,7 +126,7 @@ public class InicioFragment extends Fragment {
         spnCultivo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (actualizandoSpinner) return;
+                if (actualizandoSpinner || soloDatosReales) return;
                 List<PerfilCultivo> perfiles = PerfilCultivo.todos();
                 if (position >= 0 && position < perfiles.size()) {
                     viewModel.cambiarCultivo(perfiles.get(position));
@@ -126,6 +139,17 @@ public class InicioFragment extends Fragment {
     }
 
     private void observarViewModel() {
+        viewModel.getConectadoSistemaReal().observe(getViewLifecycleOwner(), conectado -> {
+            actualizarVisibilidadTelemetria(Boolean.TRUE.equals(
+                    viewModel.getDatosRealesDisponibles().getValue()));
+        });
+        viewModel.getDatosRealesDisponibles().observe(getViewLifecycleOwner(), disponibles -> {
+            actualizarVisibilidadTelemetria(Boolean.TRUE.equals(disponibles));
+            if (Boolean.TRUE.equals(disponibles)) {
+                actualizarDatosHuerto(viewModel.getHuertoActual().getValue());
+            }
+        });
+
         viewModel.getCorteDatosActivo().observe(getViewLifecycleOwner(), corte -> {
             tvBannerCorte.setVisibility(Boolean.TRUE.equals(corte) ? View.VISIBLE : View.GONE);
         });
@@ -155,55 +179,7 @@ public class InicioFragment extends Fragment {
             }
         });
 
-        viewModel.getHuertoActual().observe(getViewLifecycleOwner(), huerto -> {
-            if (huerto == null) return;
-
-            tvLabelCultivo.setText(getString(R.string.inicio_cultivo_torre, huerto.idx));
-
-            actualizandoSpinner = true;
-            List<PerfilCultivo> lista = PerfilCultivo.todos();
-            for (int i = 0; i < lista.size(); i++) {
-                if (lista.get(i).clave.equals(huerto.perfil.clave)) {
-                    spnCultivo.setSelection(i);
-                    break;
-                }
-            }
-            actualizandoSpinner = false;
-
-            PerfilCultivo p = huerto.perfil;
-            tvRangoAire.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_temperatura), p.aireMin, p.aireMax));
-            tvRangoAgua.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_temperatura), p.tempAguaMin, p.tempAguaMax));
-            tvRangoPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_ph), p.phMin, p.phMax));
-            tvRangoEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_ec), p.ecMin, p.ecMax));
-
-            double aire = huerto.v.get("temp_ambiente");
-            double hum = huerto.v.get("humedad");
-            double agua = huerto.v.get("temp_agua");
-            double ph = huerto.v.get("ph");
-            double ec = huerto.v.get("ec");
-            double lux = huerto.v.get("lux");
-            double nivel = huerto.v.get("nivel_agua");
-
-            tvTempAire.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), aire));
-            pintarValor(tvTempAire, aire < p.aireMin || aire > p.aireMax);
-
-            tvHumedad.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), hum));
-
-            tvTempAgua.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), agua));
-            pintarValor(tvTempAgua, agua < p.tempAguaMin || agua > p.tempAguaMax);
-
-            tvPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_ph), ph));
-            pintarValor(tvPh, ph < p.phMin || ph > p.phMax);
-
-            tvEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_ec), ec));
-            pintarValor(tvEc, ec < p.ecMin || ec > p.ecMax);
-
-            tvLux.setText(String.format(Locale.getDefault(), getString(R.string.formato_lux), lux));
-            pintarValor(tvLux, lux < Huerto.LUX_LED_ON);
-
-            tvNivel.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), nivel));
-            pintarValor(tvNivel, nivel < Huerto.NIVEL_BAJO);
-        });
+        viewModel.getHuertoActual().observe(getViewLifecycleOwner(), this::actualizarDatosHuerto);
 
         viewModel.getAlertasActuales().observe(getViewLifecycleOwner(), alertas -> {
             if (alertas == null || alertas.isEmpty()) {
@@ -226,6 +202,74 @@ public class InicioFragment extends Fragment {
                 tvAlertas.setTextColor(ContextCompat.getColor(requireContext(), R.color.alerta_error));
             }
         });
+    }
+
+    private void actualizarVisibilidadTelemetria(boolean hayDatosReales) {
+        boolean ocultarDatos = soloDatosReales && !hayDatosReales;
+        layoutDatosHuerto.setVisibility(ocultarDatos ? View.GONE : View.VISIBLE);
+        tvSinDatosReales.setVisibility(ocultarDatos ? View.VISIBLE : View.GONE);
+        if (ocultarDatos) {
+            boolean conectado = Boolean.TRUE.equals(viewModel.getConectadoSistemaReal().getValue());
+            tvSinDatosReales.setText(conectado
+                    ? R.string.inicio_esperando_datos_reales
+                    : R.string.inicio_sin_datos_reales);
+        }
+    }
+
+    private void actualizarDatosHuerto(Huerto huerto) {
+        if (huerto == null) return;
+        boolean datosRealesDisponibles = Boolean.TRUE.equals(viewModel.getDatosRealesDisponibles().getValue());
+        if (soloDatosReales && !datosRealesDisponibles) {
+            actualizarVisibilidadTelemetria(false);
+            return;
+        }
+        actualizarVisibilidadTelemetria(datosRealesDisponibles);
+
+        tvLabelCultivo.setText(getString(R.string.inicio_cultivo_torre, huerto.idx));
+
+        actualizandoSpinner = true;
+        List<PerfilCultivo> lista = PerfilCultivo.todos();
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).clave.equals(huerto.perfil.clave)) {
+                spnCultivo.setSelection(i);
+                break;
+            }
+        }
+        actualizandoSpinner = false;
+
+        PerfilCultivo p = huerto.perfil;
+        tvRangoAire.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_temperatura), p.aireMin, p.aireMax));
+        tvRangoAgua.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_temperatura), p.tempAguaMin, p.tempAguaMax));
+        tvRangoPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_ph), p.phMin, p.phMax));
+        tvRangoEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_ec), p.ecMin, p.ecMax));
+
+        double aire = huerto.v.get("temp_ambiente");
+        double hum = huerto.v.get("humedad");
+        double agua = huerto.v.get("temp_agua");
+        double ph = huerto.v.get("ph");
+        double ec = huerto.v.get("ec");
+        double lux = huerto.v.get("lux");
+        double nivel = huerto.v.get("nivel_agua");
+
+        tvTempAire.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), aire));
+        pintarValor(tvTempAire, aire < p.aireMin || aire > p.aireMax);
+
+        tvHumedad.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), hum));
+
+        tvTempAgua.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), agua));
+        pintarValor(tvTempAgua, agua < p.tempAguaMin || agua > p.tempAguaMax);
+
+        tvPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_ph), ph));
+        pintarValor(tvPh, ph < p.phMin || ph > p.phMax);
+
+        tvEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_ec), ec));
+        pintarValor(tvEc, ec < p.ecMin || ec > p.ecMax);
+
+        tvLux.setText(String.format(Locale.getDefault(), getString(R.string.formato_lux), lux));
+        pintarValor(tvLux, lux < Huerto.LUX_LED_ON);
+
+        tvNivel.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), nivel));
+        pintarValor(tvNivel, nivel < Huerto.NIVEL_BAJO);
     }
 
     private String formatearNombreVariable(String raw) {

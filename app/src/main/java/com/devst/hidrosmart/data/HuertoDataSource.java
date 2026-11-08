@@ -14,6 +14,7 @@ public interface HuertoDataSource {
     void start();
     void stop();
     boolean estaConectadoAlSistemaReal();
+    boolean hayDatosRealesDisponibles();
     List<Huerto> getTorres();
     Huerto getHuertoActual();
     int getTorreSeleccionada();

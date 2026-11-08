@@ -31,6 +31,23 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <TextView
+                android:id="@+id/tvSinDatosReales"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/superficie_tarjeta"
+                android:padding="16dp"
+                android:text="@string/inicio_sin_datos_reales"
+                android:textColor="@color/texto_secundario"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/layoutDatosHuerto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabTorres"
                 android:layout_width="match_parent"
@@ -169,6 +186,8 @@
                     android:textColor="@color/alerta_ok"
                     android:textSize="13sp" />
             </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

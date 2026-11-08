@@ -40,6 +40,9 @@ public class HistorialFragment extends Fragment {
 
     // Control para no resetear el spinner a cada segundo
     private final List<String> opcionesPrevias = new ArrayList<>();
+    private List<Huerto> torresDisponibles = new ArrayList<>();
+    private boolean conectadoReal = false;
+    private boolean datosRealesDisponibles = false;
 
     @Nullable
     @Override
@@ -60,9 +63,14 @@ public class HistorialFragment extends Fragment {
         tvAlertasReales = view.findViewById(R.id.tvAlertasReales);
         tvObservacionesGuardadas = view.findViewById(R.id.tvObservacionesGuardadas);
         viewModel.getConectadoSistemaReal().observe(getViewLifecycleOwner(), conectado -> {
-            tvEstadoConexion.setText(Boolean.TRUE.equals(conectado)
-                    ? R.string.historial_conectado
-                    : R.string.historial_sin_conexion);
+            conectadoReal = Boolean.TRUE.equals(conectado);
+            actualizarEstadoConexion();
+            actualizarAlertasReales();
+        });
+        viewModel.getDatosRealesDisponibles().observe(getViewLifecycleOwner(), disponibles -> {
+            datosRealesDisponibles = Boolean.TRUE.equals(disponibles);
+            actualizarEstadoConexion();
+            actualizarSelectorTorre();
             actualizarAlertasReales();
         });
         viewModel.getAlertasActuales().observe(getViewLifecycleOwner(), alertas -> actualizarAlertasReales());
@@ -75,26 +83,8 @@ public class HistorialFragment extends Fragment {
 
         viewModel.getListaTorres().observe(getViewLifecycleOwner(), torres -> {
             if (torres == null) return;
-            List<String> nuevasOpciones = new ArrayList<>();
-            for (Huerto h : torres) {
-                nuevasOpciones.add(getString(R.string.formato_torre_cultivo,
-                        h.idx, nombreCultivoLocalizado(h.perfil)));
-            }
-
-            // Solo recarga si cambió el contenido real, evitando cerrar el desplegable
-            if (!nuevasOpciones.equals(opcionesPrevias)) {
-                int posSeleccionada = spnTorreComentario.getSelectedItemPosition();
-                opcionesPrevias.clear();
-                opcionesPrevias.addAll(nuevasOpciones);
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, nuevasOpciones);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spnTorreComentario.setAdapter(adapter);
-
-                if (posSeleccionada >= 0 && posSeleccionada < nuevasOpciones.size()) {
-                    spnTorreComentario.setSelection(posSeleccionada);
-                }
-            }
+            torresDisponibles = torres;
+            actualizarSelectorTorre();
         });
 
         btnEnviarComentario.setOnClickListener(v -> {
@@ -130,11 +120,48 @@ public class HistorialFragment extends Fragment {
         }
     }
 
+    private void actualizarSelectorTorre() {
+        List<String> nuevasOpciones = new ArrayList<>();
+        if (!datosRealesDisponibles) {
+            nuevasOpciones.add(getString(R.string.historial_torre_sin_conexion));
+        } else {
+            for (Huerto huerto : torresDisponibles) {
+                nuevasOpciones.add(getString(R.string.formato_torre_cultivo,
+                        huerto.idx, nombreCultivoLocalizado(huerto.perfil)));
+            }
+        }
+
+        if (nuevasOpciones.equals(opcionesPrevias)) return;
+        int posicionSeleccionada = spnTorreComentario.getSelectedItemPosition();
+        opcionesPrevias.clear();
+        opcionesPrevias.addAll(nuevasOpciones);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, nuevasOpciones);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnTorreComentario.setAdapter(adapter);
+        if (posicionSeleccionada >= 0 && posicionSeleccionada < nuevasOpciones.size()) {
+            spnTorreComentario.setSelection(posicionSeleccionada);
+        }
+        spnTorreComentario.setEnabled(datosRealesDisponibles && !nuevasOpciones.isEmpty());
+    }
+
+    private void actualizarEstadoConexion() {
+        if (!conectadoReal) {
+            tvEstadoConexion.setText(R.string.historial_sin_conexion);
+        } else if (!datosRealesDisponibles) {
+            tvEstadoConexion.setText(R.string.historial_esperando_datos);
+        } else {
+            tvEstadoConexion.setText(R.string.historial_conectado);
+        }
+    }
+
     private void actualizarAlertasReales() {
         if (tvAlertasReales == null || viewModel == null) return;
-        Boolean conectado = viewModel.getConectadoSistemaReal().getValue();
-        if (!Boolean.TRUE.equals(conectado)) {
-            tvAlertasReales.setText(R.string.historial_alertas_sin_conexion);
+        if (!datosRealesDisponibles) {
+            tvAlertasReales.setText(conectadoReal
+                    ? R.string.historial_alertas_esperando_datos
+                    : R.string.historial_alertas_sin_conexion);
             return;
         }
 

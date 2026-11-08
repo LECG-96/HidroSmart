@@ -31,6 +31,7 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
     private final MutableLiveData<List<ComentarioUsuario>> comentarios = new MutableLiveData<>();
     private final MutableLiveData<Boolean> corteDatosActivo = new MutableLiveData<>();
     private final MutableLiveData<Boolean> conectadoSistemaReal = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> datosRealesDisponibles = new MutableLiveData<>();
 
     public HuertoViewModel(Application application) {
         super(application);
@@ -56,6 +57,7 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
         usuariosGenerales.postValue(repository.getUsuariosGenerales());
         corteDatosActivo.postValue(simulador != null && simulador.isCorteDatos());
         conectadoSistemaReal.postValue(repository.estaConectadoAlSistemaReal());
+        datosRealesDisponibles.postValue(repository.hayDatosRealesDisponibles());
 
         if (actual != null) {
             alertasActuales.postValue(actual.alertas());
@@ -71,6 +73,7 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
     public LiveData<List<ComentarioUsuario>> getComentarios() { return comentarios; }
     public LiveData<Boolean> getCorteDatosActivo() { return corteDatosActivo; }
     public LiveData<Boolean> getConectadoSistemaReal() { return conectadoSistemaReal; }
+    public LiveData<Boolean> getDatosRealesDisponibles() { return datosRealesDisponibles; }
 
     public int getIndiceTorreSeleccionada() { return repository.getTorreSeleccionada(); }
 
