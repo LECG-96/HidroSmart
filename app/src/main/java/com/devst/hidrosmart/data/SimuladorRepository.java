@@ -3,7 +3,6 @@ package com.devst.hidrosmart.data;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.devst.hidrosmart.modelo.ComentarioUsuario;
 import com.devst.hidrosmart.modelo.Huerto;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.modelo.RespuestaComando;
@@ -19,7 +18,6 @@ public class SimuladorRepository implements SimuladorDataSource {
     private final List<Observer> observadores = new ArrayList<>();
     private final List<Huerto> torres = new ArrayList<>();
     private final List<String> usuariosGenerales = new ArrayList<>();
-    private final List<ComentarioUsuario> comentariosRegistrados = new ArrayList<>();
 
     private int torreSeleccionada = 0;
     private boolean corteDatos = false;
@@ -50,7 +48,6 @@ public class SimuladorRepository implements SimuladorDataSource {
         torres.add(new Huerto(1, PerfilCultivo.todos().get(0)));
         torres.add(new Huerto(2, PerfilCultivo.todos().get(1)));
 
-        comentariosRegistrados.add(new ComentarioUsuario("user", "Torre 1 (Lechuga)", "Hojas firmes y coloración verde normal. Sin signos de plagas.", "09:15"));
     }
 
     public static synchronized SimuladorRepository getInstancia() {
@@ -238,15 +235,4 @@ public class SimuladorRepository implements SimuladorDataSource {
         return Collections.unmodifiableList(new ArrayList<>(usuariosGenerales));
     }
 
-    @Override
-    public synchronized List<ComentarioUsuario> getComentariosRegistrados() {
-        return Collections.unmodifiableList(new ArrayList<>(comentariosRegistrados));
-    }
-
-    @Override
-    public synchronized void agregarComentario(String usuario, String torre, String mensaje) {
-        ComentarioUsuario nuevo = new ComentarioUsuario(usuario, torre, mensaje);
-        comentariosRegistrados.add(0, nuevo);
-        notificarObservadores();
-    }
 }

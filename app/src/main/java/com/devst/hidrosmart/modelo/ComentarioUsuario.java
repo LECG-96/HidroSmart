@@ -18,6 +18,6 @@ public class ComentarioUsuario {
     }
 
     public ComentarioUsuario(String usuario, String torre, String mensaje) {
-        this(usuario, torre, mensaje, new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
+        this(usuario, torre, mensaje, new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date()));
     }
 }

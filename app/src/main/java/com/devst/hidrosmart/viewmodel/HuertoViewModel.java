@@ -2,10 +2,12 @@ package com.devst.hidrosmart.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.AndroidViewModel;
+import android.app.Application;
 
 import com.devst.hidrosmart.data.HuertoDataSource;
 import com.devst.hidrosmart.data.HuertoDataSourceProvider;
+import com.devst.hidrosmart.data.ComentarioLocalDataSource;
 import com.devst.hidrosmart.data.SimuladorDataSource;
 import com.devst.hidrosmart.modelo.Alerta;
 import com.devst.hidrosmart.modelo.ComentarioUsuario;
@@ -16,9 +18,10 @@ import com.devst.hidrosmart.modelo.RespuestaComando;
 import java.util.Collections;
 import java.util.List;
 
-public class HuertoViewModel extends ViewModel implements HuertoDataSource.Observer {
+public class HuertoViewModel extends AndroidViewModel implements HuertoDataSource.Observer {
 
     private final HuertoDataSource repository;
+    private final ComentarioLocalDataSource comentarioDataSource;
     private final SimuladorDataSource simulador;
 
     private final MutableLiveData<Huerto> huertoActual = new MutableLiveData<>();
@@ -29,10 +32,13 @@ public class HuertoViewModel extends ViewModel implements HuertoDataSource.Obser
     private final MutableLiveData<Boolean> corteDatosActivo = new MutableLiveData<>();
     private final MutableLiveData<Boolean> conectadoSistemaReal = new MutableLiveData<>();
 
-    public HuertoViewModel() {
+    public HuertoViewModel(Application application) {
+        super(application);
         this.repository = HuertoDataSourceProvider.get();
+        this.comentarioDataSource = HuertoDataSourceProvider.getComentarios(application);
         this.simulador = repository instanceof SimuladorDataSource
                 ? (SimuladorDataSource) repository : null;
+        comentarios.setValue(comentarioDataSource.obtenerTodos());
         this.repository.addObserver(this);
         this.repository.start();
         actualizarDatos();
@@ -48,7 +54,6 @@ public class HuertoViewModel extends ViewModel implements HuertoDataSource.Obser
         huertoActual.postValue(actual);
         listaTorres.postValue(repository.getTorres());
         usuariosGenerales.postValue(repository.getUsuariosGenerales());
-        comentarios.postValue(repository.getComentariosRegistrados());
         corteDatosActivo.postValue(simulador != null && simulador.isCorteDatos());
         conectadoSistemaReal.postValue(repository.estaConectadoAlSistemaReal());
 
@@ -138,7 +143,8 @@ public class HuertoViewModel extends ViewModel implements HuertoDataSource.Obser
     }
 
     public void registrarComentario(String usuario, String torre, String mensaje) {
-        repository.agregarComentario(usuario, torre, mensaje);
+        comentarioDataSource.guardar(new ComentarioUsuario(usuario, torre, mensaje));
+        comentarios.postValue(comentarioDataSource.obtenerTodos());
         actualizarDatos();
     }
 

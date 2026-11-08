@@ -1,6 +1,5 @@
 package com.devst.hidrosmart.data;
 
-import com.devst.hidrosmart.modelo.ComentarioUsuario;
 import com.devst.hidrosmart.modelo.Huerto;
 import com.devst.hidrosmart.modelo.RespuestaComando;
 
@@ -24,6 +23,4 @@ public interface HuertoDataSource {
     void cambiarCultivoTorreActual(String perfilClave);
     RespuestaComando enviarComando(String actuador, String orden);
     List<String> getUsuariosGenerales();
-    List<ComentarioUsuario> getComentariosRegistrados();
-    void agregarComentario(String usuario, String torre, String mensaje);
 }
