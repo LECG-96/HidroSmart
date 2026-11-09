@@ -4,7 +4,7 @@ import android.content.Context;
 
 /** Punto único para seleccionar la fuente de datos activa de la aplicación. */
 public final class HuertoDataSourceProvider {
-    private static ComentarioLocalDataSource comentarios;
+    private static ComentarioDatabase almacenamientoLocal;
     private static GestionUsuariosDataSource usuarios;
 
     private HuertoDataSourceProvider() {}
@@ -21,9 +21,21 @@ public final class HuertoDataSourceProvider {
     }
 
     public static synchronized ComentarioLocalDataSource getComentarios(Context context) {
-        if (comentarios == null) {
-            comentarios = new ComentarioDatabase(context.getApplicationContext());
+        return getAlmacenamientoLocal(context);
+    }
+
+    public static synchronized HistorialLocalDataSource getHistorial(Context context) {
+        return getAlmacenamientoLocal(context);
+    }
+
+    public static synchronized HistorialMedicionesDataSource getHistorialMediciones(Context context) {
+        return getAlmacenamientoLocal(context);
+    }
+
+    private static ComentarioDatabase getAlmacenamientoLocal(Context context) {
+        if (almacenamientoLocal == null) {
+            almacenamientoLocal = new ComentarioDatabase(context.getApplicationContext());
         }
-        return comentarios;
+        return almacenamientoLocal;
     }
 }

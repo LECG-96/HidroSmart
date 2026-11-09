@@ -190,7 +190,19 @@
     <string name="historial_sin_conexion">La app no está conectada a una torre física. No se muestran valores hasta recibir datos reales del sistema.</string>
     <string name="historial_conectado">Conexión con el sistema real activa. La telemetría estará disponible al recibir datos.</string>
     <string name="historial_esperando_datos">Conexión establecida; esperando la primera lectura real de la torre.</string>
-    <string name="historial_alertas_titulo">Alertas del sistema</string>
+    <string name="historial_alertas_titulo">Alertas activas</string>
+    <string name="historial_atender_alertas">Marcar alertas como revisadas</string>
+    <string name="historial_alerta_activa_formato">Torre %1$d · %2$s\n%3$s · %4$s (%5$.1f)\nAcción: %6$s\n%7$s</string>
+    <string name="historial_alertas_revisadas">No quedan alertas pendientes de revisión.</string>
+    <string name="historial_eventos_titulo">Historial de eventos</string>
+    <string name="historial_eventos_vacio">Las activaciones y resoluciones aparecerán aquí.</string>
+    <string name="historial_evento_formato">%1$s · Torre %2$d · %3$s\n%4$s · %5$.1f\n%6$s · %7$s\n</string>
+    <string name="historial_evento_activada">Alerta activada</string>
+    <string name="historial_evento_resuelta">Alerta normalizada</string>
+    <string name="historial_evento_atendida">Revisada</string>
+    <string name="historial_evento_pendiente">Pendiente de revisión</string>
+    <string name="historial_evento_cerrada">Cerrada al normalizarse</string>
+    <string name="historial_admin_simulacion">Modo local: historial generado con datos simulados.</string>
     <string name="historial_alertas_sin_conexion">Las alertas aparecerán cuando la app reciba datos de una torre real.</string>
     <string name="historial_alertas_esperando_datos">La conexión está activa; las alertas aparecerán al recibir la primera lectura real.</string>
     <string name="historial_alertas_vacias">No se han recibido alertas del sistema.</string>
@@ -201,8 +213,51 @@
     <string name="historial_hint_observacion">Escribe tu observación...</string>
     <string name="historial_enviar_comentario">Guardar observación</string>
     <string name="historial_observaciones_guardadas">Mis observaciones guardadas en este dispositivo</string>
+    <string name="historial_todas_observaciones">Observaciones recibidas de los operadores</string>
     <string name="historial_sin_observaciones">Todavía no tienes observaciones guardadas.</string>
     <string name="historial_observacion_formato">%1$s · %2$s\n%3$s</string>
+    <string name="historial_tendencias_titulo">Tendencia de mediciones</string>
+    <string name="historial_filtro_torre">Torre</string>
+    <string name="historial_filtro_variable">Parámetro</string>
+    <string name="historial_filtro_periodo">Período</string>
+    <string name="historial_grafico_descripcion">Gráfico de tendencia de mediciones de la torre seleccionada.</string>
+    <string name="historial_grafico_esperando">Una muestra cada 30 s; se conservan las últimas 24 h mientras la app está activa.</string>
+    <string name="historial_grafico_vacio">Aún no hay suficientes lecturas para este período.</string>
+    <string name="historial_grafico_sin_muestras">Sin lecturas</string>
+    <string name="historial_grafico_resumen">Último valor: %1$.2f %2$s · %3$d lecturas</string>
+
+    <string-array name="historial_variable_claves">
+        <item>temp_ambiente</item>
+        <item>humedad</item>
+        <item>temp_agua</item>
+        <item>ph</item>
+        <item>ec</item>
+        <item>lux</item>
+        <item>nivel_agua</item>
+    </string-array>
+    <string-array name="historial_variable_nombres">
+        <item>Temperatura aire</item>
+        <item>Humedad</item>
+        <item>Temperatura agua</item>
+        <item>pH</item>
+        <item>EC</item>
+        <item>Luminosidad</item>
+        <item>Nivel de agua</item>
+    </string-array>
+    <string-array name="historial_variable_unidades">
+        <item>°C</item>
+        <item>%</item>
+        <item>°C</item>
+        <item>pH</item>
+        <item>mS/cm</item>
+        <item>lux</item>
+        <item>%</item>
+    </string-array>
+    <string-array name="historial_periodo_nombres">
+        <item>Última hora</item>
+        <item>Últimas 6 horas</item>
+        <item>Últimas 24 horas</item>
+    </string-array>
     <string name="formato_torre_cultivo">Torre %1$d (%2$s)</string>
     <string name="mensaje_escribe_observacion">Escribe una observación antes de guardar</string>
     <string name="mensaje_selecciona_torre">Selecciona una torre</string>

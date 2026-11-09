@@ -88,7 +88,7 @@
         app:tabIndicatorFullWidth="false"
         app:tabIndicatorColor="@color/verde_primario"
         app:tabIndicatorHeight="3dp"
-        app:tabMode="fixed"
+        app:tabMode="scrollable"
         app:tabRippleColor="@color/verde_claro"
         app:tabSelectedTextColor="@color/verde_primario"
         app:tabTextColor="@color/texto_secundario">
@@ -108,6 +108,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tab_usuarios" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_historial" />
     </com.google.android.material.tabs.TabLayout>
 
     <!-- Contenedor de Fragments -->

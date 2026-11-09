@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         if (rol == null) rol = Login.ROL_ADMIN;
         esModoDemo = getIntent().getBooleanExtra(EXTRA_MODO_DEMO, false);
         viewModel = new ViewModelProvider(this).get(HuertoViewModel.class);
+        viewModel.configurarRol(Login.ROL_USER.equals(rol));
 
         inicializarComponentes();
         configurarFragmentosIniciales(savedInstanceState);
@@ -148,10 +149,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             fragmentInicio = fm.findFragmentByTag("inicio");
             fragmentControl = fm.findFragmentByTag("control");
-            if (esModoDemo) fragmentHistorial = fm.findFragmentByTag("historial");
+            fragmentHistorial = fm.findFragmentByTag("historial");
 
             boolean necesitaAgregar = fragmentInicio == null || fragmentControl == null
-                    || (esModoDemo && fragmentHistorial == null);
+                    || fragmentHistorial == null;
             if (necesitaAgregar) {
                 androidx.fragment.app.FragmentTransaction transaction = fm.beginTransaction();
                 if (fragmentInicio == null) {
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     fragmentControl = new ControlFragment();
                     transaction.add(R.id.contenedorFragment, fragmentControl, "control").hide(fragmentControl);
                 }
-                if (esModoDemo && fragmentHistorial == null) {
+                if (fragmentHistorial == null) {
                     fragmentHistorial = new HistorialFragment();
                     transaction.add(R.id.contenedorFragment, fragmentHistorial, "historial").hide(fragmentHistorial);
                 }
@@ -172,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             String tagActivo = savedInstanceState == null
                     ? "inicio"
                     : savedInstanceState.getString(STATE_FRAGMENT_ACTIVO, "inicio");
-            if ("historial".equals(tagActivo) && esModoDemo && fragmentHistorial != null) {
+            if ("historial".equals(tagActivo) && fragmentHistorial != null) {
                 fragmentActivo = fragmentHistorial;
             } else if ("control".equals(tagActivo) && fragmentControl != null) {
                 fragmentActivo = fragmentControl;
@@ -221,6 +222,8 @@ public class MainActivity extends AppCompatActivity {
             if (tabNavegacionAdmin.getTabAt(1) != null) {
                 tabNavegacionAdmin.getTabAt(1).setText(R.string.tab_historial);
             }
+            TabLayout.Tab tabHistorialDuplicado = tabNavegacionAdmin.getTabAt(3);
+            if (tabHistorialDuplicado != null) tabNavegacionAdmin.removeTab(tabHistorialDuplicado);
             TabLayout.Tab tabUsuarios = tabNavegacionAdmin.getTabAt(2);
             if (tabUsuarios != null) tabNavegacionAdmin.removeTab(tabUsuarios);
         } else if (esModoDemo) {
@@ -230,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
             if (tabNavegacionAdmin.getTabAt(0) != null) {
                 tabNavegacionAdmin.getTabAt(0).setText(R.string.tab_estado);
             }
+            TabLayout.Tab tabUsuarios = tabNavegacionAdmin.getTabAt(2);
+            if (tabUsuarios != null) tabNavegacionAdmin.removeTab(tabUsuarios);
             TabLayout.Tab tabHistorial = tabNavegacionAdmin.getTabAt(2);
             if (tabHistorial != null) tabHistorial.setText(R.string.tab_historial);
         } else {
@@ -252,6 +257,8 @@ public class MainActivity extends AppCompatActivity {
                     cambiarFragment(fragmentHistorial);
                 } else if (!esModoDemo && pos == 2) {
                     abrirGestionUsuarios();
+                } else if (!esModoDemo && pos == 3) {
+                    cambiarFragment(fragmentHistorial);
                 }
             }
 
@@ -268,7 +275,8 @@ public class MainActivity extends AppCompatActivity {
 
         int tabInicial = fragmentActivo == fragmentControl ? 1
                 : (esModoDemo && fragmentActivo == fragmentHistorial ? 2
-                : (Login.ROL_USER.equals(rol) && fragmentActivo == fragmentHistorial ? 1 : 0));
+                : (Login.ROL_USER.equals(rol) && fragmentActivo == fragmentHistorial ? 1
+                : (!esModoDemo && !Login.ROL_USER.equals(rol) && fragmentActivo == fragmentHistorial ? 3 : 0)));
         TabLayout.Tab tab = tabNavegacionAdmin.getTabAt(tabInicial);
         if (tab != null && !tab.isSelected()) tab.select();
     }
