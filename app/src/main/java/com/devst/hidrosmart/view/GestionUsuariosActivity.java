@@ -104,6 +104,8 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                 | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         EditText clave = campo(getString(R.string.usuarios_contrasena), InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        EditText confirmarClave = campo(getString(R.string.usuarios_confirmar_contrasena), InputType.TYPE_CLASS_TEXT
+                | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         Spinner selectorRol = new Spinner(this);
         ArrayAdapter<String> adaptador = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item,
@@ -113,21 +115,28 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         selectorRol.setPadding(dp(4), dp(8), dp(4), dp(8));
         formulario.addView(nombre);
         formulario.addView(clave);
+        formulario.addView(confirmarClave);
         formulario.addView(selectorRol);
 
-        new AlertDialog.Builder(this)
+        AlertDialog dialogo = new AlertDialog.Builder(this)
                 .setTitle(R.string.usuarios_crear)
                 .setView(formulario)
                 .setNegativeButton(R.string.accion_cancelar, null)
-                .setPositiveButton(R.string.usuarios_crear, (dialog, which) -> {
+                .setPositiveButton(R.string.usuarios_crear, null)
+                .create();
+        dialogo.setOnShowListener(ignorado -> dialogo.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                     String nombreValor = nombre.getText().toString().trim();
                     String claveValor = clave.getText().toString();
                     if (!nombreValido(nombreValor)) {
                         mostrarMensaje(R.string.usuarios_error_nombre);
                         return;
                     }
-                    if (claveValor.trim().length() < 4) {
+                    if (claveValor.trim().length() < 8) {
                         mostrarMensaje(R.string.usuarios_error_clave);
+                        return;
+                    }
+                    if (!claveValor.equals(confirmarClave.getText().toString())) {
+                        mostrarMensaje(R.string.usuarios_error_confirmar_clave);
                         return;
                     }
                     String rol = selectorRol.getSelectedItemPosition() == 1
@@ -136,13 +145,14 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                         usuarios.crearUsuario(nombreValor, claveValor, rol);
                         mostrarUsuarios();
                         mostrarMensaje(R.string.usuarios_creada);
+                        dialogo.dismiss();
                     } catch (android.database.sqlite.SQLiteConstraintException e) {
                         mostrarMensaje(R.string.usuarios_error_duplicado);
                     } catch (RuntimeException e) {
                         mostrarMensaje(e.getMessage());
                     }
-                })
-                .show();
+                }));
+        dialogo.show();
     }
 
     private void mostrarAcciones(UsuarioApp cuenta) {
@@ -196,21 +206,39 @@ public class GestionUsuariosActivity extends AppCompatActivity {
     }
 
     private void mostrarFormularioClave(String nombre) {
-        EditText clave = campo(getString(R.string.usuarios_contrasena), InputType.TYPE_CLASS_TEXT
+        LinearLayout formulario = new LinearLayout(this);
+        formulario.setOrientation(LinearLayout.VERTICAL);
+        formulario.setPadding(dp(8), dp(4), dp(8), 0);
+        EditText clave = campo(getString(R.string.usuarios_nueva_contrasena), InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        new AlertDialog.Builder(this)
+        EditText confirmarClave = campo(getString(R.string.usuarios_confirmar_contrasena), InputType.TYPE_CLASS_TEXT
+                | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        formulario.addView(clave);
+        formulario.addView(confirmarClave);
+        AlertDialog dialogo = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.usuarios_menu_clave) + " · " + nombre)
-                .setView(clave)
+                .setView(formulario)
                 .setNegativeButton(R.string.accion_cancelar, null)
-                .setPositiveButton(R.string.accion_guardar, (dialog, which) -> {
+                .setPositiveButton(R.string.accion_guardar, null)
+                .create();
+        dialogo.setOnShowListener(ignorado -> dialogo.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                    if (clave.getText().toString().trim().length() < 8) {
+                        mostrarMensaje(R.string.usuarios_error_clave);
+                        return;
+                    }
+                    if (!clave.getText().toString().equals(confirmarClave.getText().toString())) {
+                        mostrarMensaje(R.string.usuarios_error_confirmar_clave);
+                        return;
+                    }
                     try {
                         usuarios.cambiarContrasena(nombre, clave.getText().toString());
                         mostrarMensaje(R.string.usuarios_clave_actualizada);
+                        dialogo.dismiss();
                     } catch (RuntimeException e) {
                         mostrarMensaje(e.getMessage());
                     }
-                })
-                .show();
+                }));
+        dialogo.show();
     }
 
     private void confirmarCambioEstado(UsuarioApp cuenta) {

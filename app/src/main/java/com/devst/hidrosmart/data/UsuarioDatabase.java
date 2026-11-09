@@ -126,9 +126,7 @@ public final class UsuarioDatabase extends SQLiteOpenHelper implements GestionUs
 
     @Override
     public void cambiarContrasena(String nombre, String contrasena) {
-        if (contrasena == null || contrasena.trim().length() < 4) {
-            throw new IllegalArgumentException("La contraseña debe tener al menos 4 caracteres.");
-        }
+        validarContrasena(contrasena);
         String usuario = normalizarNombre(nombre);
         byte[] sal = nuevaSal();
         ContentValues valores = new ContentValues();
@@ -164,11 +162,15 @@ public final class UsuarioDatabase extends SQLiteOpenHelper implements GestionUs
         if (nombre.length() < 3 || nombre.length() > 32 || !nombre.matches("[a-z0-9._-]+")) {
             throw new IllegalArgumentException("Usa un nombre de 3 a 32 caracteres: letras, números, punto, guion o guion bajo.");
         }
-        if (contrasena == null || contrasena.trim().length() < 4) {
-            throw new IllegalArgumentException("La contraseña debe tener al menos 4 caracteres.");
-        }
+        validarContrasena(contrasena);
         if (!ROL_ADMIN.equals(rol) && !ROL_USER.equals(rol)) {
             throw new IllegalArgumentException("Selecciona un rol válido.");
+        }
+    }
+
+    private static void validarContrasena(String contrasena) {
+        if (contrasena == null || contrasena.trim().length() < 8) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres.");
         }
     }
 

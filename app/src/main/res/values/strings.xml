@@ -54,7 +54,9 @@
     <string name="usuarios_subtitulo">Crea operadores, asigna permisos y desactiva cuentas que ya no deban ingresar.</string>
     <string name="usuarios_crear">Crear cuenta</string>
     <string name="usuarios_nombre">Nombre de usuario</string>
-    <string name="usuarios_contrasena">Contraseña inicial</string>
+    <string name="usuarios_contrasena">Contraseña inicial (mínimo 8 caracteres)</string>
+    <string name="usuarios_nueva_contrasena">Nueva contraseña (mínimo 8 caracteres)</string>
+    <string name="usuarios_confirmar_contrasena">Confirmar contraseña</string>
     <string name="usuarios_rol">Tipo de cuenta</string>
     <string name="usuarios_rol_admin">Administrador</string>
     <string name="usuarios_rol_operador">Operador</string>
@@ -70,7 +72,8 @@
     <string name="usuarios_confirmar_desactivar">¿Desactivar el acceso de %1$s?</string>
     <string name="usuarios_confirmar_activar">¿Reactivar el acceso de %1$s?</string>
     <string name="usuarios_error_nombre">Usa 3–32 caracteres: letras, números, punto, guion o guion bajo.</string>
-    <string name="usuarios_error_clave">La contraseña debe tener al menos 4 caracteres.</string>
+    <string name="usuarios_error_clave">La contraseña debe tener al menos 8 caracteres.</string>
+    <string name="usuarios_error_confirmar_clave">Las contraseñas no coinciden.</string>
     <string name="usuarios_error_duplicado">Ya existe una cuenta con ese nombre.</string>
     <string name="usuarios_sin_cuentas">No hay cuentas registradas.</string>
     <string name="mensaje_error_generico">No se pudo completar la acción.</string>
