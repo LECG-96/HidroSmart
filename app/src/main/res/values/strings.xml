@@ -38,7 +38,10 @@
     <string name="login_contrasena">Contraseña</string>
     <string name="login_ingresar">Iniciar Sesión</string>
     <string name="login_modo_demo">Ingresar en Modo Demo</string>
-    <string name="login_credenciales_prueba">Credenciales de prueba:\nadmin / 1234  •  user / 1234</string>
+    <string name="login_credenciales_prueba">Cuentas iniciales: admin / 1234 · user / 1234. Se exigirá cambiar la contraseña al primer acceso.</string>
+    <string name="login_nueva_contrasena">Nueva contraseña</string>
+    <string name="login_cambio_clave_obligatorio">Actualiza tu contraseña inicial</string>
+    <string name="login_cambio_clave_descripcion">Para continuar, define una contraseña de al menos 8 caracteres y confírmala.</string>
     <string name="login_aviso_local">Acceso local de prueba; no es autenticación segura para el sistema real.</string>
     <string name="mensaje_campos_incompletos">Completa los campos</string>
     <string name="mensaje_login_incorrecto">Usuario o contraseña incorrectos</string>

@@ -21,7 +21,7 @@ import javax.crypto.spec.PBEKeySpec;
 /** Cuentas locales de prueba con contraseñas almacenadas como hashes con sal. */
 public final class UsuarioDatabase extends SQLiteOpenHelper implements GestionUsuariosDataSource {
     private static final String NOMBRE_BD = "hidrosmart_usuarios.db";
-    private static final int VERSION_BD = 1;
+    private static final int VERSION_BD = 2;
     private static final String TABLA = "usuarios";
     private static final int ITERACIONES_HASH = 120_000;
     private static final int BYTES_HASH = 32;
@@ -38,7 +38,8 @@ public final class UsuarioDatabase extends SQLiteOpenHelper implements GestionUs
                 + "rol TEXT NOT NULL CHECK (rol IN ('ADMIN','USER')), "
                 + "activo INTEGER NOT NULL DEFAULT 1, "
                 + "sal BLOB NOT NULL, "
-                + "hash_clave BLOB NOT NULL)");
+                + "hash_clave BLOB NOT NULL, "
+                + "cambio_clave_pendiente INTEGER NOT NULL DEFAULT 0)");
         insertarCuentaInicial(db, "admin", "1234", ROL_ADMIN);
         insertarCuentaInicial(db, "user", "1234", ROL_USER);
     }
@@ -51,12 +52,36 @@ public final class UsuarioDatabase extends SQLiteOpenHelper implements GestionUs
         valores.put("activo", 1);
         valores.put("sal", sal);
         valores.put("hash_clave", derivarHash(clave, sal));
+        valores.put("cambio_clave_pendiente", 1);
         db.insertOrThrow(TABLA, null, valores);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Agregar migraciones explícitas cuando cambie el esquema local.
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLA
+                    + " ADD COLUMN cambio_clave_pendiente INTEGER NOT NULL DEFAULT 0");
+            marcarClavesInicialesPendientes(db);
+        }
+    }
+
+    private void marcarClavesInicialesPendientes(SQLiteDatabase db) {
+        List<String> cuentasConClaveInicial = new ArrayList<>();
+        try (Cursor cursor = db.query(TABLA, new String[]{"nombre", "sal", "hash_clave"},
+                null, null, null, null, null)) {
+            while (cursor.moveToNext()) {
+                byte[] sal = cursor.getBlob(1);
+                byte[] hashActual = cursor.getBlob(2);
+                if (MessageDigest.isEqual(hashActual, derivarHash("1234", sal))) {
+                    cuentasConClaveInicial.add(cursor.getString(0));
+                }
+            }
+        }
+        ContentValues valores = new ContentValues();
+        valores.put("cambio_clave_pendiente", 1);
+        for (String cuenta : cuentasConClaveInicial) {
+            db.update(TABLA, valores, "nombre = ?", new String[]{cuenta});
+        }
     }
 
     @Override
@@ -97,7 +122,17 @@ public final class UsuarioDatabase extends SQLiteOpenHelper implements GestionUs
         valores.put("activo", 1);
         valores.put("sal", sal);
         valores.put("hash_clave", derivarHash(contrasena, sal));
+        valores.put("cambio_clave_pendiente", 0);
         getWritableDatabase().insertOrThrow(TABLA, null, valores);
+    }
+
+    @Override
+    public boolean requiereCambioContrasena(String nombre) {
+        try (Cursor cursor = getReadableDatabase().query(TABLA,
+                new String[]{"cambio_clave_pendiente"}, "nombre = ?",
+                new String[]{normalizarNombre(nombre)}, null, null, null)) {
+            return cursor.moveToFirst() && cursor.getInt(0) == 1;
+        }
     }
 
     @Override
