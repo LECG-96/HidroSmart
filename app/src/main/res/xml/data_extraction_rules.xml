@@ -1,19 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
-   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   for details.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <!-- Mantener la base de cuentas únicamente en el dispositivo. -->
+        <exclude domain="database" path="hidrosmart_usuarios.db" />
+        <exclude domain="database" path="hidrosmart_usuarios.db-wal" />
+        <exclude domain="database" path="hidrosmart_usuarios.db-shm" />
+        <exclude domain="database" path="hidrosmart_usuarios.db-journal" />
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <!-- Evitar que una migración copie hashes de cuentas locales. -->
+        <exclude domain="database" path="hidrosmart_usuarios.db" />
+        <exclude domain="database" path="hidrosmart_usuarios.db-wal" />
+        <exclude domain="database" path="hidrosmart_usuarios.db-shm" />
+        <exclude domain="database" path="hidrosmart_usuarios.db-journal" />
     </device-transfer>
-    -->
 </data-extraction-rules>
