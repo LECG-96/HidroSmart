@@ -258,6 +258,13 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
         }
     }
 
+    public void reiniciarDemo() {
+        if (simulador != null) {
+            simulador.reiniciarDemo();
+            actualizarDatos();
+        }
+    }
+
     public void setCorteDatos(boolean activo) {
         if (simulador != null) simulador.setCorteDatos(activo);
     }

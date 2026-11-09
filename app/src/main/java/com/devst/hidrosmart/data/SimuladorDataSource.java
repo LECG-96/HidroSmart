@@ -5,6 +5,7 @@ public interface SimuladorDataSource extends HuertoDataSource {
     void aplicarEscenario(String escenario);
     void forzarParametro(String variable, double valor, boolean persistente);
     void rellenarEstanque();
+    void reiniciarDemo();
     void setCorteDatos(boolean activo);
     boolean isCorteDatos();
 }

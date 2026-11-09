@@ -219,6 +219,18 @@ public class SimuladorRepository implements SimuladorDataSource {
     }
 
     @Override
+    public synchronized void reiniciarDemo() {
+        synchronized (torres) {
+            torres.clear();
+            torres.add(new Huerto(1, PerfilCultivo.todos().get(0)));
+            torres.add(new Huerto(2, PerfilCultivo.todos().get(1)));
+        }
+        torreSeleccionada = 0;
+        corteDatos = false;
+        notificarObservadores();
+    }
+
+    @Override
     public synchronized void setCorteDatos(boolean corte) {
         this.corteDatos = corte;
         notificarObservadores();

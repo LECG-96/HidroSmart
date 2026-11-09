@@ -9,9 +9,12 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -39,6 +42,8 @@ public class InicioFragment extends Fragment {
     private LinearLayout layoutDatosHuerto;
     private Spinner spnCultivo;
     private TabLayout tabTorres;
+    private View layoutAccionesDemo;
+    private Button btnGuiaDemo, btnReiniciarDemo;
 
     private boolean actualizandoSpinner = false;
     private boolean soloDatosReales = false;
@@ -72,6 +77,7 @@ public class InicioFragment extends Fragment {
         inicializarVistas(view);
         configurarSpinnerCultivos();
         configurarModoSoloLectura();
+        configurarAccionesDemo();
         tabTorres.addOnTabSelectedListener(tabListener);
         observarViewModel();
     }
@@ -95,6 +101,9 @@ public class InicioFragment extends Fragment {
         tvLabelCultivo = view.findViewById(R.id.tvLabelCultivo);
         tvAvisoSoloLectura = view.findViewById(R.id.tvAvisoSoloLectura);
         tvSinDatosReales = view.findViewById(R.id.tvSinDatosReales);
+        layoutAccionesDemo = view.findViewById(R.id.layoutAccionesDemo);
+        btnGuiaDemo = view.findViewById(R.id.btnGuiaDemo);
+        btnReiniciarDemo = view.findViewById(R.id.btnReiniciarDemo);
         layoutDatosHuerto = view.findViewById(R.id.layoutDatosHuerto);
         spnCultivo = view.findViewById(R.id.spnCultivo);
         tabTorres = view.findViewById(R.id.tabTorres);
@@ -106,6 +115,7 @@ public class InicioFragment extends Fragment {
         esModoDemo = requireActivity().getIntent()
                 .getBooleanExtra(MainActivity.EXTRA_MODO_DEMO, false);
         boolean soloLecturaCultivo = esModoDemo || soloDatosReales;
+        layoutAccionesDemo.setVisibility(esModoDemo ? View.VISIBLE : View.GONE);
         spnCultivo.setEnabled(!soloLecturaCultivo);
         tvAvisoSoloLectura.setVisibility(soloLecturaCultivo ? View.VISIBLE : View.GONE);
         tvAvisoSoloLectura.setText(esModoDemo
@@ -113,6 +123,53 @@ public class InicioFragment extends Fragment {
                 : R.string.inicio_operador_solo_lectura);
         actualizarVisibilidadTelemetria(Boolean.TRUE.equals(
                 viewModel.getDatosRealesDisponibles().getValue()));
+    }
+
+    private void configurarAccionesDemo() {
+        if (!esModoDemo) return;
+        btnReiniciarDemo.setOnClickListener(v -> {
+            viewModel.reiniciarDemo();
+            Toast.makeText(requireContext(), R.string.demo_reiniciado, Toast.LENGTH_SHORT).show();
+        });
+        btnGuiaDemo.setOnClickListener(v -> mostrarPasoGuiaDemo(0));
+    }
+
+    private void mostrarPasoGuiaDemo(int paso) {
+        if (!isAdded() || !esModoDemo) return;
+        String mensaje;
+        boolean esFinal = paso == 4;
+        switch (paso) {
+            case 0:
+                mensaje = getString(R.string.demo_guia_inicio);
+                break;
+            case 1:
+                viewModel.setModoManual(false);
+                viewModel.aplicarEscenario("calor");
+                mensaje = getString(R.string.demo_guia_paso_calor);
+                break;
+            case 2:
+                viewModel.aplicarEscenario("ph_alto");
+                mensaje = getString(R.string.demo_guia_paso_ph);
+                break;
+            case 3:
+                viewModel.aplicarEscenario("nivel_critico");
+                mensaje = getString(R.string.demo_guia_paso_nivel);
+                break;
+            default:
+                viewModel.reiniciarDemo();
+                mensaje = getString(R.string.demo_guia_final);
+                break;
+        }
+
+        AlertDialog.Builder dialogo = new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.demo_guia_titulo)
+                .setMessage(mensaje)
+                .setNegativeButton(esFinal ? R.string.accion_cerrar : R.string.demo_guia_terminar, null);
+        if (!esFinal) {
+            dialogo.setPositiveButton(paso == 0 ? R.string.demo_guia_comenzar
+                    : R.string.demo_guia_siguiente, (d, which) -> mostrarPasoGuiaDemo(paso + 1));
+        }
+        dialogo.show();
     }
 
     private void configurarSpinnerCultivos() {
