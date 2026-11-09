@@ -73,6 +73,16 @@ public final class PerfilCultivo {
         return aireMax - 2;
     }
 
+    /** Crea una copia del perfil con rangos ajustados para una torre concreta. */
+    public PerfilCultivo conRangos(double nuevoPhMin, double nuevoPhMax,
+                                   double nuevoEcMin, double nuevoEcMax,
+                                   double nuevaTempAguaMin, double nuevaTempAguaMax,
+                                   double nuevoAireMin, double nuevoAireMax) {
+        return new PerfilCultivo(clave, nombre, nuevoPhMin, nuevoPhMax,
+                nuevoEcMin, nuevoEcMax, nuevaTempAguaMin, nuevaTempAguaMax,
+                nuevoAireMin, nuevoAireMax);
+    }
+
     /** Así se verá el perfil en un Spinner. */
     @Override
     public String toString() {

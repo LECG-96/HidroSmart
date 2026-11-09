@@ -11,6 +11,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.EditText;
+import android.text.InputType;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +46,7 @@ public class InicioFragment extends Fragment {
     private TabLayout tabTorres;
     private View layoutAccionesDemo;
     private Button btnGuiaDemo, btnReiniciarDemo;
+    private Button btnEditarRangos;
 
     private boolean actualizandoSpinner = false;
     private boolean soloDatosReales = false;
@@ -104,6 +107,7 @@ public class InicioFragment extends Fragment {
         layoutAccionesDemo = view.findViewById(R.id.layoutAccionesDemo);
         btnGuiaDemo = view.findViewById(R.id.btnGuiaDemo);
         btnReiniciarDemo = view.findViewById(R.id.btnReiniciarDemo);
+        btnEditarRangos = view.findViewById(R.id.btnEditarRangos);
         layoutDatosHuerto = view.findViewById(R.id.layoutDatosHuerto);
         spnCultivo = view.findViewById(R.id.spnCultivo);
         tabTorres = view.findViewById(R.id.tabTorres);
@@ -115,6 +119,9 @@ public class InicioFragment extends Fragment {
         esModoDemo = requireActivity().getIntent()
                 .getBooleanExtra(MainActivity.EXTRA_MODO_DEMO, false);
         boolean soloLecturaCultivo = esModoDemo || soloDatosReales;
+        boolean esAdmin = Login.ROL_ADMIN.equals(rol);
+        btnEditarRangos.setVisibility(esAdmin && !esModoDemo ? View.VISIBLE : View.GONE);
+        btnEditarRangos.setOnClickListener(v -> mostrarEditorRangos());
         layoutAccionesDemo.setVisibility(esModoDemo ? View.VISIBLE : View.GONE);
         spnCultivo.setEnabled(!soloLecturaCultivo);
         tvAvisoSoloLectura.setVisibility(soloLecturaCultivo ? View.VISIBLE : View.GONE);
@@ -123,6 +130,67 @@ public class InicioFragment extends Fragment {
                 : R.string.inicio_operador_solo_lectura);
         actualizarVisibilidadTelemetria(Boolean.TRUE.equals(
                 viewModel.getDatosRealesDisponibles().getValue()));
+    }
+
+    private void mostrarEditorRangos() {
+        HuertoSnapshot actual = viewModel.getHuertoActual().getValue();
+        if (actual == null) return;
+        PerfilCultivo p = actual.perfil;
+        String[] etiquetas = {"pH mínimo", "pH máximo", "EC mínima (mS/cm)", "EC máxima (mS/cm)",
+                "Temperatura del agua mínima (°C)", "Temperatura del agua máxima (°C)",
+                "Temperatura del aire mínima (°C)", "Temperatura del aire máxima (°C)"};
+        double[] valores = {p.phMin, p.phMax, p.ecMin, p.ecMax,
+                p.tempAguaMin, p.tempAguaMax, p.aireMin, p.aireMax};
+        LinearLayout contenido = new LinearLayout(requireContext());
+        contenido.setOrientation(LinearLayout.VERTICAL);
+        int padding = (int) (20 * getResources().getDisplayMetrics().density);
+        contenido.setPadding(padding, padding / 2, padding, 0);
+        EditText[] campos = new EditText[valores.length];
+        for (int i = 0; i < valores.length; i += 2) {
+            LinearLayout fila = new LinearLayout(requireContext());
+            fila.setOrientation(LinearLayout.HORIZONTAL);
+            for (int j = i; j < i + 2; j++) {
+                LinearLayout columna = new LinearLayout(requireContext());
+                columna.setOrientation(LinearLayout.VERTICAL);
+                columna.setPadding(0, 0, padding / 3, 0);
+                TextView etiqueta = new TextView(requireContext());
+                etiqueta.setText(etiquetas[j]);
+                EditText campo = new EditText(requireContext());
+                campo.setSingleLine(true);
+                campo.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                campo.setText(String.valueOf(valores[j]));
+                campo.setSelectAllOnFocus(true);
+                campos[j] = campo;
+                columna.addView(etiqueta);
+                columna.addView(campo);
+                fila.addView(columna, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            }
+            contenido.addView(fila);
+        }
+        new AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.inicio_editar_rangos_titulo, actual.idx))
+                .setMessage(R.string.inicio_editar_rangos_descripcion)
+                .setView(contenido)
+                .setNegativeButton(R.string.accion_cancelar, null)
+                .setNeutralButton(R.string.inicio_restaurar_rangos, (dialog, which) -> {
+                    PerfilCultivo base = PerfilCultivo.porClave(p.clave);
+                    if (base != null) viewModel.guardarRangosCultivo(base.phMin, base.phMax,
+                            base.ecMin, base.ecMax, base.tempAguaMin, base.tempAguaMax,
+                            base.aireMin, base.aireMax);
+                })
+                .setPositiveButton(R.string.accion_guardar, (dialog, which) -> {
+                    try {
+                        double[] n = new double[campos.length];
+                        for (int i = 0; i < campos.length; i++)
+                            n[i] = Double.parseDouble(campos[i].getText().toString().trim().replace(',', '.'));
+                        boolean guardado = viewModel.guardarRangosCultivo(n[0], n[1], n[2], n[3],
+                                n[4], n[5], n[6], n[7]);
+                        Toast.makeText(requireContext(), guardado ? R.string.inicio_rangos_guardados
+                                : R.string.inicio_rangos_invalidos, Toast.LENGTH_LONG).show();
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(requireContext(), R.string.inicio_rangos_invalidos, Toast.LENGTH_LONG).show();
+                    }
+                }).show();
     }
 
     private void configurarAccionesDemo() {

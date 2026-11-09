@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.AndroidViewModel;
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import com.devst.hidrosmart.data.HuertoDataSource;
 import com.devst.hidrosmart.data.HuertoDataSourceProvider;
@@ -64,6 +65,7 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
         this.historialMedicionesDataSource = HuertoDataSourceProvider.getHistorialMediciones(application);
         this.simulador = repository instanceof SimuladorDataSource
                 ? (SimuladorDataSource) repository : null;
+        aplicarRangosGuardados();
         this.registrarHistorialAlertas = simulador == null;
         comentarios.setValue(Collections.emptyList());
         historialAlertas.setValue(Collections.emptyList());
@@ -210,8 +212,66 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
     public void cambiarCultivo(PerfilCultivo perfil) {
         if (perfil != null) {
             repository.cambiarCultivoTorreActual(perfil.clave);
+            aplicarRangosGuardados();
             actualizarDatos();
         }
+    }
+
+    /** Guarda rangos para la combinación torre/cultivo seleccionada y los aplica al instante. */
+    public boolean guardarRangosCultivo(double phMin, double phMax,
+                                        double ecMin, double ecMax,
+                                        double aguaMin, double aguaMax,
+                                        double aireMin, double aireMax) {
+        Huerto actual = repository.getHuertoActual();
+        if (actual == null || !rangosValidos(phMin, phMax, ecMin, ecMax,
+                aguaMin, aguaMax, aireMin, aireMax)) return false;
+        PerfilCultivo personalizado = actual.perfil.conRangos(phMin, phMax, ecMin, ecMax,
+                aguaMin, aguaMax, aireMin, aireMax);
+        actual.cambiarPerfil(personalizado);
+        preferenciasRangos().edit().putString(claveRangos(actual.idx, personalizado.clave),
+                serializarRangos(personalizado)).apply();
+        actualizarDatos();
+        return true;
+    }
+
+    private void aplicarRangosGuardados() {
+        SharedPreferences prefs = preferenciasRangos();
+        for (Huerto torre : repository.getTorres()) {
+            String datos = prefs.getString(claveRangos(torre.idx, torre.perfil.clave), null);
+            PerfilCultivo perfil = deserializarRangos(torre.perfil, datos);
+            if (perfil != torre.perfil) torre.cambiarPerfil(perfil);
+        }
+    }
+
+    private SharedPreferences preferenciasRangos() {
+        return getApplication().getSharedPreferences("rangos_cultivo_torre", android.content.Context.MODE_PRIVATE);
+    }
+
+    private String claveRangos(int torre, String cultivo) { return "torre_" + torre + "_" + cultivo; }
+
+    private String serializarRangos(PerfilCultivo p) {
+        return p.phMin + "," + p.phMax + "," + p.ecMin + "," + p.ecMax + "," +
+                p.tempAguaMin + "," + p.tempAguaMax + "," + p.aireMin + "," + p.aireMax;
+    }
+
+    private PerfilCultivo deserializarRangos(PerfilCultivo base, String datos) {
+        if (datos == null) return base;
+        try {
+            String[] v = datos.split(",");
+            if (v.length != 8) return base;
+            double[] n = new double[8];
+            for (int i = 0; i < n.length; i++) n[i] = Double.parseDouble(v[i]);
+            if (!rangosValidos(n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7])) return base;
+            return base.conRangos(n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7]);
+        } catch (RuntimeException e) { return base; }
+    }
+
+    private boolean rangosValidos(double... valores) {
+        for (double valor : valores) if (Double.isNaN(valor) || Double.isInfinite(valor)) return false;
+        return valores[0] >= 0 && valores[0] < valores[1] && valores[1] <= 14
+                && valores[2] >= 0 && valores[2] < valores[3] && valores[3] <= 10
+                && valores[4] >= 0 && valores[4] < valores[5] && valores[5] <= 50
+                && valores[6] >= -10 && valores[6] < valores[7] && valores[7] <= 60;
     }
 
     public boolean agregarTorre() {

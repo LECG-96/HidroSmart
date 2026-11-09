@@ -78,6 +78,12 @@
     <string name="formato_observacion_usuario">• [%1$s] %2$s:\n\"%3$s\"\n\n</string>
 
     <string name="inicio_cultivo_torre">Cultivo de Torre %1$d</string>
+    <string name="inicio_editar_rangos">Editar rangos del cultivo</string>
+    <string name="inicio_editar_rangos_titulo">Rangos · Torre %1$d</string>
+    <string name="inicio_editar_rangos_descripcion">Los valores se guardan para esta torre y cultivo. Verifica los rangos con una fuente agronómica antes de aplicarlos.</string>
+    <string name="inicio_restaurar_rangos">Restaurar valores base</string>
+    <string name="inicio_rangos_guardados">Rangos guardados para esta torre y cultivo.</string>
+    <string name="inicio_rangos_invalidos">Revisa los valores: cada mínimo debe ser menor que su máximo y estar dentro de límites válidos.</string>
     <string name="inicio_titulo_resumen">Resumen del cultivo</string>
     <string name="inicio_subtitulo_resumen">Parámetros y estado de la torre seleccionada</string>
     <string name="demo_panel_titulo">Demostración en vivo</string>

@@ -165,6 +165,14 @@
                         android:layout_height="48dp"
                         android:layout_marginTop="4dp" />
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditarRangos"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/inicio_editar_rangos" />
+
                     <TextView
                         android:id="@+id/tvAvisoSoloLectura"
                         android:layout_width="match_parent"
