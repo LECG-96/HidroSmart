@@ -1,6 +1,7 @@
 package com.devst.hidrosmart.view;
 
 import android.os.Bundle;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.ContentResolver;
+import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +31,17 @@ import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 public class HistorialFragment extends Fragment {
 
@@ -46,6 +60,7 @@ public class HistorialFragment extends Fragment {
     private Spinner spnTorreGrafico, spnVariableGrafico, spnPeriodoGrafico;
     private GraficoMedicionesView graficoMediciones;
     private TextView tvResumenMediciones;
+    private Button btnExportarHistorial;
     private LinearLayout layoutGraficoMediciones;
 
     // Control para no resetear el spinner a cada segundo
@@ -56,6 +71,17 @@ public class HistorialFragment extends Fragment {
     private boolean datosRealesDisponibles = false;
     private boolean esModoDemo = false;
     private boolean esModoAdmin = false;
+    private List<MedicionMuestra> muestrasExportables = new ArrayList<>();
+    private List<EventoAlerta> eventosExportables = new ArrayList<>();
+    private final ExecutorService exportador = Executors.newSingleThreadExecutor();
+    private ActivityResultLauncher<String> crearArchivoCsv;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        crearArchivoCsv = registerForActivityResult(new ActivityResultContracts.CreateDocument("text/csv"),
+                this::guardarCsvEnUri);
+    }
 
     @Nullable
     @Override
@@ -84,6 +110,7 @@ public class HistorialFragment extends Fragment {
         spnPeriodoGrafico = view.findViewById(R.id.spnPeriodoGrafico);
         graficoMediciones = view.findViewById(R.id.graficoMediciones);
         tvResumenMediciones = view.findViewById(R.id.tvResumenMediciones);
+        btnExportarHistorial = view.findViewById(R.id.btnExportarHistorial);
         layoutGraficoMediciones = view.findViewById(R.id.layoutGraficoMediciones);
         esModoDemo = requireActivity().getIntent()
                 .getBooleanExtra(MainActivity.EXTRA_MODO_DEMO, false);
@@ -91,6 +118,7 @@ public class HistorialFragment extends Fragment {
                 && !esModoDemo;
         if (esModoAdmin) tvTituloObservaciones.setText(R.string.historial_todas_observaciones);
         btnAtenderAlertas.setOnClickListener(v -> viewModel.marcarAlertasActivasAtendidas());
+        btnExportarHistorial.setOnClickListener(v -> crearArchivoCsv.launch("HidroSmart_historial.csv"));
         configurarGrafico();
         viewModel.getConectadoSistemaReal().observe(getViewLifecycleOwner(), conectado -> {
             conectadoReal = Boolean.TRUE.equals(conectado);
@@ -105,8 +133,14 @@ public class HistorialFragment extends Fragment {
             actualizarVisibilidadHistorial();
         });
         viewModel.getAlertasActivas().observe(getViewLifecycleOwner(), this::mostrarAlertasActivas);
-        viewModel.getHistorialAlertas().observe(getViewLifecycleOwner(), this::mostrarHistorialEventos);
-        viewModel.getMedicionesHistorial().observe(getViewLifecycleOwner(), this::mostrarMediciones);
+        viewModel.getHistorialAlertas().observe(getViewLifecycleOwner(), eventos -> {
+            eventosExportables = eventos == null ? new ArrayList<>() : new ArrayList<>(eventos);
+            mostrarHistorialEventos(eventos);
+        });
+        viewModel.getMedicionesHistorial().observe(getViewLifecycleOwner(), muestras -> {
+            muestrasExportables = muestras == null ? new ArrayList<>() : new ArrayList<>(muestras);
+            mostrarMediciones(muestras);
+        });
         String usuarioActual = requireActivity().getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
         if (usuarioActual == null) usuarioActual = "user";
         final String remitente = usuarioActual;
@@ -139,6 +173,62 @@ public class HistorialFragment extends Fragment {
             etComentario.setText("");
             Toast.makeText(requireContext(), R.string.mensaje_observacion_enviada, Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void guardarCsvEnUri(Uri uri) {
+        if (uri == null || !isAdded()) return;
+        ContentResolver resolver = requireContext().getContentResolver();
+        Activity actividad = getActivity();
+        List<MedicionMuestra> muestras = new ArrayList<>(muestrasExportables);
+        List<EventoAlerta> eventos = new ArrayList<>(eventosExportables);
+        boolean esDemo = esModoDemo;
+        exportador.execute(() -> {
+            boolean guardado = false;
+            try (OutputStream salida = resolver.openOutputStream(uri);
+                 BufferedWriter writer = salida == null ? null : new BufferedWriter(
+                         new OutputStreamWriter(salida, StandardCharsets.UTF_8))) {
+                if (writer == null) throw new IOException("No se pudo abrir el archivo");
+                writer.write('\uFEFF');
+                writer.write("origen;tipo;fecha_hora;torre;cultivo;variable;valor;estado;detalle\n");
+                SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                String origen = esDemo ? "DEMO" : "HidroSmart";
+                for (MedicionMuestra muestra : muestras) {
+                    escribirFila(writer, origen, "MEDICION", formato.format(new Date(muestra.fechaMillis)),
+                            String.valueOf(muestra.torre), muestra.cultivo, muestra.variable,
+                            String.valueOf(muestra.valor), "", "");
+                }
+                for (EventoAlerta evento : eventos) {
+                    escribirFila(writer, origen, "ALERTA", evento.fechaHora,
+                            String.valueOf(evento.torre), evento.cultivo, evento.variable,
+                            String.valueOf(evento.valor), evento.tipo + (evento.atendida ? " · ATENDIDA" : " · PENDIENTE"),
+                            evento.accion);
+                }
+                guardado = true;
+            } catch (Exception ignored) { }
+            final boolean resultado = guardado;
+            if (actividad != null) actividad.runOnUiThread(() -> {
+                if (!isAdded()) return;
+                Toast.makeText(actividad, resultado ? R.string.historial_exportacion_exitosa
+                        : R.string.historial_exportacion_error, Toast.LENGTH_LONG).show();
+            });
+        });
+    }
+
+    private void escribirFila(BufferedWriter writer, String... columnas) throws IOException {
+        for (int i = 0; i < columnas.length; i++) {
+            if (i > 0) writer.write(';');
+            String valor = columnas[i] == null ? "" : columnas[i];
+            writer.write('"');
+            writer.write(valor.replace("\"", "\"\""));
+            writer.write('"');
+        }
+        writer.write('\n');
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        exportador.shutdown();
     }
 
     private void configurarGrafico() {

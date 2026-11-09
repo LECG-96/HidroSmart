@@ -211,6 +211,9 @@
     <string name="historial_conectado">Conexión con el sistema real activa. La telemetría estará disponible al recibir datos.</string>
     <string name="historial_esperando_datos">Conexión establecida; esperando la primera lectura real de la torre.</string>
     <string name="historial_alertas_titulo">Alertas activas</string>
+    <string name="historial_exportar_csv">Exportar datos visibles a CSV</string>
+    <string name="historial_exportacion_exitosa">Archivo CSV guardado.</string>
+    <string name="historial_exportacion_error">No se pudo guardar el CSV.</string>
     <string name="historial_atender_alertas">Marcar alertas como revisadas</string>
     <string name="historial_alerta_activa_formato">Torre %1$d · %2$s\n%3$s · %4$s (%5$.1f)\nAcción: %6$s\n%7$s</string>
     <string name="historial_alertas_revisadas">No quedan alertas pendientes de revisión.</string>
