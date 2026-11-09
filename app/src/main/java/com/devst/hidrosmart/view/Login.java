@@ -12,12 +12,16 @@ import com.devst.hidrosmart.R;
 import com.devst.hidrosmart.data.AutenticacionDataSource;
 import com.devst.hidrosmart.data.HuertoDataSourceProvider;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Login extends AppCompatActivity {
 
     public static final String EXTRA_ROL = "extra_rol";
     public static final String EXTRA_USUARIO_ACTUAL = "extra_usuario_actual";
     public static final String ROL_ADMIN = AutenticacionDataSource.ROL_ADMIN;
     public static final String ROL_USER = AutenticacionDataSource.ROL_USER;
+    private final ExecutorService loginExecutor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +32,7 @@ public class Login extends AppCompatActivity {
         EditText etContrasena = findViewById(R.id.etContrasena);
         Button btnIngresar = findViewById(R.id.btnIngresar);
         Button btnDemo = findViewById(R.id.btnDemo);
-        AutenticacionDataSource autenticacion = HuertoDataSourceProvider.getAutenticacion();
+        AutenticacionDataSource autenticacion = HuertoDataSourceProvider.getAutenticacion(getApplicationContext());
 
         btnIngresar.setOnClickListener(v -> {
             String usuario = etUsuario.getText().toString().trim();
@@ -39,16 +43,29 @@ public class Login extends AppCompatActivity {
                 return;
             }
 
-            String rol = autenticacion.autenticar(usuario, contrasena);
-            if (rol == null) {
-                Toast.makeText(this, R.string.mensaje_login_incorrecto, Toast.LENGTH_SHORT).show();
-            } else {
-                abrirMain(rol, false, usuario);
-            }
+            btnIngresar.setEnabled(false);
+            loginExecutor.execute(() -> {
+                String rol = autenticacion.autenticar(usuario, contrasena);
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    btnIngresar.setEnabled(true);
+                    if (rol == null) {
+                        Toast.makeText(this, R.string.mensaje_login_incorrecto, Toast.LENGTH_SHORT).show();
+                    } else {
+                        abrirMain(rol, false, usuario);
+                    }
+                });
+            });
         });
 
         // Modo Demo permite interactuar con Control & Sim sin mostrar acciones de administración.
         btnDemo.setOnClickListener(v -> abrirMain(ROL_ADMIN, true, "demo"));
+    }
+
+    @Override
+    protected void onDestroy() {
+        loginExecutor.shutdown();
+        super.onDestroy();
     }
 
     private void abrirMain(String rol, boolean esDemo, String nombreUsuario) {

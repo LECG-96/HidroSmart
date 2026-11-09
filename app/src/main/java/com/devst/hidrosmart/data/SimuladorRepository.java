@@ -17,7 +17,6 @@ public class SimuladorRepository implements SimuladorDataSource {
 
     private final List<Observer> observadores = new ArrayList<>();
     private final List<Huerto> torres = new ArrayList<>();
-    private final List<String> usuariosGenerales = new ArrayList<>();
 
     private int torreSeleccionada = 0;
     private boolean corteDatos = false;
@@ -42,9 +41,6 @@ public class SimuladorRepository implements SimuladorDataSource {
     };
 
     private SimuladorRepository() {
-        usuariosGenerales.add("user");
-        usuariosGenerales.add("operador1");
-
         torres.add(new Huerto(1, PerfilCultivo.todos().get(0)));
         torres.add(new Huerto(2, PerfilCultivo.todos().get(1)));
 
@@ -231,11 +227,6 @@ public class SimuladorRepository implements SimuladorDataSource {
     @Override
     public synchronized boolean isCorteDatos() {
         return corteDatos;
-    }
-
-    @Override
-    public synchronized List<String> getUsuariosGenerales() {
-        return Collections.unmodifiableList(new ArrayList<>(usuariosGenerales));
     }
 
 }

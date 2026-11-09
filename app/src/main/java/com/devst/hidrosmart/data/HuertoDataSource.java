@@ -23,5 +23,4 @@ public interface HuertoDataSource {
     boolean eliminarTorre();
     void cambiarCultivoTorreActual(String perfilClave);
     RespuestaComando enviarComando(String actuador, String orden);
-    List<String> getUsuariosGenerales();
 }

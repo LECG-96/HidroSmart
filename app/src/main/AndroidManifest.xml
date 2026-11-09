@@ -33,6 +33,10 @@
             android:name=".view.AjustesActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".view.GestionUsuariosActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

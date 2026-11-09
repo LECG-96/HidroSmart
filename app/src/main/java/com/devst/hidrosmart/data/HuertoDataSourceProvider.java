@@ -5,7 +5,7 @@ import android.content.Context;
 /** Punto único para seleccionar la fuente de datos activa de la aplicación. */
 public final class HuertoDataSourceProvider {
     private static ComentarioLocalDataSource comentarios;
-    private static final AutenticacionDataSource autenticacion = new AutenticacionLocalDataSource();
+    private static GestionUsuariosDataSource usuarios;
 
     private HuertoDataSourceProvider() {}
 
@@ -13,8 +13,11 @@ public final class HuertoDataSourceProvider {
         return SimuladorRepository.getInstancia();
     }
 
-    public static AutenticacionDataSource getAutenticacion() {
-        return autenticacion;
+    public static synchronized GestionUsuariosDataSource getAutenticacion(Context context) {
+        if (usuarios == null) {
+            usuarios = new UsuarioDatabase(context.getApplicationContext());
+        }
+        return usuarios;
     }
 
     public static synchronized ComentarioLocalDataSource getComentarios(Context context) {

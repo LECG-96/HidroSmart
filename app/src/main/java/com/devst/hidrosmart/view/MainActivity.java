@@ -9,7 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -19,11 +18,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.devst.hidrosmart.R;
-import com.devst.hidrosmart.modelo.ComentarioUsuario;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -254,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (esModoDemo && pos == 2) {
                     cambiarFragment(fragmentHistorial);
                 } else if (!esModoDemo && pos == 2) {
-                    mostrarDialogoUsuariosRegistrados();
+                    abrirGestionUsuarios();
                 }
             }
 
@@ -264,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
                 if (!Login.ROL_USER.equals(rol) && !esModoDemo && tab.getPosition() == 2) {
-                    mostrarDialogoUsuariosRegistrados();
+                    abrirGestionUsuarios();
                 }
             }
         });
@@ -276,49 +273,13 @@ public class MainActivity extends AppCompatActivity {
         if (tab != null && !tab.isSelected()) tab.select();
     }
 
-    private void mostrarDialogoUsuariosRegistrados() {
-        List<String> usuarios = viewModel.getUsuariosGenerales().getValue();
-        if (usuarios == null || usuarios.isEmpty()) {
-            Toast.makeText(this, R.string.mensaje_sin_usuarios, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String[] listaArray = usuarios.toArray(new String[0]);
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.dialog_usuarios_titulo)
-                .setItems(listaArray, (dialog, which) -> {
-                    String seleccionado = listaArray[which];
-                    mostrarObservacionesUsuario(seleccionado);
-                })
-                .setPositiveButton(R.string.accion_cerrar, (d, w) -> {
-                    TabLayout.Tab tab0 = tabNavegacionAdmin.getTabAt(0);
-                    if (tab0 != null) tab0.select();
-                })
-                .show();
-    }
-
-    private void mostrarObservacionesUsuario(String usuario) {
-        List<ComentarioUsuario> comentarios = viewModel.getComentarios().getValue();
-        StringBuilder sb = new StringBuilder();
-
-        if (comentarios != null) {
-            for (ComentarioUsuario c : comentarios) {
-                if (c.usuario.equals(usuario)) {
-                    sb.append(getString(R.string.formato_observacion_usuario,
-                            c.fechaHora, c.torre, c.mensaje));
-                }
-            }
-        }
-
-        if (sb.length() == 0) {
-            sb.append(getString(R.string.dialog_usuario_sin_observaciones));
-        }
-
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.dialog_usuario_observaciones_titulo, usuario))
-                .setMessage(sb.toString().trim())
-                .setPositiveButton(R.string.accion_volver, (d, w) -> mostrarDialogoUsuariosRegistrados())
-                .show();
+    private void abrirGestionUsuarios() {
+        if (!Login.ROL_ADMIN.equals(rol) || esModoDemo) return;
+        Intent intent = new Intent(this, GestionUsuariosActivity.class);
+        intent.putExtra(Login.EXTRA_ROL, rol);
+        intent.putExtra(GestionUsuariosActivity.EXTRA_USUARIO_ADMIN,
+                getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL));
+        startActivity(intent);
     }
 
     private void cerrarSesion() {
