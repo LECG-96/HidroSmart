@@ -18,6 +18,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.devst.hidrosmart.R;
+import com.devst.hidrosmart.data.GestionUsuariosDataSource;
+import com.devst.hidrosmart.data.HuertoDataSourceProvider;
+import com.devst.hidrosmart.modelo.UsuarioApp;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 import com.google.android.material.tabs.TabLayout;
 
@@ -75,9 +78,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (!sesionAutorizada()) {
+            Toast.makeText(this, R.string.sesion_revocada, Toast.LENGTH_LONG).show();
+            cerrarSesion();
+            return;
+        }
         if (viewModel != null) {
             viewModel.reanudarSimulacion(Login.ROL_USER.equals(rol));
         }
+    }
+
+    private boolean sesionAutorizada() {
+        if (esModoDemo) return true;
+        String nombre = getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
+        if (nombre == null || nombre.trim().isEmpty()) return false;
+        GestionUsuariosDataSource usuarios = HuertoDataSourceProvider.getAutenticacion(getApplicationContext());
+        for (UsuarioApp usuario : usuarios.obtenerUsuarios()) {
+            if (nombre.equalsIgnoreCase(usuario.nombre)) {
+                return usuario.activo && rol.equals(usuario.rol);
+            }
+        }
+        return false;
     }
 
     @Override

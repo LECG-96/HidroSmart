@@ -42,6 +42,7 @@
     <string name="login_aviso_local">Acceso local de prueba; no es autenticación segura para el sistema real.</string>
     <string name="mensaje_campos_incompletos">Completa los campos</string>
     <string name="mensaje_login_incorrecto">Usuario o contraseña incorrectos</string>
+    <string name="sesion_revocada">Tu cuenta fue desactivada o sus permisos cambiaron. Inicia sesión nuevamente.</string>
 
     <string name="mensaje_maximo_torres">Máximo 4 torres alcanzado</string>
     <string name="mensaje_torre_agregada">Torre agregada</string>
