@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.GridLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Button;
@@ -28,10 +29,13 @@ import com.devst.hidrosmart.modelo.HuertoSnapshot;
 import com.devst.hidrosmart.modelo.PerfilCultivo;
 import com.devst.hidrosmart.viewmodel.HuertoViewModel;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class InicioFragment extends Fragment {
 
@@ -47,6 +51,10 @@ public class InicioFragment extends Fragment {
     private View layoutAccionesDemo;
     private Button btnGuiaDemo, btnReiniciarDemo;
     private Button btnEditarRangos;
+    private GridLayout gridEstadoSistema;
+    private final Map<String, IndicadorSistemaView> indicadoresSistema = new LinkedHashMap<>();
+    private final Map<String, TextView> textosEstadoSistema = new LinkedHashMap<>();
+    private final Map<Integer, Double> nivelesAnteriores = new LinkedHashMap<>();
 
     private boolean actualizandoSpinner = false;
     private boolean soloDatosReales = false;
@@ -111,6 +119,123 @@ public class InicioFragment extends Fragment {
         layoutDatosHuerto = view.findViewById(R.id.layoutDatosHuerto);
         spnCultivo = view.findViewById(R.id.spnCultivo);
         tabTorres = view.findViewById(R.id.tabTorres);
+        gridEstadoSistema = view.findViewById(R.id.gridEstadoSistema);
+        crearTarjetasEstadoSistema();
+    }
+
+    private void crearTarjetasEstadoSistema() {
+        if (gridEstadoSistema == null || getContext() == null) return;
+        gridEstadoSistema.removeAllViews();
+        indicadoresSistema.clear();
+        textosEstadoSistema.clear();
+        agregarTarjetaEstado("ventilador", R.string.control_ventilador, IndicadorSistemaView.VENTILADOR);
+        agregarTarjetaEstado("led", R.string.control_led, IndicadorSistemaView.LUZ);
+        agregarTarjetaEstado("bomba_riego", R.string.control_bomba_riego, IndicadorSistemaView.BOMBA);
+        agregarTarjetaEstado("nutrientes", R.string.control_nutrientes, IndicadorSistemaView.BOMBA);
+        agregarTarjetaEstado("ph_pump", R.string.control_ph_down, IndicadorSistemaView.BOMBA);
+        agregarTarjetaEstado("cerradura", R.string.control_cerradura, IndicadorSistemaView.CERRADURA);
+        agregarTarjetaEstado("nivel_agua", R.string.inicio_nivel_estanque, IndicadorSistemaView.ESTANQUE);
+    }
+
+    private void agregarTarjetaEstado(String clave, int tituloRes, int tipo) {
+        int margen = dp(4);
+        MaterialCardView tarjeta = new MaterialCardView(requireContext());
+        tarjeta.setRadius(dp(16));
+        tarjeta.setCardElevation(0);
+        tarjeta.setStrokeWidth(dp(1));
+        tarjeta.setStrokeColor(ContextCompat.getColor(requireContext(), R.color.divisor));
+        tarjeta.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.superficie_tarjeta));
+        GridLayout.LayoutParams params = new GridLayout.LayoutParams(
+                GridLayout.spec(GridLayout.UNDEFINED),
+                GridLayout.spec(GridLayout.UNDEFINED, 1f));
+        params.width = 0;
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.setMargins(margen, margen, margen, margen);
+        tarjeta.setLayoutParams(params);
+
+        LinearLayout contenido = new LinearLayout(requireContext());
+        contenido.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        contenido.setPadding(dp(10), dp(12), dp(8), dp(12));
+        contenido.setMinimumHeight(dp(76));
+
+        IndicadorSistemaView indicador = new IndicadorSistemaView(requireContext());
+        indicador.setLayoutParams(new LinearLayout.LayoutParams(dp(48), dp(48)));
+        indicador.configurar(tipo, false);
+        contenido.addView(indicador);
+
+        LinearLayout columna = new LinearLayout(requireContext());
+        columna.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams columnaParams = new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        columnaParams.setMargins(dp(6), 0, 0, 0);
+        columna.setLayoutParams(columnaParams);
+        TextView titulo = new TextView(requireContext());
+        titulo.setText(tituloRes);
+        titulo.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto_secundario));
+        titulo.setTextSize(12);
+        TextView estado = new TextView(requireContext());
+        estado.setText(R.string.estado_apagado);
+        estado.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto_terciario));
+        estado.setTextSize(14);
+        estado.setTypeface(null, android.graphics.Typeface.BOLD);
+        columna.addView(titulo);
+        columna.addView(estado);
+        contenido.addView(columna);
+        tarjeta.addView(contenido);
+        gridEstadoSistema.addView(tarjeta);
+        indicadoresSistema.put(clave, indicador);
+        textosEstadoSistema.put(clave, estado);
+    }
+
+    private int dp(float valor) {
+        return Math.round(valor * getResources().getDisplayMetrics().density);
+    }
+
+    private void actualizarIndicadoresSistema(HuertoSnapshot huerto, double nivel) {
+        boolean hayDatos = !soloDatosReales
+                || Boolean.TRUE.equals(viewModel.getDatosRealesDisponibles().getValue());
+        if (!hayDatos) return;
+        actualizarIndicador(huerto, "ventilador", R.string.estado_encendido, R.string.estado_apagado);
+        actualizarIndicador(huerto, "led", R.string.estado_encendido, R.string.estado_apagado);
+        actualizarIndicador(huerto, "bomba_riego", R.string.estado_regando, R.string.estado_apagado);
+        actualizarIndicador(huerto, "nutrientes", R.string.estado_dosificando, R.string.estado_apagado);
+        actualizarIndicador(huerto, "ph_pump", R.string.estado_dosificando, R.string.estado_apagado);
+        actualizarIndicador(huerto, "cerradura", R.string.estado_desbloqueada, R.string.estado_cerrada);
+
+        IndicadorSistemaView estanque = indicadoresSistema.get("nivel_agua");
+        TextView estadoEstanque = textosEstadoSistema.get("nivel_agua");
+        if (estanque != null && estadoEstanque != null) {
+            estanque.configurarNivel((float) nivel);
+            String tendencia = getString(R.string.estado_nivel_estable);
+            Double anterior = nivelesAnteriores.get(huerto.idx);
+            if (anterior != null) {
+                if (nivel > anterior + 0.5) tendencia = getString(R.string.estado_nivel_subiendo);
+                else if (nivel < anterior - 0.5) tendencia = getString(R.string.estado_nivel_bajando);
+            }
+            estadoEstanque.setText(String.format(Locale.getDefault(), "%s · %.0f%%", tendencia, nivel));
+            estadoEstanque.setContentDescription(getString(R.string.estado_estanque_accesible, tendencia, nivel));
+            nivelesAnteriores.put(huerto.idx, nivel);
+        }
+    }
+
+    private void actualizarIndicador(HuertoSnapshot huerto, String clave, int activoRes, int apagadoRes) {
+        boolean activo = Boolean.TRUE.equals(huerto.act.get(clave));
+        IndicadorSistemaView indicador = indicadoresSistema.get(clave);
+        TextView estado = textosEstadoSistema.get(clave);
+        if (indicador == null || estado == null) return;
+        indicador.configurar(indicadorTipo(clave), activo);
+        estado.setText(activo ? activoRes : apagadoRes);
+        estado.setTextColor(ContextCompat.getColor(requireContext(), activo
+                ? R.color.alerta_ok : R.color.texto_terciario));
+        estado.setContentDescription(getString(R.string.estado_actuador_accesible,
+                getString(activo ? activoRes : apagadoRes)));
+    }
+
+    private int indicadorTipo(String clave) {
+        if ("ventilador".equals(clave)) return IndicadorSistemaView.VENTILADOR;
+        if ("led".equals(clave)) return IndicadorSistemaView.LUZ;
+        if ("cerradura".equals(clave)) return IndicadorSistemaView.CERRADURA;
+        return IndicadorSistemaView.BOMBA;
     }
 
     private void configurarModoSoloLectura() {
@@ -400,6 +525,7 @@ public class InicioFragment extends Fragment {
 
         tvNivel.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), nivel));
         pintarValor(tvNivel, nivel < Huerto.NIVEL_BAJO);
+        actualizarIndicadoresSistema(huerto, nivel);
     }
 
     private String formatearNombreVariable(String raw) {

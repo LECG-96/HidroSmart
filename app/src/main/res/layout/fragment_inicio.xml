@@ -263,6 +263,31 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/inicio_estado_actuadores"
+                android:textColor="@color/texto_principal"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/inicio_estado_actuadores_subtitulo"
+                android:textColor="@color/texto_secundario"
+                android:textSize="13sp" />
+
+            <GridLayout
+                android:id="@+id/gridEstadoSistema"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:columnCount="2"
+                android:useDefaultMargins="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:text="@string/inicio_diagnostico"
                 android:textColor="@color/texto_principal"

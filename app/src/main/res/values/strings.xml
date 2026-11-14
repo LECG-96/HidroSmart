@@ -110,7 +110,7 @@
     <string name="inicio_demo_solo_lectura">Modo Demo: usa Control &amp; Sim para interactuar con la simulación.</string>
     <string name="inicio_operador_solo_lectura">El cultivo y sus parámetros son administrados por el administrador.</string>
     <string name="inicio_sin_datos_reales">Sin conexión a una torre real. Las mediciones y alertas aparecerán cuando se reciban datos del sistema.</string>
-    <string name="inicio_esperando_datos_reales">Conexión establecida. Esperando la primera lectura real de la torre.</string>
+    <string name="inicio_esperando_datos_reales">Sin lecturas recientes. Verifica que la torre esté publicando telemetría.</string>
     <string name="tab_torre_cultivo">T%1$d · %2$s</string>
     <string name="inicio_mediciones">Mediciones de sensores</string>
     <string name="inicio_temp_aire">Temp. Aire</string>
@@ -121,6 +121,19 @@
     <string name="inicio_ec">Conductividad (EC)</string>
     <string name="inicio_luminosidad">Luminosidad</string>
     <string name="inicio_nivel_estanque">Nivel Estanque</string>
+    <string name="inicio_estado_actuadores">Actividad del sistema</string>
+    <string name="inicio_estado_actuadores_subtitulo">Estados enviados por la torre; el estanque muestra el nivel medido.</string>
+    <string name="estado_encendido">Encendido</string>
+    <string name="estado_apagado">Apagado</string>
+    <string name="estado_regando">En riego</string>
+    <string name="estado_dosificando">Dosificando</string>
+    <string name="estado_cerrada">Cerrada</string>
+    <string name="estado_desbloqueada">Desbloqueada</string>
+    <string name="estado_nivel_estable">Nivel estable</string>
+    <string name="estado_nivel_subiendo">Nivel en aumento</string>
+    <string name="estado_nivel_bajando">Nivel en descenso</string>
+    <string name="estado_actuador_accesible">Estado: %1$s</string>
+    <string name="estado_estanque_accesible">%1$s, nivel medido %2$.0f por ciento</string>
     <string name="inicio_ph_placeholder">--</string>
     <string name="inicio_lux_minimo">(≥ 3000 lux)</string>
     <string name="inicio_nivel_minimo" formatted="false">(≥ 30%)</string>
