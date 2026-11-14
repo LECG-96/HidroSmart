@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.View;
+import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -34,11 +35,16 @@ public final class IndicadorSistemaView extends View {
     private boolean adjunto;
     private boolean animacionesHabilitadas = true;
     private ValueAnimator animadorNivel;
+    private long ultimaActualizacionAnimacion;
     private final Runnable animar = new Runnable() {
         @Override public void run() {
             if (!adjunto || !animacionesHabilitadas) return;
-            fase = (fase + 0.08f) % 1f;
-            if (tipo == VENTILADOR) giro = (giro + 9f) % 360f;
+            long ahora = SystemClock.uptimeMillis();
+            float segundos = Math.min((ahora - ultimaActualizacionAnimacion) / 1000f, 0.05f);
+            ultimaActualizacionAnimacion = ahora;
+            float ciclosPorSegundo = tipo == BOMBA ? 0.42f : 0.22f;
+            fase = (fase + segundos * ciclosPorSegundo) % 1f;
+            if (tipo == VENTILADOR) giro = (giro + segundos * 75f) % 360f;
             invalidate();
             if (necesitaAnimacionContinua()) postOnAnimation(this);
         }
@@ -70,7 +76,7 @@ public final class IndicadorSistemaView extends View {
         }
         if (animadorNivel != null) animadorNivel.cancel();
         animadorNivel = ValueAnimator.ofFloat(nivel, nivelObjetivo);
-        animadorNivel.setDuration(650);
+        animadorNivel.setDuration(1800);
         animadorNivel.addUpdateListener(a -> {
             nivel = (float) a.getAnimatedValue();
             invalidate();
@@ -108,7 +114,10 @@ public final class IndicadorSistemaView extends View {
     private void iniciarOPararAnimacion() {
         removeCallbacks(animar);
         animacionesHabilitadas = animacionPermitida();
-        if (adjunto && animacionesHabilitadas && necesitaAnimacionContinua()) postOnAnimation(animar);
+        if (adjunto && animacionesHabilitadas && necesitaAnimacionContinua()) {
+            ultimaActualizacionAnimacion = SystemClock.uptimeMillis();
+            postOnAnimation(animar);
+        }
     }
 
     private int color(int resource) { return ContextCompat.getColor(getContext(), resource); }

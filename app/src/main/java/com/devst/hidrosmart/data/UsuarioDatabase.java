@@ -129,10 +129,19 @@ public final class UsuarioDatabase extends SQLiteOpenHelper implements GestionUs
     @Override
     public boolean requiereCambioContrasena(String nombre) {
         try (Cursor cursor = getReadableDatabase().query(TABLA,
-                new String[]{"cambio_clave_pendiente"}, "nombre = ?",
+                new String[]{"cambio_clave_pendiente", "sal", "hash_clave"}, "nombre = ?",
                 new String[]{normalizarNombre(nombre)}, null, null, null)) {
-            return cursor.moveToFirst() && cursor.getInt(0) == 1;
+            if (!cursor.moveToFirst() || cursor.getInt(0) != 1) return false;
+            byte[] sal = cursor.getBlob(1);
+            byte[] hashActual = cursor.getBlob(2);
+            if (MessageDigest.isEqual(hashActual, derivarHash("1234", sal))) return true;
         }
+        // Limpia las cuentas que ya cambiaron su clave antes de corregirse el indicador pendiente.
+        ContentValues valores = new ContentValues();
+        valores.put("cambio_clave_pendiente", 0);
+        getWritableDatabase().update(TABLA, valores, "nombre = ?",
+                new String[]{normalizarNombre(nombre)});
+        return false;
     }
 
     @Override
@@ -167,6 +176,7 @@ public final class UsuarioDatabase extends SQLiteOpenHelper implements GestionUs
         ContentValues valores = new ContentValues();
         valores.put("sal", sal);
         valores.put("hash_clave", derivarHash(contrasena, sal));
+        valores.put("cambio_clave_pendiente", 0);
         if (getWritableDatabase().update(TABLA, valores, "nombre = ?", new String[]{usuario}) == 0) {
             throw new IllegalArgumentException("No se encontró la cuenta.");
         }
