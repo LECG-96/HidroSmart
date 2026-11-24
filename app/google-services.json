@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "278212241255",
+    "project_id": "hidro-smart",
+    "storage_bucket": "hidro-smart.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278212241255:android:5d65c74e0453a05322f1c2",
+        "android_client_info": {
+          "package_name": "com.devst.hidrosmart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPcAL00-97Pq0SOwANSkFZXGDqo4gavS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

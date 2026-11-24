@@ -4,8 +4,10 @@ import android.content.Context;
 
 /** Punto único para seleccionar la fuente de datos activa de la aplicación. */
 public final class HuertoDataSourceProvider {
-    private static ComentarioDatabase almacenamientoLocal;
     private static GestionUsuariosDataSource usuarios;
+    private static ComentarioLocalDataSource comentarios;
+    private static HistorialLocalDataSource historial;
+    private static HistorialMedicionesDataSource mediciones;
 
     private HuertoDataSourceProvider() {}
 
@@ -15,27 +17,29 @@ public final class HuertoDataSourceProvider {
 
     public static synchronized GestionUsuariosDataSource getAutenticacion(Context context) {
         if (usuarios == null) {
-            usuarios = new UsuarioDatabase(context.getApplicationContext());
+            usuarios = new UsuarioFirestore(context.getApplicationContext());
         }
         return usuarios;
     }
 
     public static synchronized ComentarioLocalDataSource getComentarios(Context context) {
-        return getAlmacenamientoLocal(context);
+        if (comentarios == null) {
+            comentarios = new ComentarioFirestore();
+        }
+        return comentarios;
     }
 
     public static synchronized HistorialLocalDataSource getHistorial(Context context) {
-        return getAlmacenamientoLocal(context);
+        if (historial == null) {
+            historial = new HistorialFirestore();
+        }
+        return historial;
     }
 
     public static synchronized HistorialMedicionesDataSource getHistorialMediciones(Context context) {
-        return getAlmacenamientoLocal(context);
-    }
-
-    private static ComentarioDatabase getAlmacenamientoLocal(Context context) {
-        if (almacenamientoLocal == null) {
-            almacenamientoLocal = new ComentarioDatabase(context.getApplicationContext());
+        if (mediciones == null) {
+            mediciones = new MedicionesFirestore();
         }
-        return almacenamientoLocal;
+        return mediciones;
     }
 }

@@ -332,7 +332,11 @@ public class HuertoViewModel extends AndroidViewModel implements HuertoDataSourc
     public void registrarComentario(String usuario, String torre, String mensaje) {
         ComentarioUsuario comentario = new ComentarioUsuario(usuario, torre, mensaje);
         comentariosExecutor.execute(() -> {
-            comentarioDataSource.guardar(comentario);
+            try {
+                comentarioDataSource.guardar(comentario);
+            } catch (RuntimeException e) {
+                android.util.Log.e("HuertoViewModel", "No se pudo guardar el comentario", e);
+            }
             comentarios.postValue(comentarioDataSource.obtenerTodos());
         });
     }

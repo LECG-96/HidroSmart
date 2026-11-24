@@ -39,7 +39,7 @@ public class Login extends AppCompatActivity {
         GestionUsuariosDataSource autenticacion = HuertoDataSourceProvider.getAutenticacion(getApplicationContext());
 
         btnIngresar.setOnClickListener(v -> {
-            String usuario = etUsuario.getText().toString().trim();
+            String usuario = etUsuario.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
             String contrasena = etContrasena.getText().toString();
 
             if (usuario.isEmpty() || contrasena.isEmpty()) {
@@ -49,17 +49,33 @@ public class Login extends AppCompatActivity {
 
             btnIngresar.setEnabled(false);
             loginExecutor.execute(() -> {
-                String rol = autenticacion.autenticar(usuario, contrasena);
-                boolean cambioObligatorio = rol != null && autenticacion.requiereCambioContrasena(usuario);
+                String rol = null;
+                boolean cambioObligatorio = false;
+                RuntimeException falloRed = null;
+                try {
+                    rol = autenticacion.autenticar(usuario, contrasena);
+                    cambioObligatorio = rol != null && autenticacion.requiereCambioContrasena(usuario);
+                } catch (RuntimeException e) {
+                    falloRed = e;
+                }
+                final String rolFinal = rol;
+                final boolean cambioFinal = cambioObligatorio;
+                final RuntimeException errorFinal = falloRed;
                 runOnUiThread(() -> {
                     if (isFinishing() || isDestroyed()) return;
                     btnIngresar.setEnabled(true);
-                    if (rol == null) {
+                    if (errorFinal != null) {
+                        Toast.makeText(this, errorFinal.getMessage() == null
+                                        ? getString(R.string.mensaje_error_generico) : errorFinal.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (rolFinal == null) {
                         Toast.makeText(this, R.string.mensaje_login_incorrecto, Toast.LENGTH_SHORT).show();
-                    } else if (cambioObligatorio) {
-                        mostrarCambioClaveObligatorio(usuario, rol, autenticacion);
+                    } else if (cambioFinal) {
+                        mostrarCambioClaveObligatorio(usuario, rolFinal, autenticacion);
                     } else {
-                        abrirMain(rol, false, usuario);
+                        abrirMain(rolFinal, false, usuario);
                     }
                 });
             });
@@ -119,7 +135,7 @@ public class Login extends AppCompatActivity {
                     guardar.setEnabled(true);
                     if (resultadoError != null) {
                         Toast.makeText(this, resultadoError.getMessage() == null
-                                ? getString(R.string.mensaje_error_generico) : resultadoError.getMessage(),
+                                        ? getString(R.string.mensaje_error_generico) : resultadoError.getMessage(),
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
