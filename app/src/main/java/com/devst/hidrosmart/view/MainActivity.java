@@ -78,14 +78,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!sesionAutorizada()) {
-            Toast.makeText(this, R.string.sesion_revocada, Toast.LENGTH_LONG).show();
-            cerrarSesion();
-            return;
-        }
         if (viewModel != null) {
             viewModel.reanudarSimulacion(Login.ROL_USER.equals(rol));
         }
+        if (esModoDemo) return;
+        // La validación consulta Firebase, así que corre fuera del hilo principal.
+        new Thread(() -> {
+            boolean autorizada;
+            try {
+                autorizada = sesionAutorizada();
+            } catch (RuntimeException e) {
+                return; // Sin conexión: se conserva la sesión y se revalida en el próximo onResume.
+            }
+            if (autorizada) return;
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                Toast.makeText(this, R.string.sesion_revocada, Toast.LENGTH_LONG).show();
+                cerrarSesion();
+            });
+        }).start();
     }
 
     private boolean sesionAutorizada() {
@@ -93,12 +104,8 @@ public class MainActivity extends AppCompatActivity {
         String nombre = getIntent().getStringExtra(Login.EXTRA_USUARIO_ACTUAL);
         if (nombre == null || nombre.trim().isEmpty()) return false;
         GestionUsuariosDataSource usuarios = HuertoDataSourceProvider.getAutenticacion(getApplicationContext());
-        for (UsuarioApp usuario : usuarios.obtenerUsuarios()) {
-            if (nombre.equalsIgnoreCase(usuario.nombre)) {
-                return usuario.activo && rol.equals(usuario.rol);
-            }
-        }
-        return false;
+        UsuarioApp usuario = usuarios.obtenerUsuario(nombre);
+        return usuario != null && usuario.activo && rol.equals(usuario.rol);
     }
 
     @Override
@@ -296,8 +303,8 @@ public class MainActivity extends AppCompatActivity {
 
         int tabInicial = fragmentActivo == fragmentControl ? 1
                 : (esModoDemo && fragmentActivo == fragmentHistorial ? 2
-                : (Login.ROL_USER.equals(rol) && fragmentActivo == fragmentHistorial ? 1
-                : (!esModoDemo && !Login.ROL_USER.equals(rol) && fragmentActivo == fragmentHistorial ? 3 : 0)));
+                   : (Login.ROL_USER.equals(rol) && fragmentActivo == fragmentHistorial ? 1
+                      : (!esModoDemo && !Login.ROL_USER.equals(rol) && fragmentActivo == fragmentHistorial ? 3 : 0)));
         TabLayout.Tab tab = tabNavegacionAdmin.getTabAt(tabInicial);
         if (tab != null && !tab.isSelected()) tab.select();
     }
@@ -312,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void cerrarSesion() {
+        com.google.firebase.auth.FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(MainActivity.this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

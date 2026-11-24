@@ -20,6 +20,9 @@ import com.devst.hidrosmart.modelo.UsuarioApp;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 /** Panel local para que Admin gestione las cuentas de la app. */
 public class GestionUsuariosActivity extends AppCompatActivity {
@@ -28,6 +31,7 @@ public class GestionUsuariosActivity extends AppCompatActivity {
     private GestionUsuariosDataSource usuarios;
     private LinearLayout contenedor;
     private String usuarioActual;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +50,48 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         mostrarUsuarios();
     }
 
+    @Override
+    protected void onDestroy() {
+        executor.shutdown();
+        super.onDestroy();
+    }
+
+    /** Ejecuta el trabajo en segundo plano (Firebase) y devuelve el resultado al hilo principal. */
+    private void enSegundoPlano(Runnable trabajo, Runnable exito, Consumer<RuntimeException> fallo) {
+        executor.execute(() -> {
+            RuntimeException error = null;
+            try {
+                trabajo.run();
+            } catch (RuntimeException e) {
+                error = e;
+            }
+            RuntimeException resultado = error;
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                if (resultado == null) exito.run(); else fallo.accept(resultado);
+            });
+        });
+    }
+
     private void mostrarUsuarios() {
         if (contenedor == null || usuarios == null) return;
+        executor.execute(() -> {
+            List<UsuarioApp> lista;
+            try {
+                lista = usuarios.obtenerUsuarios();
+            } catch (RuntimeException e) {
+                runOnUiThread(() -> mostrarMensaje(e.getMessage()));
+                return;
+            }
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                pintarUsuarios(lista);
+            });
+        });
+    }
+
+    private void pintarUsuarios(List<UsuarioApp> lista) {
         contenedor.removeAllViews();
-        List<UsuarioApp> lista = usuarios.obtenerUsuarios();
         if (lista.isEmpty()) {
             TextView vacio = new TextView(this);
             vacio.setText(R.string.usuarios_sin_cuentas);
@@ -125,33 +167,34 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.usuarios_crear, null)
                 .create();
         dialogo.setOnShowListener(ignorado -> dialogo.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                    String nombreValor = nombre.getText().toString().trim();
-                    String claveValor = clave.getText().toString();
-                    if (!nombreValido(nombreValor)) {
-                        mostrarMensaje(R.string.usuarios_error_nombre);
-                        return;
-                    }
-                    if (claveValor.trim().length() < 8) {
-                        mostrarMensaje(R.string.usuarios_error_clave);
-                        return;
-                    }
-                    if (!claveValor.equals(confirmarClave.getText().toString())) {
-                        mostrarMensaje(R.string.usuarios_error_confirmar_clave);
-                        return;
-                    }
-                    String rol = selectorRol.getSelectedItemPosition() == 1
-                            ? Login.ROL_ADMIN : Login.ROL_USER;
-                    try {
-                        usuarios.crearUsuario(nombreValor, claveValor, rol);
+            String nombreValor = nombre.getText().toString().trim();
+            String claveValor = clave.getText().toString();
+            if (!nombreValido(nombreValor)) {
+                mostrarMensaje(R.string.usuarios_error_nombre);
+                return;
+            }
+            if (claveValor.trim().length() < 8) {
+                mostrarMensaje(R.string.usuarios_error_clave);
+                return;
+            }
+            if (!claveValor.equals(confirmarClave.getText().toString())) {
+                mostrarMensaje(R.string.usuarios_error_confirmar_clave);
+                return;
+            }
+            String rol = selectorRol.getSelectedItemPosition() == 1
+                    ? Login.ROL_ADMIN : Login.ROL_USER;
+            v.setEnabled(false);
+            enSegundoPlano(() -> usuarios.crearUsuario(nombreValor, claveValor, rol),
+                    () -> {
                         mostrarUsuarios();
                         mostrarMensaje(R.string.usuarios_creada);
                         dialogo.dismiss();
-                    } catch (android.database.sqlite.SQLiteConstraintException e) {
-                        mostrarMensaje(R.string.usuarios_error_duplicado);
-                    } catch (RuntimeException e) {
+                    },
+                    e -> {
+                        v.setEnabled(true);
                         mostrarMensaje(e.getMessage());
-                    }
-                }));
+                    });
+        }));
         dialogo.show();
     }
 
@@ -191,15 +234,13 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                 .setTitle(R.string.usuarios_rol)
                 .setSingleChoiceItems(roles, seleccionado, (dialog, which) -> {
                     String rol = which == 1 ? Login.ROL_ADMIN : Login.ROL_USER;
-                    try {
-                        usuarios.cambiarRol(cuenta.nombre, rol);
-                        mostrarUsuarios();
-                        mostrarMensaje(R.string.usuarios_actualizada);
-                        dialog.dismiss();
-                    } catch (RuntimeException e) {
-                        dialog.dismiss();
-                        mostrarMensaje(e.getMessage());
-                    }
+                    dialog.dismiss();
+                    enSegundoPlano(() -> usuarios.cambiarRol(cuenta.nombre, rol),
+                            () -> {
+                                mostrarUsuarios();
+                                mostrarMensaje(R.string.usuarios_actualizada);
+                            },
+                            e -> mostrarMensaje(e.getMessage()));
                 })
                 .setNegativeButton(R.string.accion_cancelar, null)
                 .show();
@@ -222,22 +263,26 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.accion_guardar, null)
                 .create();
         dialogo.setOnShowListener(ignorado -> dialogo.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                    if (clave.getText().toString().trim().length() < 8) {
-                        mostrarMensaje(R.string.usuarios_error_clave);
-                        return;
-                    }
-                    if (!clave.getText().toString().equals(confirmarClave.getText().toString())) {
-                        mostrarMensaje(R.string.usuarios_error_confirmar_clave);
-                        return;
-                    }
-                    try {
-                        usuarios.cambiarContrasena(nombre, clave.getText().toString());
+            if (clave.getText().toString().trim().length() < 8) {
+                mostrarMensaje(R.string.usuarios_error_clave);
+                return;
+            }
+            if (!clave.getText().toString().equals(confirmarClave.getText().toString())) {
+                mostrarMensaje(R.string.usuarios_error_confirmar_clave);
+                return;
+            }
+            String nuevaClave = clave.getText().toString();
+            v.setEnabled(false);
+            enSegundoPlano(() -> usuarios.cambiarContrasena(nombre, nuevaClave),
+                    () -> {
                         mostrarMensaje(R.string.usuarios_clave_actualizada);
                         dialogo.dismiss();
-                    } catch (RuntimeException e) {
+                    },
+                    e -> {
+                        v.setEnabled(true);
                         mostrarMensaje(e.getMessage());
-                    }
-                }));
+                    });
+        }));
         dialogo.show();
     }
 
@@ -249,13 +294,12 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                         : getString(R.string.usuarios_confirmar_desactivar, cuenta.nombre))
                 .setNegativeButton(R.string.accion_cancelar, null)
                 .setPositiveButton(R.string.accion_confirmar, (dialog, which) -> {
-                    try {
-                        usuarios.cambiarEstado(cuenta.nombre, activar);
-                        mostrarUsuarios();
-                        mostrarMensaje(R.string.usuarios_actualizada);
-                    } catch (RuntimeException e) {
-                        mostrarMensaje(e.getMessage());
-                    }
+                    enSegundoPlano(() -> usuarios.cambiarEstado(cuenta.nombre, activar),
+                            () -> {
+                                mostrarUsuarios();
+                                mostrarMensaje(R.string.usuarios_actualizada);
+                            },
+                            e -> mostrarMensaje(e.getMessage()));
                 })
                 .show();
     }
