@@ -23,4 +23,5 @@
     <color name="texto_secundario">#53635A</color>
     <color name="texto_terciario">#748178</color>
     <color name="divisor">#DCE5DD</color>
+    <color name="volver">#256448</color>
 </resources>

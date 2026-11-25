@@ -198,30 +198,53 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         dialogo.show();
     }
 
+
     private void mostrarAcciones(UsuarioApp cuenta) {
-        boolean esPropia = usuarioActual != null && usuarioActual.equalsIgnoreCase(cuenta.nombre);
+        boolean esPropia = usuarioActual != null
+                && usuarioActual.equalsIgnoreCase(cuenta.nombre);
+
         String[] acciones;
+
         if (esPropia) {
-            acciones = new String[]{getString(R.string.usuarios_menu_clave)};
+            // El administrador solo puede cambiar su propia contraseña.
+            acciones = new String[]{
+                    getString(R.string.usuarios_menu_clave)
+            };
         } else if (cuenta.activo) {
-            acciones = new String[]{getString(R.string.usuarios_menu_rol),
-                    getString(R.string.usuarios_menu_clave), getString(R.string.usuarios_menu_desactivar)};
+            acciones = new String[]{
+                    getString(R.string.usuarios_menu_rol),
+                    getString(R.string.usuarios_menu_clave),
+                    getString(R.string.usuarios_menu_desactivar),
+                    getString(R.string.usuarios_menu_eliminar)
+            };
         } else {
-            acciones = new String[]{getString(R.string.usuarios_menu_rol),
-                    getString(R.string.usuarios_menu_clave), getString(R.string.usuarios_menu_activar)};
+            acciones = new String[]{
+                    getString(R.string.usuarios_menu_rol),
+                    getString(R.string.usuarios_menu_clave),
+                    getString(R.string.usuarios_menu_activar),
+                    getString(R.string.usuarios_menu_eliminar)
+            };
         }
+
         new AlertDialog.Builder(this)
                 .setTitle(cuenta.nombre)
                 .setItems(acciones, (dialog, index) -> {
+
                     if (esPropia) {
                         mostrarFormularioClave(cuenta.nombre);
-                    } else if (index == 0) {
+                        return;
+                    }
+
+                    if (index == 0) {
                         mostrarSelectorRol(cuenta);
                     } else if (index == 1) {
                         mostrarFormularioClave(cuenta.nombre);
-                    } else {
+                    } else if (index == 2) {
                         confirmarCambioEstado(cuenta);
+                    } else if (index == 3) {
+                        confirmarEliminarUsuario(cuenta);
                     }
+
                 })
                 .setNegativeButton(R.string.accion_cancelar, null)
                 .show();
@@ -300,6 +323,26 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                                 mostrarMensaje(R.string.usuarios_actualizada);
                             },
                             e -> mostrarMensaje(e.getMessage()));
+                })
+                .show();
+    }
+    private void confirmarEliminarUsuario(UsuarioApp cuenta) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.usuarios_menu_eliminar)
+                .setMessage(getString(
+                        R.string.usuarios_confirmar_eliminar,
+                        cuenta.nombre
+                ))
+                .setNegativeButton(R.string.accion_cancelar, null)
+                .setPositiveButton(R.string.accion_confirmar, (dialog, which) -> {
+                    enSegundoPlano(
+                            () -> usuarios.eliminarUsuario(cuenta.nombre),
+                            () -> {
+                                mostrarUsuarios();
+                                mostrarMensaje(R.string.usuarios_eliminada);
+                            },
+                            e -> mostrarMensaje(e.getMessage())
+                    );
                 })
                 .show();
     }

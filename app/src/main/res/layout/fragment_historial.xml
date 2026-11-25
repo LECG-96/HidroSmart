@@ -10,10 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/screen_padding">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/historial_titulo"
             android:textColor="@color/verde_primario"
@@ -22,7 +23,8 @@
 
         <!-- Estado de conexión; no se muestran datos del simulador como telemetría -->
         <TextView
-            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/historial_estadisticas"
@@ -54,7 +56,8 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/historial_alertas_titulo"
@@ -73,7 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="@dimen/screen_padding">
 
                 <TextView
                     android:id="@+id/tvAlertasReales"
@@ -102,7 +105,8 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+            android:gravity="center"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/historial_eventos_titulo"
@@ -122,7 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="5dp"
-                    android:padding="16dp"
+                    android:padding="@dimen/screen_padding"
                     android:text="@string/historial_eventos_vacio"
                     android:textColor="@color/texto_secundario"
                     android:textSize="14sp" />
@@ -136,7 +140,8 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+            android:gravity="center"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:text="@string/historial_tendencias_titulo"
@@ -155,7 +160,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/screen_padding">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -281,8 +286,9 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
+            android:gravity="center"
             android:id="@+id/tvTituloObservaciones"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/historial_observaciones_guardadas"
