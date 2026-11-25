@@ -14,4 +14,6 @@ public interface GestionUsuariosDataSource extends AutenticacionDataSource {
     void cambiarContrasena(String nombre, String contrasena);
     boolean requiereCambioContrasena(String nombre);
     void cambiarEstado(String nombre, boolean activo);
+
+    void eliminarUsuario(String nombre);
 }

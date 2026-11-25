@@ -34,11 +34,12 @@ android {
 
 dependencies {
     implementation("androidx.activity:activity:1.9.0")
-    implementation(libs.appcompat)
+    implementation(libs.firebase.functions)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.firestore)
     implementation("com.google.firebase:firebase-auth:25.0.0")
     implementation(libs.material)
+    implementation("com.google.firebase:firebase-functions")
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)

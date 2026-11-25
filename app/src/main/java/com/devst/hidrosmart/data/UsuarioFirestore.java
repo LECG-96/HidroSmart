@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -165,6 +166,42 @@ import java.util.concurrent.TimeoutException;
             }
             esperar(doc.getReference().update("activo", activo));
         }
+
+        @Override
+        public void eliminarUsuario(String nombre) {
+            String nombreNormalizado = normalizarNombre(nombre);
+
+            if (nombreNormalizado.isEmpty()) {
+                throw new IllegalArgumentException("Nombre de usuario inválido.");
+            }
+
+            FirebaseUser actual = auth.getCurrentUser();
+            if (actual == null) {
+                throw new IllegalStateException("No hay una sesión activa.");
+            }
+
+            if (actual.getEmail() != null
+                    && actual.getEmail().equalsIgnoreCase(correo(nombreNormalizado))) {
+                throw new IllegalStateException("No puedes eliminar tu propia cuenta.");
+            }
+
+            // 1. Buscar el documento del usuario en Firestore
+            DocumentSnapshot doc = documentoDe(nombreNormalizado);
+            if (doc == null) {
+                throw new IllegalArgumentException("No se encontró la cuenta.");
+            }
+
+            // 2. Evitar borrar al último administrador activo
+            if (ROL_ADMIN.equals(doc.getString("rol"))
+                    && Boolean.TRUE.equals(doc.getBoolean("activo"))
+                    && contarAdministradoresActivos() <= 1) {
+                throw new IllegalStateException("Debe quedar al menos un administrador activo.");
+            }
+
+            // 3. Eliminar el documento de Firestore (permitido por tus reglas actuales)
+            esperar(doc.getReference().delete());
+        }
+
 
         // ---- Auxiliares ----
 

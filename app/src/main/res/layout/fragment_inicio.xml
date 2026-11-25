@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="@dimen/screen_padding">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/layoutAccionesDemo"
@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/screen_padding">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -93,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/superficie_tarjeta"
-                android:padding="16dp"
+                android:padding="@dimen/screen_padding"
                 android:text="@string/inicio_sin_datos_reales"
                 android:textColor="@color/texto_secundario"
                 android:textSize="14sp"
@@ -107,6 +107,7 @@
                 android:orientation="vertical">
 
             <TextView
+            android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
@@ -116,6 +117,7 @@
                 android:textStyle="bold" />
 
             <TextView
+            android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="14dp"
@@ -147,7 +149,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/screen_padding">
 
                     <TextView
                         android:id="@+id/tvLabelCultivo"
@@ -186,7 +188,8 @@
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
-                android:layout_width="wrap_content"
+            android:gravity="center"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:text="@string/inicio_mediciones"
@@ -261,7 +264,8 @@
             </GridLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+            android:gravity="center"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/inicio_estado_actuadores"
@@ -286,7 +290,8 @@
                 android:useDefaultMargins="false" />
 
             <TextView
-                android:layout_width="wrap_content"
+            android:gravity="center"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:text="@string/inicio_diagnostico"
@@ -308,7 +313,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="3dp"
-                    android:padding="16dp"
+                    android:padding="@dimen/screen_padding"
                     android:text="@string/alertas_todas_ok"
                     android:textColor="@color/alerta_ok"
                     android:textSize="13sp" />

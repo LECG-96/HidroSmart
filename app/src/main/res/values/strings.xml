@@ -9,7 +9,6 @@
     <string name="ajustes_tema_sistema">Usar tema del dispositivo</string>
     <string name="ajustes_tema_claro">Tema claro</string>
     <string name="ajustes_tema_oscuro">Tema oscuro</string>
-    <string name="ajustes_tema_ayuda">La preferencia se guarda en este dispositivo y se aplica a toda la app.</string>
     <string name="btn_agregar_torre">+ Torre</string>
     <string name="btn_eliminar_torre">- Torre</string>
     <string name="tab_sensores">Sensores</string>
@@ -245,7 +244,7 @@
     <string name="historial_evento_atendida">Revisada</string>
     <string name="historial_evento_pendiente">Pendiente de revisión</string>
     <string name="historial_evento_cerrada">Cerrada al normalizarse</string>
-    <string name="historial_admin_simulacion">Modo local: historial generado con datos simulados.</string>
+    <string name="historial_admin_simulacion">Conexion a Firebase: historial generado con datos simulados.</string>
     <string name="historial_alertas_sin_conexion">Las alertas aparecerán cuando la app reciba datos de una torre real.</string>
     <string name="historial_alertas_esperando_datos">La conexión está activa; las alertas aparecerán al recibir la primera lectura real.</string>
     <string name="historial_alertas_vacias">No se han recibido alertas del sistema.</string>
@@ -268,6 +267,10 @@
     <string name="historial_grafico_vacio">Aún no hay suficientes lecturas para este período.</string>
     <string name="historial_grafico_sin_muestras">Sin lecturas</string>
     <string name="historial_grafico_resumen">Último valor: %1$.2f %2$s · %3$d lecturas</string>
+    <string name="usuarios_menu_eliminar">Eliminar usuario</string>
+    <string name="usuarios_confirmar_eliminar">¿Estás seguro de que deseas eliminar la cuenta de %1$s? Esta acción no se puede deshacer.</string>
+    <string name="usuarios_eliminada">Usuario eliminado correctamente</string>
+
 
     <string-array name="historial_variable_claves">
         <item>temp_ambiente</item>
