@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo_pantalla"
+    android:orientation="vertical">
+
+    <!-- Banner de Corte de Datos -->
+    <TextView
+        android:id="@+id/tvBannerCorte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/alerta_error"
+        android:padding="8dp"
+        android:text="@string/aviso_corte_datos"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/screen_padding">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/layoutAccionesDemo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:visibility="gone"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/screen_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/demo_panel_titulo"
+                        android:textColor="@color/texto_principal"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/demo_panel_descripcion"
+                        android:textColor="@color/texto_secundario"
+                        android:textSize="13sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnGuiaDemo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:text="@string/demo_iniciar_guia" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnReiniciarDemo"
+                            style="?attr/materialButtonOutlinedStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:text="@string/demo_reiniciar" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvSinDatosReales"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/superficie_tarjeta"
+                android:padding="@dimen/screen_padding"
+                android:text="@string/inicio_sin_datos_reales"
+                android:textColor="@color/texto_secundario"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/layoutDatosHuerto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+            <TextView
+            android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="@string/inicio_titulo_resumen"
+                android:textColor="@color/texto_principal"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+            android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:text="@string/inicio_subtitulo_resumen"
+                android:textColor="@color/texto_secundario"
+                android:textSize="14sp" />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabTorres"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabIndicatorColor="@color/verde_primario"
+                app:tabIndicatorFullWidth="false"
+                app:tabIndicatorHeight="3dp"
+                app:tabMode="fixed"
+                app:tabRippleColor="@color/verde_claro"
+                app:tabSelectedTextColor="@color/verde_primario" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divisor"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/screen_padding">
+
+                    <TextView
+                        android:id="@+id/tvLabelCultivo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/inicio_cultivo_torre"
+                        android:textColor="@color/texto_secundario"
+                        android:textSize="12sp"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.04" />
+
+                    <Spinner
+                        android:id="@+id/spnCultivo"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="4dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditarRangos"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/inicio_editar_rangos" />
+
+                    <TextView
+                        android:id="@+id/tvAvisoSoloLectura"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/inicio_demo_solo_lectura"
+                        android:textColor="@color/texto_terciario"
+                        android:layout_marginTop="4dp"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+            android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/inicio_mediciones"
+                android:textColor="@color/texto_principal"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <GridLayout
+                android:id="@+id/gridMediciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layoutAnimation="@anim/metric_cards_layout"
+                android:layout_marginTop="8dp"
+                android:columnCount="2"
+                android:useDefaultMargins="false">
+
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_temp_aire" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvTempAire" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_temperatura" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvRangoAire" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_humedad" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvHumedad" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_humedad" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/inicio_optimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_temp_agua" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvTempAgua" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_temperatura" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvRangoAgua" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_ph" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvPh" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/inicio_ph_placeholder" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvRangoPh" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_ec" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvEc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_ec" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvRangoEc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/placeholder_rango" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_luminosidad" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvLux" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_lux" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/inicio_lux_minimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Hidro.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:layout_margin="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="112dp" android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/inicio_nivel_estanque" android:textColor="@color/texto_secundario" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvNivel" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/placeholder_nivel" android:textColor="@color/alerta_ok" android:textSize="25sp" android:textStyle="bold" />
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/inicio_nivel_minimo" android:textColor="@color/texto_terciario" android:textSize="11sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </GridLayout>
+
+            <TextView
+            android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/inicio_estado_actuadores"
+                android:textColor="@color/texto_principal"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/inicio_estado_actuadores_subtitulo"
+                android:textColor="@color/texto_secundario"
+                android:textSize="13sp" />
+
+            <GridLayout
+                android:id="@+id/gridEstadoSistema"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:columnCount="2"
+                android:useDefaultMargins="false" />
+
+            <TextView
+            android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/inicio_diagnostico"
+                android:textColor="@color/texto_principal"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divisor"
+                app:strokeWidth="1dp">
+
+                <TextView
+                    android:id="@+id/tvAlertas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="3dp"
+                    android:padding="@dimen/screen_padding"
+                    android:text="@string/alertas_todas_ok"
+                    android:textColor="@color/alerta_ok"
+                    android:textSize="13sp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
