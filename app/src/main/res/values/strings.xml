@@ -30,6 +30,19 @@
     <string name="cultivo_cilantro">Cilantro</string>
     <string name="cultivo_acelga">Acelga</string>
     <string name="cultivo_tomate_cherry">Tomate cherry</string>
+    <string name="desc_seek_aire">Temperatura del aire</string>
+    <string name="desc_seek_humedad">Temperatura del aire</string>
+    <string name="desc_seek_agua">Temperatura del aire</string>
+    <string name="desc_seek_ph">Temperatura del aire</string>
+    <string name="desc_seek_ec">Temperatura del aire</string>
+    <string name="desc_seek_lux">Temperatura del aire</string>
+    <string name="desc_seek_nivelAgua">Temperatura del aire</string>
+
+
+
+
+
+
 
     <string name="login_subtitulo">Gestión y Control Hidropónico Automatizado</string>
     <string name="login_titulo_acceso">Acceso al Sistema</string>

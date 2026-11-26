@@ -86,7 +86,7 @@
             android:id="@+id/btnVolverAjustes"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:text="@string/accion_volver"
             android:layout_marginTop="24dp"
             />

@@ -91,18 +91,21 @@
                 <Button
                     android:id="@+id/btnIngresar"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="@string/login_ingresar"
                     android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:minHeight="48dp"
+                    />
 
                 <!-- Acceso directo al modo Demo -->
                 <Button
                     android:id="@+id/btnDemo"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
                     android:layout_marginTop="10dp"
                     android:text="@string/login_modo_demo"
                     android:textSize="14sp" />

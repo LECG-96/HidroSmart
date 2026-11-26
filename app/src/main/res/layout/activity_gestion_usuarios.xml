@@ -57,17 +57,21 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCrearUsuario"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginTop="16sp"
-        android:text="@string/usuarios_crear" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/usuarios_crear"
+        android:minHeight="48dp"
+        />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnVolverUsuarios"
         style="?attr/materialButtonOutlinedStyle"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:text="@string/accion_volver"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="48dp"/>
+        android:layout_marginBottom="48dp"
+        android:minHeight="48dp"
+        />
 
 </LinearLayout>
