@@ -176,42 +176,46 @@ public class HistorialFragment extends Fragment {
     }
 
     private void guardarCsvEnUri(Uri uri) {
-        if (uri == null || !isAdded()) return;
-        ContentResolver resolver = requireContext().getContentResolver();
-        Activity actividad = getActivity();
+        if (uri == null || !isAdded() || exportador.isShutdown()) return;
+        ContentResolver resolver = requireContext().getApplicationContext().getContentResolver();
         List<MedicionMuestra> muestras = new ArrayList<>(muestrasExportables);
         List<EventoAlerta> eventos = new ArrayList<>(eventosExportables);
         boolean esDemo = esModoDemo;
-        exportador.execute(() -> {
-            boolean guardado = false;
-            try (OutputStream salida = resolver.openOutputStream(uri);
-                 BufferedWriter writer = salida == null ? null : new BufferedWriter(
-                         new OutputStreamWriter(salida, StandardCharsets.UTF_8))) {
-                if (writer == null) throw new IOException("No se pudo abrir el archivo");
-                writer.write('\uFEFF');
-                writer.write("origen;tipo;fecha_hora;torre;cultivo;variable;valor;estado;detalle\n");
-                SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                String origen = esDemo ? "DEMO" : "HidroSmart";
-                for (MedicionMuestra muestra : muestras) {
-                    escribirFila(writer, origen, "MEDICION", formato.format(new Date(muestra.fechaMillis)),
-                            String.valueOf(muestra.torre), muestra.cultivo, muestra.variable,
-                            String.valueOf(muestra.valor), "", "");
+        try {
+            exportador.execute(() -> {
+                boolean guardado = false;
+                try (OutputStream salida = resolver.openOutputStream(uri);
+                     BufferedWriter writer = salida == null ? null : new BufferedWriter(
+                             new OutputStreamWriter(salida, StandardCharsets.UTF_8))) {
+                    if (writer == null) throw new IOException("No se pudo abrir el archivo");
+                    writer.write('\uFEFF');
+                    writer.write("origen;tipo;fecha_hora;torre;cultivo;variable;valor;estado;detalle\n");
+                    SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    String origen = esDemo ? "DEMO" : "HidroSmart";
+                    for (MedicionMuestra muestra : muestras) {
+                        escribirFila(writer, origen, "MEDICION", formato.format(new Date(muestra.fechaMillis)),
+                                String.valueOf(muestra.torre), muestra.cultivo, muestra.variable,
+                                String.valueOf(muestra.valor), "", "");
+                    }
+                    for (EventoAlerta evento : eventos) {
+                        escribirFila(writer, origen, "ALERTA", evento.fechaHora,
+                                String.valueOf(evento.torre), evento.cultivo, evento.variable,
+                                String.valueOf(evento.valor), evento.tipo + (evento.atendida ? " · ATENDIDA" : " · PENDIENTE"),
+                                evento.accion);
+                    }
+                    guardado = true;
+                } catch (Exception ignored) { }
+                final boolean resultado = guardado;
+                Activity actividad = getActivity();
+                if (actividad != null && !actividad.isFinishing() && !actividad.isDestroyed()) {
+                    actividad.runOnUiThread(() -> {
+                        if (!isAdded() || actividad.isFinishing() || actividad.isDestroyed()) return;
+                        Toast.makeText(actividad, resultado ? R.string.historial_exportacion_exitosa
+                                : R.string.historial_exportacion_error, Toast.LENGTH_LONG).show();
+                    });
                 }
-                for (EventoAlerta evento : eventos) {
-                    escribirFila(writer, origen, "ALERTA", evento.fechaHora,
-                            String.valueOf(evento.torre), evento.cultivo, evento.variable,
-                            String.valueOf(evento.valor), evento.tipo + (evento.atendida ? " · ATENDIDA" : " · PENDIENTE"),
-                            evento.accion);
-                }
-                guardado = true;
-            } catch (Exception ignored) { }
-            final boolean resultado = guardado;
-            if (actividad != null) actividad.runOnUiThread(() -> {
-                if (!isAdded()) return;
-                Toast.makeText(actividad, resultado ? R.string.historial_exportacion_exitosa
-                        : R.string.historial_exportacion_error, Toast.LENGTH_LONG).show();
             });
-        });
+        } catch (java.util.concurrent.RejectedExecutionException ignored) { }
     }
 
     private void escribirFila(BufferedWriter writer, String... columnas) throws IOException {
@@ -305,7 +309,7 @@ public class HistorialFragment extends Fragment {
     }
 
     private String nombreCultivoLocalizado(PerfilCultivo perfil) {
-        if (perfil == null) return "Cultivo";
+        if (perfil == null || perfil.clave == null) return "Cultivo";
         switch (perfil.clave) {
             case "guia": return getString(R.string.cultivo_guia);
             case "lechuga": return getString(R.string.cultivo_lechuga);
