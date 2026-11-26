@@ -259,7 +259,7 @@ public class InicioFragment extends Fragment {
 
     private void mostrarEditorRangos() {
         HuertoSnapshot actual = viewModel.getHuertoActual().getValue();
-        if (actual == null) return;
+        if (actual == null || actual.perfil == null) return;
         PerfilCultivo p = actual.perfil;
         String[] etiquetas = {"pH mínimo", "pH máximo", "EC mínima (mS/cm)", "EC máxima (mS/cm)",
                 "Temperatura del agua mínima (°C)", "Temperatura del agua máxima (°C)",
