@@ -563,6 +563,7 @@ public class InicioFragment extends Fragment {
     }
 
     private String nombreCultivoLocalizado(PerfilCultivo perfil) {
+        if (perfil == null || perfil.clave == null) return "";
         switch (perfil.clave) {
             case "guia": return getString(R.string.cultivo_guia);
             case "lechuga": return getString(R.string.cultivo_lechuga);
