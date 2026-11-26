@@ -274,8 +274,8 @@ import java.util.concurrent.TimeoutException;
             return new IllegalStateException(mensaje == null ? "Error de servidor." : mensaje, causa);
         }
 
-        private static String correo(String nombreNormalizado) {
-            return nombreNormalizado + DOMINIO;
+        private static String correo(String entrada) {
+            return entrada.contains("@") ? entrada : entrada + DOMINIO;
         }
 
         private static String normalizarNombre(String nombre) {
@@ -283,8 +283,11 @@ import java.util.concurrent.TimeoutException;
         }
 
         private static void validarCuenta(String nombre, String contrasena, String rol) {
-            if (nombre.length() < 3 || nombre.length() > 32 || !nombre.matches("[a-z0-9._-]+")) {
-                throw new IllegalArgumentException("Usa un nombre de 3 a 32 caracteres: letras, números, punto, guion o guion bajo.");
+            if (nombre.length() < 3 || nombre.length() > 64 || !nombre.matches("[a-z0-9._@+-]+")) {
+                throw new IllegalArgumentException("Usa un usuario o un correo válido.");
+            }
+            if (nombre.contains("@") && !android.util.Patterns.EMAIL_ADDRESS.matcher(nombre).matches()) {
+                throw new IllegalArgumentException("El correo ingresado no es válido.");
             }
             validarContrasena(contrasena);
             if (!ROL_ADMIN.equals(rol) && !ROL_USER.equals(rol)) {

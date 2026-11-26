@@ -33,7 +33,7 @@
 
     <string name="login_subtitulo">Gestión y Control Hidropónico Automatizado</string>
     <string name="login_titulo_acceso">Acceso al Sistema</string>
-    <string name="login_usuario">Usuario</string>
+    <string name="login_usuario">Usuario o Correo</string>
     <string name="login_contrasena">Contraseña</string>
     <string name="login_ingresar">Iniciar Sesión</string>
     <string name="login_modo_demo">Ingresar en Modo Demo</string>
