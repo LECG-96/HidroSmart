@@ -20,3 +20,7 @@ captures/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Documentación y reportes locales
+*.md
+*.MD
