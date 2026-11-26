@@ -446,9 +446,10 @@ public class InicioFragment extends Fragment {
                     String sufijo = getString(a.automatica
                             ? R.string.alerta_auto_sufijo
                             : R.string.alerta_manual_sufijo);
+                    String nivelTexto = a.nivel == null ? "" : a.nivel.toUpperCase(Locale.getDefault());
                     sb.append(String.format(Locale.getDefault(), getString(R.string.alerta_formato),
                             formatearNombreVariable(a.variable),
-                            a.nivel.toUpperCase(Locale.getDefault()),
+                            nivelTexto,
                             a.valor,
                             obtenerAccionAlerta(a),
                             sufijo));
