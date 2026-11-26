@@ -498,34 +498,55 @@ public class InicioFragment extends Fragment {
         tvRangoPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_ph), p.phMin, p.phMax));
         tvRangoEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_rango_ec), p.ecMin, p.ecMax));
 
-        double aire = huerto.v.get("temp_ambiente");
-        double hum = huerto.v.get("humedad");
-        double agua = huerto.v.get("temp_agua");
-        double ph = huerto.v.get("ph");
-        double ec = huerto.v.get("ec");
-        double lux = huerto.v.get("lux");
-        double nivel = huerto.v.get("nivel_agua");
+        Double aireVal = huerto.v.get("temp_ambiente");
+        Double humVal = huerto.v.get("humedad");
+        Double aguaVal = huerto.v.get("temp_agua");
+        Double phVal = huerto.v.get("ph");
+        Double ecVal = huerto.v.get("ec");
+        Double luxVal = huerto.v.get("lux");
+        Double nivelVal = huerto.v.get("nivel_agua");
 
-        tvTempAire.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), aire));
-        pintarValor(tvTempAire, aire < p.aireMin || aire > p.aireMax);
+        if (aireVal != null) {
+            double aire = aireVal;
+            tvTempAire.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), aire));
+            pintarValor(tvTempAire, aire < p.aireMin || aire > p.aireMax);
+        }
 
-        tvHumedad.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), hum));
+        if (humVal != null) {
+            double hum = humVal;
+            tvHumedad.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), hum));
+        }
 
-        tvTempAgua.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), agua));
-        pintarValor(tvTempAgua, agua < p.tempAguaMin || agua > p.tempAguaMax);
+        if (aguaVal != null) {
+            double agua = aguaVal;
+            tvTempAgua.setText(String.format(Locale.getDefault(), getString(R.string.formato_temperatura), agua));
+            pintarValor(tvTempAgua, agua < p.tempAguaMin || agua > p.tempAguaMax);
+        }
 
-        tvPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_ph), ph));
-        pintarValor(tvPh, ph < p.phMin || ph > p.phMax);
+        if (phVal != null) {
+            double ph = phVal;
+            tvPh.setText(String.format(Locale.getDefault(), getString(R.string.formato_ph), ph));
+            pintarValor(tvPh, ph < p.phMin || ph > p.phMax);
+        }
 
-        tvEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_ec), ec));
-        pintarValor(tvEc, ec < p.ecMin || ec > p.ecMax);
+        if (ecVal != null) {
+            double ec = ecVal;
+            tvEc.setText(String.format(Locale.getDefault(), getString(R.string.formato_ec), ec));
+            pintarValor(tvEc, ec < p.ecMin || ec > p.ecMax);
+        }
 
-        tvLux.setText(String.format(Locale.getDefault(), getString(R.string.formato_lux), lux));
-        pintarValor(tvLux, lux < Huerto.LUX_LED_ON);
+        if (luxVal != null) {
+            double lux = luxVal;
+            tvLux.setText(String.format(Locale.getDefault(), getString(R.string.formato_lux), lux));
+            pintarValor(tvLux, lux < Huerto.LUX_LED_ON);
+        }
 
-        tvNivel.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), nivel));
-        pintarValor(tvNivel, nivel < Huerto.NIVEL_BAJO);
-        actualizarIndicadoresSistema(huerto, nivel);
+        if (nivelVal != null) {
+            double nivel = nivelVal;
+            tvNivel.setText(String.format(Locale.getDefault(), getString(R.string.formato_porcentaje), nivel));
+            pintarValor(tvNivel, nivel < Huerto.NIVEL_BAJO);
+            actualizarIndicadoresSistema(huerto, nivel);
+        }
     }
 
     private String formatearNombreVariable(String raw) {
