@@ -296,7 +296,9 @@ public class HistorialFragment extends Fragment {
             return;
         }
         String[] unidades = getResources().getStringArray(R.array.historial_variable_unidades);
-        int variable = Math.min(spnVariableGrafico.getSelectedItemPosition(), unidades.length - 1);
+        int posicion = spnVariableGrafico.getSelectedItemPosition();
+        if (posicion < 0 || unidades.length == 0) return;
+        int variable = Math.min(posicion, unidades.length - 1);
         MedicionMuestra ultima = muestras.get(muestras.size() - 1);
         tvResumenMediciones.setText(getString(R.string.historial_grafico_resumen,
                 ultima.valor, unidades[variable], muestras.size()));
@@ -395,11 +397,13 @@ public class HistorialFragment extends Fragment {
         StringBuilder texto = new StringBuilder();
         for (EventoAlerta alerta : alertas) {
             hayPendientes |= !alerta.atendida;
+            String variableTexto = alerta.variable == null ? "" : alerta.variable.replace('_', ' ').toUpperCase(Locale.getDefault());
+            String nivelTexto = alerta.nivel == null ? "" : alerta.nivel.toUpperCase(Locale.getDefault());
             texto.append(getString(R.string.historial_alerta_activa_formato,
                     alerta.torre,
                     nombreCultivoLocalizado(alerta.cultivo),
-                    alerta.variable.replace('_', ' ').toUpperCase(Locale.getDefault()),
-                    alerta.nivel.toUpperCase(Locale.getDefault()),
+                    variableTexto,
+                    nivelTexto,
                     alerta.valor,
                     alerta.accion,
                     getString(alerta.atendida ? R.string.historial_evento_atendida
@@ -425,12 +429,13 @@ public class HistorialFragment extends Fragment {
 
         StringBuilder texto = new StringBuilder();
         for (EventoAlerta evento : eventos) {
+            String variableTexto = evento.variable == null ? "" : evento.variable.replace('_', ' ').toUpperCase(Locale.getDefault());
+            String nivelTexto = evento.nivel == null ? "" : evento.nivel.toUpperCase(Locale.getDefault());
             texto.append(getString(R.string.historial_evento_formato,
                     evento.fechaHora,
                     evento.torre,
                     nombreCultivoLocalizado(evento.cultivo),
-                    evento.variable.replace('_', ' ').toUpperCase(Locale.getDefault())
-                            + " · " + evento.nivel.toUpperCase(Locale.getDefault()),
+                    variableTexto + " · " + nivelTexto,
                     evento.valor,
                     getString(EventoAlerta.ACTIVA.equals(evento.tipo)
                             ? R.string.historial_evento_activada : R.string.historial_evento_resuelta),
